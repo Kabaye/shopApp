@@ -1,0 +1,23 @@
+# Maven
+.mvn/
+target/
+
+# Eclipse
+bin/
+.classpath
+.project
+.settings/
+.springBeans
+
+# IDEA
+.idea/
+*.iml
+
+# Cassandra
+.toDelete
+
+# logs 
+*.log
+
+# misc
+*.gz
