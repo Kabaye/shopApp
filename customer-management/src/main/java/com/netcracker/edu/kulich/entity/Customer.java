@@ -20,7 +20,7 @@ public class Customer {
     @Id
     @GeneratedValue
     @NonNull
-    private int id;
+    private long id;
 
     @Getter
     @Setter
