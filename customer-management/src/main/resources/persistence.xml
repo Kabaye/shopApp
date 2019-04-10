@@ -11,7 +11,7 @@
     -->
 
 
-    <persistence-unit name="userPersistenceUnit">
+    <persistence-unit name="shopDatabasePersistenceUnit">
 
         <properties>
 

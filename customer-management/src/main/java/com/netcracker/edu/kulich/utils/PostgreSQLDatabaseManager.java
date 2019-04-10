@@ -5,7 +5,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 public class PostgreSQLDatabaseManager implements DatabaseManager {
-    private static final EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("userPersistenceUnit");
+    private static final EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("shopDatabasePersistenceUnit");
     private EntityManager entityManager;
 
     private PostgreSQLDatabaseManager() {
