@@ -11,5 +11,29 @@
 
     <artifactId>customer-management</artifactId>
 
+    <dependencies>
+        <!-- Core of Hibernate -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.2.11.Final</version>
+        </dependency>
+
+        <!-- Entity manager which is required for JPA -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>5.2.11.Final</version>
+        </dependency>
+
+        <!-- JDBC Driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.1.4</version>
+        </dependency>
+
+    </dependencies>
+
 
 </project>
