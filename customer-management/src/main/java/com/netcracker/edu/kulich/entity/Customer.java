@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.StringJoiner;
 
 @Entity
 @Table (name = "customers")
@@ -32,4 +33,12 @@ public class Customer {
     @NonNull
     private int age;
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Customer.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("fio='" + fio + "'")
+                .add("age=" + age)
+                .toString();
+    }
 }
