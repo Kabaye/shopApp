@@ -36,6 +36,7 @@ public class CustomerDAOImplementation implements CustomerDAO {
         List<Customer> customers;
         transaction.begin();
         customers = entityManager.createQuery("SELECT elem FROM Customer elem ORDER BY elem.id", Customer.class).getResultList();
+        transaction.commit();
         return customers;
     }
 
