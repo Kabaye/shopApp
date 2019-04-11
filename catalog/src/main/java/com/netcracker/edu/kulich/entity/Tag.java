@@ -23,7 +23,7 @@ public class Tag {
 
     @Getter
     @Setter
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String tagname;
 
     @Getter

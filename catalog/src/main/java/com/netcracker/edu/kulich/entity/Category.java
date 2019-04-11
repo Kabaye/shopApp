@@ -25,7 +25,7 @@ public class Category {
     @Getter
     @Setter
     @NonNull
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String category;
 
 
