@@ -25,6 +25,8 @@ public class TagDAOImplementation implements TagDAO {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         Tag tag = entityManager.find(Tag.class, id);
+        if (tag != null)
+        entityManager.refresh(tag);
         transaction.commit();
         return tag;
     }

@@ -24,6 +24,8 @@ public class CategoryDAOImplementation implements CategoryDAO {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         Category category = entityManager.find(Category.class, id);
+        if (category != null)
+            entityManager.refresh(category);
         transaction.commit();
         return category;
     }
