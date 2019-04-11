@@ -43,7 +43,6 @@ public class CategoryDAOImplementation implements CategoryDAO {
     public Category update(Category category) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-        //entityManager.refresh(category);
         entityManager.merge(category);
         transaction.commit();
         return category;
