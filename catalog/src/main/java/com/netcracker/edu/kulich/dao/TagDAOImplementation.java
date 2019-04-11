@@ -1,5 +1,6 @@
 package com.netcracker.edu.kulich.dao;
 
+import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Tag;
 import com.netcracker.edu.kulich.utils.PostgreSQLDatabaseManager;
 
@@ -68,6 +69,13 @@ public class TagDAOImplementation implements TagDAO {
         transaction.begin();
         Tag tag = entityManager.getReference(Tag.class, id);
         entityManager.refresh(tag);
+
+        Set<Offer> offers = tag.getOffers();
+
+        for (Offer elem : offers ) {
+            elem.getTags().remove(tag);
+        }
+
         entityManager.remove(tag);
         transaction.commit();
     }
