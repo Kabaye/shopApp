@@ -2,7 +2,6 @@ package com.netcracker.edu.kulich.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -13,17 +12,17 @@ import java.util.StringJoiner;
 @NoArgsConstructor
 public class Price {
 
-    @NonNull
+
     @Getter
     @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "price_id")
+    @Column(name = "price_id", nullable = false)
     private long id;
 
     @Getter
     @Setter
-    @NonNull
+    @Column(nullable = false)
     private double price;
 
     @Override

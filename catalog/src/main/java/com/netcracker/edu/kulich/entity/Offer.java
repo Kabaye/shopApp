@@ -2,7 +2,6 @@ package com.netcracker.edu.kulich.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -15,33 +14,30 @@ import java.util.StringJoiner;
 @NoArgsConstructor
 public class Offer {
 
-    @NonNull
     @Getter
     @Setter
     @Id
+    @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @NonNull
     @Getter
     @Setter
+    @Column(nullable = false)
     private String name;
 
-    @NonNull
     @Getter
     @Setter
     @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "price_id")
     private Price price;
 
-    @NonNull
     @Getter
     @Setter
     @ManyToOne(optional = false, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @NonNull
     @Getter
     @Setter
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
