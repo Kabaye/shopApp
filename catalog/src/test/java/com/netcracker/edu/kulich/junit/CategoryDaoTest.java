@@ -14,8 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class CategoryDaoTest {
     private CategoryDAO categoryDAO = new CategoryDAOImplementation();
@@ -105,7 +104,7 @@ public class CategoryDaoTest {
         categoryDAO.delete(category.getId());
 
         Category category1 = categoryDAO.read(category.getId());
-        assertEquals(null, category1);
+        assertNull(category1);
     }
 
     @Test
