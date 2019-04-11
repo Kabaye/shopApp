@@ -42,6 +42,7 @@ public class CategoryDAOImplementation implements CategoryDAO {
     /**
      * Merge the state of the given entity into the
      * current persistence context.
+     *
      * @param category entity instance
      * @return the managed instance that the state was merged to
      * @throws IllegalArgumentException if instance is not an
@@ -53,8 +54,10 @@ public class CategoryDAOImplementation implements CategoryDAO {
         transaction.begin();
         if (entityManager.contains(category)) {
             entityManager.merge(category);
+        } else {
+            transaction.commit();
+            throw new IllegalArgumentException("Instance is not an entity or detached entity!");
         }
-        else throw new IllegalArgumentException("Instance is not an entity or detached entity!");
         transaction.commit();
         return category;
     }
