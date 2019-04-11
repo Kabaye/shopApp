@@ -21,19 +21,6 @@ public class CategoryDaoTest {
     private OfferDAO offerDAO = new OfferDAOImplementation();
 
     @Test
-    public void testCreateAndReadOneCategoryWithoutOffer() {
-        Category category = new Category();
-
-        category.setCategory("cat1");
-
-        categoryDAO.create(category);
-
-        Category category1 = categoryDAO.read(category.getId());
-        assertNotNull(category1);
-        assertEquals(category.toString(), category1.toString());
-    }
-
-    @Test
     public void testCreateAndReadWithTwoCreatedCategories() {
         Category category = new Category();
         category.setCategory("cat1");
@@ -129,6 +116,17 @@ public class CategoryDaoTest {
 
         tag = new Tag();
         tag.setTagname("tag2");
+        offer.addTag(tag);
+
+        offerDAO.create(offer);
+        offer = new Offer();
+        offer.setName("of1");
+
+        price = new Price();
+        price.setPrice(2500d);
+
+        offer.setCategory(category);
+        offer.setPrice(price);
 
         offerDAO.create(offer);
 
