@@ -31,7 +31,7 @@ public class Category {
 
     @Getter
     @Setter
-    @OneToMany (mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany (mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Set<Offer> offers;
 
     @Override
