@@ -40,7 +40,7 @@ public class Offer {
 
     @Getter
     @Setter
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany (cascade = CascadeType.PERSIST)
     @JoinTable(name = "offers_tags",
             joinColumns = @JoinColumn(name = "offer_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
