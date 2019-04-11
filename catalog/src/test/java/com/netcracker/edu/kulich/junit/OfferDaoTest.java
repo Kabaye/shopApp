@@ -17,35 +17,6 @@ public class OfferDaoTest {
     private OfferDAO offerDAO = new OfferDAOImplementation();
 
     @Test
-    public void testCreateAndReadOneOffer() {
-        Offer offer = new Offer();
-        offer.setName("of1");
-
-        Category category = new Category();
-        category.setCategory("cat1");
-
-        Price price = new Price();
-        price.setPrice(1950d);
-
-        offer.setCategory(category);
-        offer.setPrice(price);
-
-        Tag tag = new Tag();
-        tag.setTagname("tag1");
-        offer.addTag(tag);
-
-        tag = new Tag();
-        tag.setTagname("tag2");
-
-        OfferDAO offerDAO = new OfferDAOImplementation();
-        offerDAO.create(offer);
-
-        Offer offer1 = offerDAO.read(offer.getId());
-        assertNotNull(offer1);
-        assertEquals(offer.toString(), offer1.toString());
-    }
-
-    @Test
     public void testCreateAndReadTwoOffers() {
         Offer offer = new Offer();
         offer.setName("of1");
