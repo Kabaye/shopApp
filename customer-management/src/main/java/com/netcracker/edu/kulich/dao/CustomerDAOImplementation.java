@@ -42,11 +42,12 @@ public class CustomerDAOImplementation implements CustomerDAO {
 
     @Override
     public Customer update(Customer customer) {
-        EntityTransaction transaction = entityManager.getTransaction();
+        EntityTransaction transaction;
+        transaction = entityManager.getTransaction();
         transaction.begin();
-        Customer foundCustomer = entityManager.merge(customer);
+        entityManager.merge(customer);
         transaction.commit();
-        return foundCustomer;
+        return customer;
     }
 
     @Override
