@@ -39,11 +39,25 @@ public class TagDAOImplementation implements TagDAO {
         return tags;
     }
 
+    /**
+     * Merge the state of the given entity into the
+     * current persistence context.
+     * @param tag entity instance
+     * @return the managed instance that the state was merged to
+     * @throws IllegalArgumentException if instance is not an
+     *         entity or is a removed (detached) entity
+     */
     @Override
     public Tag update(Tag tag) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
+        if (entityManager.contains(tag))
         tag = entityManager.merge(tag);
+        else
+        {
+            transaction.commit();
+            throw new IllegalArgumentException("Instance is not an entity or detached entity!");
+        }
         transaction.commit();
         return tag;
     }
