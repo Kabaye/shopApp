@@ -6,6 +6,9 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringJoiner;
 
 @Entity
 @Table(name = "offers")
@@ -27,8 +30,39 @@ public class Offer {
     @NonNull
     @Getter
     @Setter
-    @OneToOne (optional = false, cascade = CascadeType.ALL)
-    @JoinColumn (name = "id")
+    @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "price_id")
     private Price price;
 
+    @NonNull
+    @Getter
+    @Setter
+    @ManyToOne(optional = false, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @NonNull
+    @Getter
+    @Setter
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "offers_tags",
+            joinColumns = @JoinColumn(name = "offer_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<Tag> tags = new HashSet<>();
+
+    public void addTag(Tag tag) {
+        tags.add(tag);
+    }
+
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Offer.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("name='" + name + "'")
+                .add("price=" + price)
+                .add("category=" + category)
+                .add("tags=" + tags)
+                .toString();
+    }
 }
