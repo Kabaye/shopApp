@@ -39,11 +39,22 @@ public class OfferDAOImplementation implements OfferDAO {
         return offers;
     }
 
+    /**
+     * Merge the state of the given entity into the
+     * current persistence context.
+     * @param offer entity instance
+     * @return the managed instance that the state was merged to
+     * @throws IllegalArgumentException if instance is not an
+     *         entity or is a removed (detached) entity
+     */
     @Override
     public Offer update(Offer offer) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-        entityManager.merge(offer);
+        if (entityManager.contains(offer)) {
+            entityManager.merge(offer);
+        }
+        else throw new IllegalArgumentException("Instance is not an entity or detached entity!");
         transaction.commit();
         return offer;
     }
