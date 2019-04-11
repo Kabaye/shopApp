@@ -42,7 +42,7 @@ public class OfferDaoTest {
 
         Offer offer1 = offerDAO.read(offer.getId());
         assertNotNull(offer1);
-        assertEquals(offer1.toString(), offer.toString());
+        assertEquals(offer.toString(), offer1.toString());
     }
 
     @Test
@@ -88,7 +88,7 @@ public class OfferDaoTest {
 
         Offer offer2 = offerDAO.read(offer.getId());
         assertNotNull(offer);
-        assertEquals(offer2.toString(), offer.toString());
+        assertEquals(offer.toString(), offer2.toString());
     }
 
     @Test
@@ -143,7 +143,7 @@ public class OfferDaoTest {
 
         List<Offer> offers = offerDAO.findAll();
         assertNotNull(offers);
-        assertEquals(offers.toString(), offerList.toString());
+        assertEquals(offerList.toString(), offers.toString());
     }
 
     @Test
@@ -180,7 +180,7 @@ public class OfferDaoTest {
 
         Offer offer1 = offerDAO.read(offer.getId());
         assertNotNull(offer1);
-        assertEquals(offer1.toString(),offer.toString());
+        assertEquals(offer.toString(),offer1.toString());
     }
 
     @Test
@@ -214,6 +214,6 @@ public class OfferDaoTest {
         List<Offer> offers = offerDAO.findAll();
 
         assertNotNull(offers);
-        assertEquals(offers.toString(),offerList.toString());
+        assertEquals(offerList.toString(),offers.toString());
     }
 }
