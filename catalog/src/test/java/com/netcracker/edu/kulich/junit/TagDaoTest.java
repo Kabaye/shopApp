@@ -1,9 +1,9 @@
 package com.netcracker.edu.kulich.junit;
 
 import com.netcracker.edu.kulich.dao.OfferDAO;
-import com.netcracker.edu.kulich.dao.OfferDAOImplementation;
+import com.netcracker.edu.kulich.dao.OfferDAOManager;
 import com.netcracker.edu.kulich.dao.TagDAO;
-import com.netcracker.edu.kulich.dao.TagDAOImplementation;
+import com.netcracker.edu.kulich.dao.TagDAOManager;
 import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Price;
@@ -17,8 +17,8 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 public class TagDaoTest {
-    private TagDAO tagDAO = new TagDAOImplementation();
-    private OfferDAO offerDAO = new OfferDAOImplementation();
+    private TagDAO tagDAO = new TagDAOManager();
+    private OfferDAO offerDAO = new OfferDAOManager();
     @Test
     public void testCreateAndReadOneTag() {
         Tag tag = new Tag();

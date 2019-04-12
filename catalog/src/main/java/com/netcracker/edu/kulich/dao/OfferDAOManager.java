@@ -7,7 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import java.util.List;
 
-public class OfferDAOImplementation implements OfferDAO {
+public class OfferDAOManager implements OfferDAO {
 
     private EntityManager entityManager = PostgreSQLDatabaseManager.getInstance().getEntityManager();
 

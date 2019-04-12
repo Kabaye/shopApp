@@ -7,7 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import java.util.Set;
 
-public class CategoryDAOImplementation implements CategoryDAO {
+public class CategoryDAOManager implements CategoryDAO {
     private EntityManager entityManager = PostgreSQLDatabaseManager.getInstance().getEntityManager();
 
     @Override

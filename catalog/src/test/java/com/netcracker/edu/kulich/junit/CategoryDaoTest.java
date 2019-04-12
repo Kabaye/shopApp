@@ -1,9 +1,9 @@
 package com.netcracker.edu.kulich.junit;
 
 import com.netcracker.edu.kulich.dao.CategoryDAO;
-import com.netcracker.edu.kulich.dao.CategoryDAOImplementation;
+import com.netcracker.edu.kulich.dao.CategoryDAOManager;
 import com.netcracker.edu.kulich.dao.OfferDAO;
-import com.netcracker.edu.kulich.dao.OfferDAOImplementation;
+import com.netcracker.edu.kulich.dao.OfferDAOManager;
 import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Price;
@@ -17,8 +17,8 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 public class CategoryDaoTest {
-    private CategoryDAO categoryDAO = new CategoryDAOImplementation();
-    private OfferDAO offerDAO = new OfferDAOImplementation();
+    private CategoryDAO categoryDAO = new CategoryDAOManager();
+    private OfferDAO offerDAO = new OfferDAOManager();
 
     @Test
     public void testCreateAndReadWithTwoCreatedCategories() {

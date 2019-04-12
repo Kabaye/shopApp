@@ -1,7 +1,7 @@
 package com.netcracker.edu.kulich.junit;
 
 import com.netcracker.edu.kulich.dao.OfferDAO;
-import com.netcracker.edu.kulich.dao.OfferDAOImplementation;
+import com.netcracker.edu.kulich.dao.OfferDAOManager;
 import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Price;
@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class OfferDaoTest {
-    private OfferDAO offerDAO = new OfferDAOImplementation();
+    private OfferDAO offerDAO = new OfferDAOManager();
 
     @Test
     public void testCreateAndReadTwoOffers() {
@@ -37,7 +37,7 @@ public class OfferDaoTest {
         tag = new Tag();
         tag.setTagname("tag2");
 
-        OfferDAO offerDAO = new OfferDAOImplementation();
+        OfferDAO offerDAO = new OfferDAOManager();
         offerDAO.create(offer);
 
         offer = new Offer();
@@ -65,7 +65,7 @@ public class OfferDaoTest {
     @Test
     public void testFindAllOffers() {
 
-        OfferDAO offerDAO = new OfferDAOImplementation();
+        OfferDAO offerDAO = new OfferDAOManager();
         List<Offer> offerList = offerDAO.findAll();
 
         Offer offer = new Offer();
@@ -119,7 +119,7 @@ public class OfferDaoTest {
 
     @Test
     public void testUpdateOffer() {
-        OfferDAO offerDAO = new OfferDAOImplementation();
+        OfferDAO offerDAO = new OfferDAOManager();
 
         Offer offer = new Offer();
         offer.setName("of1");
@@ -156,7 +156,7 @@ public class OfferDaoTest {
 
     @Test
     public void testDeleteOffer() {
-        OfferDAO offerDAO = new OfferDAOImplementation();
+        OfferDAO offerDAO = new OfferDAOManager();
         List<Offer> offerList = offerDAO.findAll();
 
         Offer offer = new Offer();

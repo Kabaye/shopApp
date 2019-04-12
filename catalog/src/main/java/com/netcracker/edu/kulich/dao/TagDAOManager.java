@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import java.util.Set;
 
-public class TagDAOImplementation implements TagDAO {
+public class TagDAOManager implements TagDAO {
     private EntityManager entityManager = PostgreSQLDatabaseManager.getInstance().getEntityManager();
 
     @Override
