@@ -8,7 +8,7 @@ import javax.persistence.EntityTransaction;
 import java.util.List;
 
 
-public class CustomerDAOImplementation implements CustomerDAO {
+public class CustomerDAOManager implements CustomerDAO {
 
     private EntityManager entityManager = PostgreSQLDatabaseManager.getInstance().getEntityManager();
 
