@@ -17,6 +17,7 @@ public class TagDAOManager implements TagDAO {
         transaction.begin();
         entityManager.persist(tag);
         transaction.commit();
+        entityManager.detach(tag);
         return tag;
     }
 
@@ -25,8 +26,10 @@ public class TagDAOManager implements TagDAO {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         Tag tag = entityManager.find(Tag.class, id);
-        if (tag != null)
-        entityManager.refresh(tag);
+        if (tag != null) {
+            entityManager.refresh(tag);
+            entityManager.detach(tag);
+        }
         transaction.commit();
         return tag;
     }
@@ -39,29 +42,20 @@ public class TagDAOManager implements TagDAO {
             entityManager.persist(elem);
         }
         transaction.commit();
+        for (Tag elem : tags) {
+            entityManager.detach(elem);
+        }
         return tags;
     }
 
-    /**
-     * Merge the state of the given entity into the
-     * current persistence context.
-     * @param tag entity instance
-     * @return the managed instance that the state was merged to
-     * @throws IllegalArgumentException if instance is not an
-     *         entity or is a removed (detached) entity
-     */
+
     @Override
     public Tag update(Tag tag) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-        if (entityManager.contains(tag))
         tag = entityManager.merge(tag);
-        else
-        {
-            transaction.commit();
-            throw new IllegalArgumentException("Instance is not an entity or detached entity!");
-        }
         transaction.commit();
+        entityManager.detach(tag);
         return tag;
     }
 
@@ -74,7 +68,7 @@ public class TagDAOManager implements TagDAO {
 
         Set<Offer> offers = tag.getOffers();
 
-        for (Offer elem : offers ) {
+        for (Offer elem : offers) {
             elem.getTags().remove(tag);
         }
 

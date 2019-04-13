@@ -16,6 +16,7 @@ public class CategoryDAOManager implements CategoryDAO {
         transaction.begin();
         entityManager.persist(category);
         transaction.commit();
+        entityManager.detach(category);
         return category;
     }
 
@@ -24,9 +25,12 @@ public class CategoryDAOManager implements CategoryDAO {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         Category category = entityManager.find(Category.class, id);
-        if (category != null)
+        if (category != null) {
             entityManager.refresh(category);
+            entityManager.detach(category);
+        }
         transaction.commit();
+
         return category;
     }
 
@@ -38,28 +42,18 @@ public class CategoryDAOManager implements CategoryDAO {
             entityManager.persist(elem);
         }
         transaction.commit();
+        for (Category elem : categories) {
+            entityManager.detach(elem);
+        }
         return categories;
     }
 
-    /**
-     * Merge the state of the given entity into the
-     * current persistence context.
-     *
-     * @param category entity instance
-     * @return the managed instance that the state was merged to
-     * @throws IllegalArgumentException if instance is not an
-     *         entity or is a removed (detached) entity
-     */
     @Override
     public Category update(Category category) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-        if (entityManager.contains(category)) {
-            entityManager.merge(category);
-        } else {
-            transaction.commit();
-            throw new IllegalArgumentException("Instance is not an entity or detached entity!");
-        }
+        entityManager.merge(category);
+        entityManager.detach(category);
         transaction.commit();
         return category;
     }

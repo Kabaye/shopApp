@@ -13,10 +13,12 @@ public class OfferDAOManager implements OfferDAO {
 
     @Override
     public Offer create(Offer offer) {
-        EntityTransaction transaction = entityManager.getTransaction();
+        EntityTransaction transaction;
+        transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(offer);
         transaction.commit();
+        entityManager.detach(offer);
         return offer;
     }
 
@@ -25,7 +27,12 @@ public class OfferDAOManager implements OfferDAO {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         Offer foundOffer = entityManager.find(Offer.class, id);
+
+        //check problem with lazy downloading
+
+        foundOffer.toString();
         transaction.commit();
+        entityManager.detach(foundOffer);
         return foundOffer;
     }
 
@@ -39,25 +46,14 @@ public class OfferDAOManager implements OfferDAO {
         return offers;
     }
 
-    /**
-     * Merge the state of the given entity into the
-     * current persistence context.
-     *
-     * @param offer entity instance
-     * @return the managed instance that the state was merged to
-     * @throws IllegalArgumentException if instance is not an
-     *         entity or is a removed (detached) entity
-     */
+
     @Override
     public Offer update(Offer offer) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-        if (!entityManager.contains(offer)) {
-            transaction.commit();
-            throw new IllegalArgumentException("Instance is not an entity or detached entity!");
-        }
-        offer = entityManager.merge(offer);
+        entityManager.merge(offer);
         transaction.commit();
+        entityManager.detach(offer);
         return offer;
     }
 
