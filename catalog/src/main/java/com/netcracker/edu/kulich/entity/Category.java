@@ -6,6 +6,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -32,7 +33,7 @@ public class Category {
     @Getter
     @Setter
     @OneToMany (mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private Set<Offer> offers;
+    private Set<Offer> offers = new HashSet<>();
 
     @Override
     public String toString() {

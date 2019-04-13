@@ -28,13 +28,13 @@ public class Offer {
 
     @Getter
     @Setter
-    @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "price_id")
     private Price price;
 
     @Getter
     @Setter
-    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "category_id")
     private Category category;
 
