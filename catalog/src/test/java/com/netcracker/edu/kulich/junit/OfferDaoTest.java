@@ -1,13 +1,14 @@
 package com.netcracker.edu.kulich.junit;
 
-import com.netcracker.edu.kulich.dao.OfferDAO;
-import com.netcracker.edu.kulich.dao.OfferDAOManager;
+import com.netcracker.edu.kulich.dao.*;
 import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Price;
 import com.netcracker.edu.kulich.entity.Tag;
+import com.netcracker.edu.kulich.utils.PostgreSQLDatabaseManager;
 import org.junit.Test;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -15,6 +16,9 @@ import static org.junit.Assert.assertNotNull;
 
 public class OfferDaoTest {
     private OfferDAO offerDAO = new OfferDAOManager();
+    private CategoryDAO categoryDAO = new CategoryDAOManager();
+    private TagDAO tagDAO = new TagDAOManager();
+    private EntityManager manager = PostgreSQLDatabaseManager.getInstance().getEntityManager();
 
     @Test
     public void testCreateAndReadTwoOffers() {
@@ -36,8 +40,8 @@ public class OfferDaoTest {
 
         tag = new Tag();
         tag.setTagname("tag2");
+        offer.addTag(tag);
 
-        OfferDAO offerDAO = new OfferDAOManager();
         offerDAO.create(offer);
 
         offer = new Offer();
@@ -64,8 +68,6 @@ public class OfferDaoTest {
 
     @Test
     public void testFindAllOffers() {
-
-        OfferDAO offerDAO = new OfferDAOManager();
         List<Offer> offerList = offerDAO.findAll();
 
         Offer offer = new Offer();
@@ -119,8 +121,6 @@ public class OfferDaoTest {
 
     @Test
     public void testUpdateOffer() {
-        OfferDAO offerDAO = new OfferDAOManager();
-
         Offer offer = new Offer();
         offer.setName("of1");
 
@@ -151,12 +151,11 @@ public class OfferDaoTest {
 
         Offer offer1 = offerDAO.read(offer.getId());
         assertNotNull(offer1);
-        assertEquals(offer.toString(),offer1.toString());
+        assertEquals(offer.toString(), offer1.toString());
     }
 
     @Test
     public void testDeleteOffer() {
-        OfferDAO offerDAO = new OfferDAOManager();
         List<Offer> offerList = offerDAO.findAll();
 
         Offer offer = new Offer();
@@ -185,6 +184,6 @@ public class OfferDaoTest {
         List<Offer> offers = offerDAO.findAll();
 
         assertNotNull(offers);
-        assertEquals(offerList.toString(),offers.toString());
+        assertEquals(offerList.toString(), offers.toString());
     }
 }

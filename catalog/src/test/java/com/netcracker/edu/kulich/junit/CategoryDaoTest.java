@@ -134,4 +134,5 @@ public class CategoryDaoTest {
 
         assertEquals(offers.toString(), offerDAO.findAll().toString());
     }
+
 }
