@@ -1,5 +1,6 @@
 package com.netcracker.edu.kulich.dao;
 
+import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Tag;
 import com.netcracker.edu.kulich.utils.PostgreSQLDatabaseManager;
 
@@ -26,6 +27,7 @@ public class TagDAOManager implements TagDAO {
         entityManager = entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
         Tag tag = entityManager.find(Tag.class, id);
+        //entityManager.refresh(tag);
         entityManager.getTransaction().commit();
         entityManager.close();
         return tag;
@@ -59,7 +61,10 @@ public class TagDAOManager implements TagDAO {
         entityManager = entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
         Tag tag = entityManager.getReference(Tag.class, id);
-        entityManager.refresh(tag);
+        for (Offer offer : tag.getOffers()
+        ) {
+            offer.getTags().remove(tag);
+        }
         entityManager.remove(tag);
         entityManager.getTransaction().commit();
         entityManager.close();
