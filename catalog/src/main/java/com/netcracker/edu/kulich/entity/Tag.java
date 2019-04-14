@@ -34,10 +34,6 @@ public class Tag {
             inverseJoinColumns = @JoinColumn(name = "offer_id"))
     private Set<Offer> offers = new HashSet<>();
 
-    public void addOffer(Offer offer) {
-        offers.add(offer);
-    }
-
     @Override
     public String toString() {
         return new StringJoiner(", ", Tag.class.getSimpleName() + "[", "]")

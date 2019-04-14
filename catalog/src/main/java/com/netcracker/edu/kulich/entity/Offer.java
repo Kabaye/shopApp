@@ -28,19 +28,19 @@ public class Offer {
 
     @Getter
     @Setter
-    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "price_id")
     private Price price;
 
     @Getter
     @Setter
-    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private Category category;
 
     @Getter
     @Setter
-    @ManyToMany (cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "offers_tags",
             joinColumns = @JoinColumn(name = "offer_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -49,7 +49,6 @@ public class Offer {
     public void addTag(Tag tag) {
         tags.add(tag);
     }
-
 
     @Override
     public String toString() {
