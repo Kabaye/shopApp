@@ -9,5 +9,6 @@ public interface CustomerDAO {
     Customer read(Long id);
     List<Customer> findAll();
     Customer update(Customer customer);
-    void delete(Customer customer);
+
+    void delete(Long id);
 }

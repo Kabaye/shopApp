@@ -18,7 +18,7 @@ public class CustomerDAOManager implements CustomerDAO {
         entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-        entityManager.persist(customer);
+        customer = entityManager.merge(customer);
         transaction.commit();
         entityManager.close();
         return customer;
@@ -60,10 +60,11 @@ public class CustomerDAOManager implements CustomerDAO {
     }
 
     @Override
-    public void delete(Customer customer) {
+    public void delete(Long id) {
         entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
+        Customer customer = entityManager.getReference(Customer.class, id);
         entityManager.remove(customer);
         transaction.commit();
         entityManager.close();
