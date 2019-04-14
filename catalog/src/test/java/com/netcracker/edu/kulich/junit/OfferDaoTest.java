@@ -1,14 +1,13 @@
 package com.netcracker.edu.kulich.junit;
 
-import com.netcracker.edu.kulich.dao.*;
+import com.netcracker.edu.kulich.dao.OfferDAO;
+import com.netcracker.edu.kulich.dao.OfferDAOManager;
 import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Price;
 import com.netcracker.edu.kulich.entity.Tag;
-import com.netcracker.edu.kulich.utils.PostgreSQLDatabaseManager;
 import org.junit.Test;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -16,9 +15,6 @@ import static org.junit.Assert.assertNotNull;
 
 public class OfferDaoTest {
     private OfferDAO offerDAO = new OfferDAOManager();
-    private CategoryDAO categoryDAO = new CategoryDAOManager();
-    private TagDAO tagDAO = new TagDAOManager();
-    private EntityManager manager = PostgreSQLDatabaseManager.getInstance().getEntityManager();
 
     @Test
     public void testCreateAndReadTwoOffers() {
@@ -42,12 +38,10 @@ public class OfferDaoTest {
         tag.setTagname("tag2");
         offer.addTag(tag);
 
-        offerDAO.create(offer);
+        offer = offerDAO.create(offer);
 
         offer = new Offer();
         offer.setName("of2");
-        category = new Category();
-        category.setCategory("cat1");
 
         price = new Price();
         price.setPrice(2500d);
@@ -59,7 +53,7 @@ public class OfferDaoTest {
         tag.setTagname("tag3");
         offer.addTag(tag);
 
-        offerDAO.create(offer);
+        offer = offerDAO.create(offer);
 
         Offer offer2 = offerDAO.read(offer.getId());
         assertNotNull(offer);
@@ -90,7 +84,7 @@ public class OfferDaoTest {
         tag.setTagname("tag2");
 
 
-        offerDAO.create(offer);
+        offer = offerDAO.create(offer);
 
         offerList.add(offer);
 
@@ -111,10 +105,12 @@ public class OfferDaoTest {
         tag.setTagname("tag3");
         offer.addTag(tag);
 
-        offerDAO.create(offer);
+        offer = offerDAO.create(offer);
+
         offerList.add(offer);
 
         List<Offer> offers = offerDAO.findAll();
+
         assertNotNull(offers);
         assertEquals(offerList.toString(), offers.toString());
     }
@@ -140,7 +136,7 @@ public class OfferDaoTest {
         tag = new Tag();
         tag.setTagname("tag2");
 
-        offerDAO.create(offer);
+        offer = offerDAO.create(offer);
 
         offer.setName("new of1");
         offer.getPrice().setPrice(666d);
@@ -177,7 +173,7 @@ public class OfferDaoTest {
         tag = new Tag();
         tag.setTagname("tag2");
 
-        offerDAO.create(offer);
+        offer = offerDAO.create(offer);
 
         offerDAO.delete(offer.getId());
 

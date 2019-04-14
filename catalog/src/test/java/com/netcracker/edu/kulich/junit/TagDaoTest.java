@@ -11,6 +11,7 @@ import com.netcracker.edu.kulich.entity.Tag;
 import org.junit.Test;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ import static org.junit.Assert.*;
 public class TagDaoTest {
     private TagDAO tagDAO = new TagDAOManager();
     private OfferDAO offerDAO = new OfferDAOManager();
+
     @Test
     public void testCreateAndReadOneTag() {
         Tag tag = new Tag();
@@ -112,11 +114,16 @@ public class TagDaoTest {
         tag.setTagname("tag2");
         offer.addTag(tag);
 
-        offerDAO.create(offer);
+        offer = offerDAO.create(offer);
 
-        offer.getTags().remove(tag);
-
-        offers.add(offer);
+        Iterator<Tag> tagIterator = offer.getTags().iterator();
+        while (true) {
+            Tag tag1 = tagIterator.next();
+            if (tag1.getTagname().equals(tag.getTagname())) {
+                tag = tag1;
+                break;
+            }
+        }
 
         tagDAO.delete(tag.getId());
 
@@ -125,6 +132,10 @@ public class TagDaoTest {
 
         List<Offer> offers1 = offerDAO.findAll();
         assertNotNull(offers1);
+
+        offer.getTags().remove(tag);
+        offers.add(offer);
+
         assertEquals(offers.toString(),offers1.toString());
     }
 }

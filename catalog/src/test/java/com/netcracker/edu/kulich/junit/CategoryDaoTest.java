@@ -91,6 +91,7 @@ public class CategoryDaoTest {
         categoryDAO.delete(category.getId());
 
         Category category1 = categoryDAO.read(category.getId());
+
         assertNull(category1);
     }
 
@@ -118,7 +119,9 @@ public class CategoryDaoTest {
         tag.setTagname("tag2");
         offer.addTag(tag);
 
-        offerDAO.create(offer);
+        offer = offerDAO.create(offer);
+        category = offer.getCategory();
+
         offer = new Offer();
         offer.setName("of1");
 
@@ -128,9 +131,9 @@ public class CategoryDaoTest {
         offer.setCategory(category);
         offer.setPrice(price);
 
-        offerDAO.create(offer);
+        offer = offerDAO.create(offer);
 
-        categoryDAO.delete(category.getId());
+        categoryDAO.delete(offer.getCategory().getId());
 
         assertEquals(offers.toString(), offerDAO.findAll().toString());
     }
