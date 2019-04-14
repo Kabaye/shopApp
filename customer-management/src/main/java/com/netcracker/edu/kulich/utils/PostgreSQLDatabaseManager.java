@@ -21,4 +21,8 @@ public class PostgreSQLDatabaseManager implements DatabaseManager {
     public EntityManager getEntityManager() {
         return entityManager;
     }
+
+    public static EntityManagerFactory getEntityManagerFactory() {
+        return ENTITY_MANAGER_FACTORY;
+    }
 }
