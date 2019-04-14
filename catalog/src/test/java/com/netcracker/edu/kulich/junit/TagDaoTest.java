@@ -124,18 +124,27 @@ public class TagDaoTest {
                 break;
             }
         }
-
         tagDAO.delete(tag.getId());
 
         Tag tag1 = tagDAO.read(tag.getId());
         assertNull(tag1);
 
         List<Offer> offers1 = offerDAO.findAll();
-        assertNotNull(offers1);
 
         offer.getTags().remove(tag);
         offers.add(offer);
 
-        assertEquals(offers.toString(),offers1.toString());
+        StringBuilder builder = new StringBuilder();
+        StringBuilder expectedBuilder = new StringBuilder();
+
+        for (int i = 0; i < offers.size(); i++) {
+            builder.append(offers1.get(i).getId());
+            builder.append(offers1.get(i).getCategory().getId());
+            expectedBuilder.append(offers.get(i).getId());
+            expectedBuilder.append(offers.get(i).getCategory().getId());
+            builder.append(offers1.get(i).getTags().size());
+            expectedBuilder.append(offers.get(i).getTags().size());
+        }
+        assertEquals(expectedBuilder.toString(), builder.toString());
     }
 }
