@@ -13,10 +13,8 @@ public class PostgreSQLDatabaseManager implements DatabaseManager {
         entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
     }
 
-    private final static DatabaseManager INSTANCE = new PostgreSQLDatabaseManager();
-
-    public static DatabaseManager getInstance() {
-        return PostgreSQLDatabaseManager.INSTANCE;
+    public static EntityManagerFactory getDatabaseManagerFactory() {
+        return ENTITY_MANAGER_FACTORY;
     }
 
     public EntityManager getEntityManager() {
