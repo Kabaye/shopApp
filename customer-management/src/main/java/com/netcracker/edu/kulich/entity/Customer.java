@@ -2,7 +2,6 @@ package com.netcracker.edu.kulich.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -13,21 +12,21 @@ import java.util.StringJoiner;
 @NoArgsConstructor
 public class Customer {
 
-    @NonNull
     @Getter
     @Setter
     @Id
-    @GeneratedValue (strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(nullable = false)
     private long id;
 
     @Getter
     @Setter
-    @NonNull
+    @Column(nullable = false)
     private String fio;
 
     @Getter
     @Setter
-    @NonNull
+    @Column(nullable = false)
     private int age;
 
     @Override
