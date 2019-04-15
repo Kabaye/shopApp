@@ -15,7 +15,6 @@ import java.util.StringJoiner;
 @NoArgsConstructor
 public class Category {
 
-
     @Getter
     @Setter
     @Id
