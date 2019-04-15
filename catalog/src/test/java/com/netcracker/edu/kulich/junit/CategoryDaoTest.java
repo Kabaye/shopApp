@@ -97,7 +97,7 @@ public class CategoryDaoTest {
 
     @Test
     public void testDeleteCategoryWithOffers() {
-        List<Offer> offers = offerDAO.findAll();
+        List<Offer> offerList = offerDAO.findAll();
 
         Offer offer = new Offer();
         offer.setName("of1");
@@ -134,8 +134,23 @@ public class CategoryDaoTest {
         offer = offerDAO.create(offer);
 
         categoryDAO.delete(offer.getCategory().getId());
+        List<Offer> offers = offerDAO.findAll();
 
-        assertEquals(offers.toString(), offerDAO.findAll().toString());
+        StringBuilder builder = new StringBuilder();
+        StringBuilder expectedBuilder = new StringBuilder();
+        if (offers.size() != offerList.size())
+            fail();
+        else {
+            for (int i = 0; i < offerList.size(); i++) {
+                builder.append(offers.get(i).getId());
+                builder.append(offers.get(i).getCategory().getId());
+                expectedBuilder.append(offerList.get(i).getId());
+                expectedBuilder.append(offerList.get(i).getCategory().getId());
+                builder.append(offers.get(i).getTags().size());
+                expectedBuilder.append(offerList.get(i).getTags().size());
+            }
+            assertEquals(expectedBuilder.toString(), builder.toString());
+        }
     }
 
 }
