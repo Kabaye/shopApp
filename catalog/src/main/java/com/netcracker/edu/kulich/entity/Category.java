@@ -18,12 +18,12 @@ public class Category {
     @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column (name = "category_id", nullable = false)
+    @Column(name = "category_id", nullable = false, unique = true)
     private long id;
 
     @Getter
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String category;
 
 
@@ -38,5 +38,23 @@ public class Category {
                 .add("id=" + id)
                 .add("category='" + category + "'")
                 .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Category category1 = (Category) o;
+
+        if (id != category1.id) return false;
+        return category != null ? category.equals(category1.category) : category1.category == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        return result;
     }
 }

@@ -60,4 +60,28 @@ public class Offer {
                 .add("tags=" + tags)
                 .toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Offer offer = (Offer) o;
+
+        if (id != offer.id) return false;
+        if (name != null ? !name.equals(offer.name) : offer.name != null) return false;
+        if (price != null ? !price.equals(offer.price) : offer.price != null) return false;
+        if (category != null ? !category.equals(offer.category) : offer.category != null) return false;
+        return tags.equals(offer.tags);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (price != null ? price.hashCode() : 0);
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        result = 31 * result + tags.hashCode();
+        return result;
+    }
 }

@@ -23,7 +23,7 @@ public class Tag {
 
     @Getter
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String tagname;
 
     @Getter
@@ -40,5 +40,23 @@ public class Tag {
                 .add("id=" + id)
                 .add("tagname='" + tagname + "'")
                 .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Tag tag = (Tag) o;
+
+        if (id != tag.id) return false;
+        return tagname != null ? tagname.equals(tag.tagname) : tag.tagname == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (tagname != null ? tagname.hashCode() : 0);
+        return result;
     }
 }
