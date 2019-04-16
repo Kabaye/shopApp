@@ -61,7 +61,7 @@ public class CustomerTests {
         customer.setFio("FIO1");
         customer.setAge(100);
 
-        customerDAO.create(customer);
+        customer = customerDAO.create(customer);
 
         Customer customer1 = new Customer();
         customer1.setFio("FIO2");
