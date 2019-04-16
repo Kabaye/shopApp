@@ -1,4 +1,4 @@
-package com.netcracker.edu.kulich.entity;
+package com.netcracker.edu.kulich.utils;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
