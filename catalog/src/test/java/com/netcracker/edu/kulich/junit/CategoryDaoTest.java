@@ -23,11 +23,11 @@ public class CategoryDaoTest {
     @Test
     public void testCreateAndReadWithTwoCreatedCategories() {
         Category category = new Category();
-        category.setCategory("cat1");
+        category.setCategory("CreateAndReadWithTwoCreatedCategories_category1");
         categoryDAO.create(category);
 
         category = new Category();
-        category.setCategory("cat2");
+        category.setCategory("CreateAndReadWithTwoCreatedCategories_category2");
         categoryDAO.create(category);
 
         Category category1 = categoryDAO.read(category.getId());
@@ -41,37 +41,33 @@ public class CategoryDaoTest {
         Set<Category> categories = new HashSet<>();
 
         Category category = new Category();
-        category.setCategory("cat1");
+        category.setCategory("CreateWithSomeAmountOfCategories_category1");
         categories.add(category);
 
         category = new Category();
-        category.setCategory("cat2");
+        category.setCategory("CreateWithSomeAmountOfCategories_category2");
         categories.add(category);
 
         category = new Category();
-        category.setCategory("cat3");
+        category.setCategory("CreateWithSomeAmountOfCategories_category3");
         categories.add(category);
 
         categoryDAO.create(categories);
 
-        StringBuffer buffer = new StringBuffer();
-        StringBuffer expectedBuffer = new StringBuffer();
         for (Category elem : categories) {
-            buffer.append(categoryDAO.read(elem.getId()));
-            expectedBuffer.append(elem);
+            assertEquals(elem, categoryDAO.read(elem.getId()));
         }
-        assertEquals(expectedBuffer.toString(), buffer.toString());
     }
 
     @Test
     public void testUpdateCategory() {
         Category category = new Category();
 
-        category.setCategory("cat1");
+        category.setCategory("UpdateCategory_category1");
 
         categoryDAO.create(category);
 
-        category.setCategory("new cat1");
+        category.setCategory("new UpdateCategory_category1");
 
         categoryDAO.update(category);
 
@@ -84,7 +80,7 @@ public class CategoryDaoTest {
     public void testDeleteCategory() {
         Category category = new Category();
 
-        category.setCategory("cat1");
+        category.setCategory("DeleteCategory_category1");
 
         categoryDAO.create(category);
 
@@ -100,10 +96,10 @@ public class CategoryDaoTest {
         List<Offer> offerList = offerDAO.findAll();
 
         Offer offer = new Offer();
-        offer.setName("of1");
+        offer.setName("DeleteCategoryWithOffers_offer1");
 
         Category category = new Category();
-        category.setCategory("cat1");
+        category.setCategory("DeleteCategoryWithOffers_category1");
 
         Price price = new Price();
         price.setPrice(2500d);
@@ -112,18 +108,18 @@ public class CategoryDaoTest {
         offer.setPrice(price);
 
         Tag tag = new Tag();
-        tag.setTagname("tag1");
+        tag.setTagname("DeleteCategoryWithOffers_tag1");
         offer.addTag(tag);
 
         tag = new Tag();
-        tag.setTagname("tag2");
+        tag.setTagname("DeleteCategoryWithOffers_tag2");
         offer.addTag(tag);
 
         offer = offerDAO.create(offer);
         category = offer.getCategory();
 
         offer = new Offer();
-        offer.setName("of1");
+        offer.setName("DeleteCategoryWithOffers_offer2");
 
         price = new Price();
         price.setPrice(2500d);
@@ -136,20 +132,12 @@ public class CategoryDaoTest {
         categoryDAO.delete(offer.getCategory().getId());
         List<Offer> offers = offerDAO.findAll();
 
-        StringBuilder builder = new StringBuilder();
-        StringBuilder expectedBuilder = new StringBuilder();
         if (offers.size() != offerList.size())
             fail();
         else {
             for (int i = 0; i < offerList.size(); i++) {
-                builder.append(offers.get(i).getId());
-                builder.append(offers.get(i).getCategory().getId());
-                expectedBuilder.append(offerList.get(i).getId());
-                expectedBuilder.append(offerList.get(i).getCategory().getId());
-                builder.append(offers.get(i).getTags().size());
-                expectedBuilder.append(offerList.get(i).getTags().size());
+                assertEquals(offerList.get(i), offers.get(i));
             }
-            assertEquals(expectedBuilder.toString(), builder.toString());
         }
     }
 

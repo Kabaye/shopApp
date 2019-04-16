@@ -18,10 +18,10 @@ public class OfferDaoTest {
     @Test
     public void testCreateAndReadTwoOffers() {
         Offer offer = new Offer();
-        offer.setName("of1");
+        offer.setName("CreateAndReadTwoOffers_offer1");
 
         Category category = new Category();
-        category.setCategory("cat1");
+        category.setCategory("CreateAndReadTwoOffers_category1");
 
         Price price = new Price();
         price.setPrice(1950d);
@@ -30,17 +30,19 @@ public class OfferDaoTest {
         offer.setPrice(price);
 
         Tag tag = new Tag();
-        tag.setTagname("tag1");
+        tag.setTagname("CreateAndReadTwoOffers_tag1");
         offer.addTag(tag);
 
         tag = new Tag();
-        tag.setTagname("tag2");
+        tag.setTagname("CreateAndReadTwoOffers_tag2");
         offer.addTag(tag);
 
         offer = offerDAO.create(offer);
 
+        category = offer.getCategory();
+
         offer = new Offer();
-        offer.setName("of2");
+        offer.setName("CreateAndReadTwoOffers_offer2");
 
         price = new Price();
         price.setPrice(2500d);
@@ -49,14 +51,14 @@ public class OfferDaoTest {
         offer.setPrice(price);
 
         tag = new Tag();
-        tag.setTagname("tag3");
+        tag.setTagname("CreateAndReadTwoOffers_tag3");
         offer.addTag(tag);
 
         offer = offerDAO.create(offer);
 
         Offer offer2 = offerDAO.read(offer.getId());
         assertNotNull(offer);
-        assertEquals(offer.toString(), offer2.toString());
+        assertEquals(offer, offer2);
     }
 
     @Test
@@ -64,10 +66,10 @@ public class OfferDaoTest {
         List<Offer> offerList = offerDAO.findAll();
 
         Offer offer = new Offer();
-        offer.setName("of1");
+        offer.setName("FindAllOffers_offer1");
 
         Category category = new Category();
-        category.setCategory("cat1");
+        category.setCategory("FindAllOffers_category1");
 
         Price price = new Price();
         price.setPrice(1950d);
@@ -76,11 +78,11 @@ public class OfferDaoTest {
         offer.setPrice(price);
 
         Tag tag = new Tag();
-        tag.setTagname("tag1");
+        tag.setTagname("FindAllOffers_tag1");
         offer.addTag(tag);
 
         tag = new Tag();
-        tag.setTagname("tag2");
+        tag.setTagname("FindAllOffers_tag2");
 
         offer = offerDAO.create(offer);
 
@@ -88,10 +90,10 @@ public class OfferDaoTest {
 
         offer = new Offer();
 
-        offer.setName("of2");
+        offer.setName("FindAllOffers_offer2");
 
         category = new Category();
-        category.setCategory("cat2");
+        category.setCategory("FindAllOffers_category2");
 
         price = new Price();
         price.setPrice(2500d);
@@ -100,7 +102,7 @@ public class OfferDaoTest {
         offer.setPrice(price);
 
         tag = new Tag();
-        tag.setTagname("tag3");
+        tag.setTagname("FindAllOffers_tag3");
         offer.addTag(tag);
 
         offer = offerDAO.create(offer);
@@ -109,30 +111,23 @@ public class OfferDaoTest {
 
         List<Offer> offers = offerDAO.findAll();
 
-        StringBuilder builder = new StringBuilder();
-        StringBuilder expectedBuilder = new StringBuilder();
+
         if (offers.size() != offerList.size())
             fail();
         else {
             for (int i = 0; i < offerList.size(); i++) {
-                builder.append(offers.get(i).getId());
-                builder.append(offers.get(i).getCategory().getId());
-                expectedBuilder.append(offerList.get(i).getId());
-                expectedBuilder.append(offerList.get(i).getCategory().getId());
-                builder.append(offers.get(i).getTags().size());
-                expectedBuilder.append(offerList.get(i).getTags().size());
+                assertEquals(offerList.get(i), offers.get(i));
             }
-            assertEquals(expectedBuilder.toString(), builder.toString());
         }
     }
 
     @Test
     public void testUpdateOffer() {
         Offer offer = new Offer();
-        offer.setName("of1");
+        offer.setName("UpdateOffer_offer1");
 
         Category category = new Category();
-        category.setCategory("cat1");
+        category.setCategory("UpdateOffer_category1");
 
         Price price = new Price();
         price.setPrice(1950d);
@@ -141,24 +136,24 @@ public class OfferDaoTest {
         offer.setPrice(price);
 
         Tag tag = new Tag();
-        tag.setTagname("tag1");
+        tag.setTagname("UpdateOffer_tag1");
         offer.addTag(tag);
 
         tag = new Tag();
-        tag.setTagname("tag2");
+        tag.setTagname("UpdateOffer_tag2");
 
         offer = offerDAO.create(offer);
 
-        offer.setName("new of1");
+        offer.setName("new UpdateOffer_offer1");
         offer.getPrice().setPrice(666d);
-        offer.getCategory().setCategory("new cat1");
+        offer.getCategory().setCategory("new UpdateOffer_category1");
         offer.getTags().clear();
 
         offerDAO.update(offer);
 
         Offer offer1 = offerDAO.read(offer.getId());
         assertNotNull(offer1);
-        assertEquals(offer.toString(), offer1.toString());
+        assertEquals(offer, offer1);
     }
 
     @Test
@@ -166,10 +161,10 @@ public class OfferDaoTest {
         List<Offer> offerList = offerDAO.findAll();
 
         Offer offer = new Offer();
-        offer.setName("of1");
+        offer.setName("DeleteOffer_offer1");
 
         Category category = new Category();
-        category.setCategory("cat1");
+        category.setCategory("DeleteOffer_category1");
 
         Price price = new Price();
         price.setPrice(2500d);
@@ -178,11 +173,11 @@ public class OfferDaoTest {
         offer.setPrice(price);
 
         Tag tag = new Tag();
-        tag.setTagname("tag1");
+        tag.setTagname("DeleteOffer_tag1");
         offer.addTag(tag);
 
         tag = new Tag();
-        tag.setTagname("tag2");
+        tag.setTagname("DeleteOffer_tag2");
 
         offer = offerDAO.create(offer);
 
@@ -190,20 +185,12 @@ public class OfferDaoTest {
 
         List<Offer> offers = offerDAO.findAll();
 
-        StringBuilder builder = new StringBuilder();
-        StringBuilder expectedBuilder = new StringBuilder();
         if (offers.size() != offerList.size())
             fail();
         else {
             for (int i = 0; i < offerList.size(); i++) {
-                builder.append(offers.get(i).getId());
-                builder.append(offers.get(i).getCategory().getId());
-                expectedBuilder.append(offerList.get(i).getId());
-                expectedBuilder.append(offerList.get(i).getCategory().getId());
-                builder.append(offers.get(i).getTags().size());
-                expectedBuilder.append(offerList.get(i).getTags().size());
+                assertEquals(offerList.get(i), offers.get(i));
             }
-            assertEquals(expectedBuilder.toString(), builder.toString());
         }
     }
 }

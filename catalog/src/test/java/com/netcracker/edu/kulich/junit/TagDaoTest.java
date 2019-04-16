@@ -24,7 +24,7 @@ public class TagDaoTest {
     @Test
     public void testCreateAndReadOneTag() {
         Tag tag = new Tag();
-        tag.setTagname("tag1");
+        tag.setTagname("CreateAndReadOneTag_tag1");
         tagDAO.create(tag);
 
         Tag tag1 = tagDAO.read(tag.getId());
@@ -37,36 +37,32 @@ public class TagDaoTest {
         Set<Tag> tags = new HashSet<>();
 
         Tag tag = new Tag();
-        tag.setTagname("tag1");
+        tag.setTagname("CreateWithSomeAmountOfTags_tag1");
         tags.add(tag);
 
         tag = new Tag();
-        tag.setTagname("cat2");
+        tag.setTagname("CreateWithSomeAmountOfTags_tag2");
         tags.add(tag);
 
         tag = new Tag();
-        tag.setTagname("cat3");
+        tag.setTagname("CreateWithSomeAmountOfTags_tag3");
         tags.add(tag);
 
         tagDAO.create(tags);
 
-        StringBuffer buffer = new StringBuffer();
-        StringBuffer expectedBuffer = new StringBuffer();
         for (Tag elem : tags) {
-            buffer.append(tagDAO.read(elem.getId()));
-            expectedBuffer.append(elem);
+            assertEquals(elem, tagDAO.read(elem.getId()));
         }
-        assertEquals(expectedBuffer.toString(), buffer.toString());
     }
 
     @Test
     public void testUpdateTag() {
         Tag tag = new Tag();
-        tag.setTagname("tag1");
+        tag.setTagname("UpdateTag_tag1");
 
         tagDAO.create(tag);
 
-        tag.setTagname("new tag1");
+        tag.setTagname("new UpdateTag_tag1");
 
         tagDAO.update(tag);
 
@@ -78,7 +74,7 @@ public class TagDaoTest {
     @Test
     public void testDeleteTag() {
         Tag tag = new Tag();
-        tag.setTagname("tag1");
+        tag.setTagname("DeleteTag_tag1");
 
         tagDAO.create(tag);
 
@@ -95,10 +91,10 @@ public class TagDaoTest {
         List<Offer> offers = offerDAO.findAll();
 
         Offer offer = new Offer();
-        offer.setName("of1");
+        offer.setName("DeleteTagCreatedWithOffer_offer1");
 
         Category category = new Category();
-        category.setCategory("cat1");
+        category.setCategory("DeleteTagCreatedWithOffer_category1");
 
         Price price = new Price();
         price.setPrice(2500d);
@@ -107,11 +103,11 @@ public class TagDaoTest {
         offer.setPrice(price);
 
         Tag tag = new Tag();
-        tag.setTagname("tag1");
+        tag.setTagname("DeleteTagCreatedWithOffer_tag1");
         offer.addTag(tag);
 
         tag = new Tag();
-        tag.setTagname("tag2");
+        tag.setTagname("DeleteTagCreatedWithOffer_tag2");
         offer.addTag(tag);
 
         offer = offerDAO.create(offer);
@@ -133,18 +129,12 @@ public class TagDaoTest {
 
         offer.getTags().remove(tag);
         offers.add(offer);
-
-        StringBuilder builder = new StringBuilder();
-        StringBuilder expectedBuilder = new StringBuilder();
-
-        for (int i = 0; i < offers.size(); i++) {
-            builder.append(offers1.get(i).getId());
-            builder.append(offers1.get(i).getCategory().getId());
-            expectedBuilder.append(offers.get(i).getId());
-            expectedBuilder.append(offers.get(i).getCategory().getId());
-            builder.append(offers1.get(i).getTags().size());
-            expectedBuilder.append(offers.get(i).getTags().size());
+        if (offers.size() != offers1.size())
+            fail();
+        else {
+            for (int i = 0; i < offers.size(); i++) {
+                assertEquals(offers.get(i), offers1.get(i));
+            }
         }
-        assertEquals(expectedBuilder.toString(), builder.toString());
     }
 }
