@@ -1,10 +1,8 @@
 package com.netcracker.edu.kulich.junit;
 
-
 import com.netcracker.edu.kulich.dao.OrderDAO;
 import com.netcracker.edu.kulich.dao.OrderDAOManager;
 import com.netcracker.edu.kulich.entity.*;
-import org.apache.log4j.PropertyConfigurator;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -14,53 +12,52 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class OrderDaoTest {
-    OrderDAO orderDAO = new OrderDAOManager();
+    private OrderDAO orderDAO = new OrderDAOManager();
 
     @Test
     public void createOrderTest() {
-        PropertyConfigurator.configure("D:\\Univer\\NetCracker\\MainProject\\inventory\\properties\\log4j.properties");
-        Offer offer = new Offer();
-        offer.setName("of1");
+        OrderItem orderItem = new OrderItem();
+        orderItem.setName("createOrder_offer1");
 
         Category category = new Category();
-        category.setCategory("cat1");
+        category.setCategory("createOrder_category1");
 
         Price price = new Price();
         price.setPrice(1950d);
 
-        offer.setCategory(category);
-        offer.setPrice(price);
+        orderItem.setCategory(category);
+        orderItem.setPrice(price);
 
         Tag tag = new Tag();
-        tag.setTagname("tag1");
-        offer.addTag(tag);
+        tag.setTagname("createOrder_tag1");
+        orderItem.addTag(tag);
 
         tag = new Tag();
-        tag.setTagname("tag2");
-        offer.addTag(tag);
+        tag.setTagname("createOrder_tag2");
+        orderItem.addTag(tag);
 
-        Offer offer1 = new Offer();
-        offer1.setName("of2");
+        OrderItem orderItem1 = new OrderItem();
+        orderItem1.setName("createOrder_offer2");
 
         price = new Price();
         price.setPrice(2500d);
 
-        offer1.setCategory(category);
-        offer1.setPrice(price);
+        orderItem1.setCategory(category);
+        orderItem1.setPrice(price);
 
         tag = new Tag();
-        tag.setTagname("tag3");
-        offer1.addTag(tag);
+        tag.setTagname("createOrder_tag3");
+        orderItem1.addTag(tag);
 
         LocalDate date = LocalDate.of(2019, 04, 15);
 
         Customer customer = new Customer();
-        customer.setFio("FIO1");
+        customer.setFio("createOrder_FIO1");
         customer.setAge(100);
 
         Order order = new Order();
-        order.addOffer(offer);
-        order.addOffer(offer1);
+        order.addOffer(orderItem);
+        order.addOffer(orderItem1);
         order.setDate(date);
 
         order.setCustomer(customer);
@@ -68,21 +65,39 @@ public class OrderDaoTest {
         order.setOrderStatus(OrderStatusEnum.AGGREGATED);
         order.setOrderPaymentStatus(OrderPaymentStatusEnum.PAID);
 
+        orderItem.setOrder(order);
+
+        orderItem1.setOrder(order);
+
         order = orderDAO.create(order);
 
-        offer = (Offer) order.getOrderItems().toArray()[0];
-        offer1 = (Offer) order.getOrderItems().toArray()[1];
+        category = ((OrderItem) order.getOrderItems().toArray()[0]).getCategory();
+
         customer = order.getCustomer();
 
         Order order1 = new Order();
 
-        order1.addOffer(offer);
-        order1.addOffer(offer1);
+        orderItem = new OrderItem();
+
+        orderItem.setName("createOrder_offer3");
+
+        tag = new Tag();
+        tag.setTagname("createOrder_tag4");
+        orderItem.addTag(tag);
+
+        orderItem.setPrice(price);
+
+        orderItem.setCategory(category);
+
+        order1.addOffer(orderItem);
+
         order1.setDate(date);
         order1.setCustomer(customer);
 
         order1.setOrderStatus(OrderStatusEnum.IN_PROCESS);
         order1.setOrderPaymentStatus(OrderPaymentStatusEnum.NOT_PAID);
+
+        orderItem.setOrder(order1);
 
         order1 = orderDAO.create(order1);
 
@@ -96,49 +111,54 @@ public class OrderDaoTest {
     @Test
     public void findAllOrdersTest() {
         List<Order> orderList = orderDAO.findAll();
-        Offer offer = new Offer();
-        offer.setName("of1");
+
+        OrderItem orderItem = new OrderItem();
+
+        orderItem.setName("findAllOrders_offer1");
 
         Category category = new Category();
-        category.setCategory("cat1");
+        category.setCategory("findAllOrders_cat1");
 
         Price price = new Price();
         price.setPrice(1950d);
 
-        offer.setCategory(category);
-        offer.setPrice(price);
+        orderItem.setCategory(category);
+        orderItem.setPrice(price);
 
         Tag tag = new Tag();
-        tag.setTagname("tag1");
-        offer.addTag(tag);
+        tag.setTagname("findAllOrders_tag1");
+        orderItem.addTag(tag);
 
         tag = new Tag();
-        tag.setTagname("tag2");
-        offer.addTag(tag);
+        tag.setTagname("findAllOrders_tag2");
+        orderItem.addTag(tag);
 
-        Offer offer1 = new Offer();
-        offer1.setName("of2");
+        OrderItem orderItem1 = new OrderItem();
+        orderItem1.setName("findAllOrders_offer2");
 
         price = new Price();
         price.setPrice(2500d);
 
-        offer1.setCategory(category);
-        offer1.setPrice(price);
+        orderItem1.setCategory(category);
+        orderItem1.setPrice(price);
 
         tag = new Tag();
-        tag.setTagname("tag3");
-        offer1.addTag(tag);
+        tag.setTagname("findAllOrders_tag3");
+        orderItem1.addTag(tag);
 
         LocalDate date = LocalDate.of(2019, 04, 15);
 
         Customer customer = new Customer();
-        customer.setFio("FIO1");
+        customer.setFio("findAllOrders_FIO1");
         customer.setAge(100);
 
         Order order = new Order();
-        order.addOffer(offer);
-        order.addOffer(offer1);
+        order.addOffer(orderItem);
+        order.addOffer(orderItem1);
         order.setDate(date);
+
+        orderItem.setOrder(order);
+        orderItem1.setOrder(order);
 
         order.setOrderStatus(OrderStatusEnum.SHIPPED);
         order.setOrderPaymentStatus(OrderPaymentStatusEnum.PAID);
@@ -149,18 +169,33 @@ public class OrderDaoTest {
 
         orderList.add(order);
 
-        offer = (Offer) order.getOrderItems().toArray()[0];
-        offer1 = (Offer) order.getOrderItems().toArray()[1];
+        category = ((OrderItem) order.getOrderItems().toArray()[0]).getCategory();
+
         customer = order.getCustomer();
 
         Order order1 = new Order();
 
-        order1.addOffer(offer);
-        order1.addOffer(offer1);
+        orderItem = new OrderItem();
+
+        orderItem.setName("findAllOrders_offer3");
+
+        tag = new Tag();
+        tag.setTagname("findAllOrders_tag4");
+        orderItem.addTag(tag);
+
+        orderItem.setPrice(price);
+
+        orderItem.setCategory(category);
+
+        order1.addOffer(orderItem);
+
         order1.setDate(date);
         order1.setCustomer(customer);
-        order1.setOrderStatus(OrderStatusEnum.DELIVERED);
+
+        order1.setOrderStatus(OrderStatusEnum.IN_PROCESS);
         order1.setOrderPaymentStatus(OrderPaymentStatusEnum.NOT_PAID);
+
+        orderItem.setOrder(order1);
 
         order1 = orderDAO.create(order1);
 
@@ -172,137 +207,136 @@ public class OrderDaoTest {
         for (int i = 0; i < orderList.size(); i++) {
             assertEquals(orderList.get(i), orders.get(i));
         }
-
     }
 
     @Test
     public void updateOrderTest() {
-        Offer offer = new Offer();
-        offer.setName("of1");
+        OrderItem orderItem = new OrderItem();
+
+        orderItem.setName("updateOrder_offer1");
 
         Category category = new Category();
-        category.setCategory("cat1");
+        category.setCategory("updateOrder_cat1");
 
         Price price = new Price();
         price.setPrice(1950d);
 
-        offer.setCategory(category);
-        offer.setPrice(price);
+        orderItem.setCategory(category);
+        orderItem.setPrice(price);
 
         Tag tag = new Tag();
-        tag.setTagname("tag1");
-        offer.addTag(tag);
+        tag.setTagname("updateOrder_tag1");
+        orderItem.addTag(tag);
 
         tag = new Tag();
-        tag.setTagname("tag2");
-        offer.addTag(tag);
+        tag.setTagname("updateOrder_tag2");
+        orderItem.addTag(tag);
 
-        Offer offer1 = new Offer();
-        offer1.setName("of2");
+        OrderItem orderItem1 = new OrderItem();
+        orderItem1.setName("updateOrder_offer2");
 
         price = new Price();
         price.setPrice(2500d);
 
-        offer1.setCategory(category);
-        offer1.setPrice(price);
+        orderItem1.setCategory(category);
+        orderItem1.setPrice(price);
 
-        tag = offer.getTags().iterator().next();
-
-        offer1.addTag(tag);
-
-        Tag tag1 = new Tag();
-        tag1.setTagname("tag3");
-        offer1.addTag(tag1);
+        tag = new Tag();
+        tag.setTagname("updateOrder_tag3");
+        orderItem1.addTag(tag);
 
         LocalDate date = LocalDate.of(2019, 04, 15);
 
         Customer customer = new Customer();
-        customer.setFio("FIO1");
+        customer.setFio("updateOrder_FIO1");
         customer.setAge(100);
 
         Order order = new Order();
-        order.addOffer(offer);
-        order.addOffer(offer1);
+        order.addOffer(orderItem);
+        order.addOffer(orderItem1);
         order.setDate(date);
-
         order.setCustomer(customer);
         order.setOrderStatus(OrderStatusEnum.SHIPPED);
         order.setOrderPaymentStatus(OrderPaymentStatusEnum.PAID);
 
+        orderItem.setOrder(order);
+        orderItem1.setOrder(order);
+
         order = orderDAO.create(order);
 
-        offer = (Offer) order.getOrderItems().toArray()[0];
-        offer1 = (Offer) order.getOrderItems().toArray()[1];
+        orderItem = (OrderItem) order.getOrderItems().toArray()[0];
 
-        order.getOrderItems().remove(offer);
+        order.getOrderItems().remove(orderItem);
 
-        order.setDate(date);
         customer = new Customer();
-        customer.setFio("new FIO1");
-        customer.setAge(100);
+        customer.setFio("new updateOrder_FIO1");
+        customer.setAge(55);
         order.setCustomer(customer);
         order.setOrderStatus(OrderStatusEnum.AGGREGATED);
 
         Order order1 = orderDAO.update(order);
 
-
+        order.setCustomer(order1.getCustomer());
+        order.setAmountOfOrderItems(order.getOrderItems().size());
+        order.setTotalPrice(0D);
+        for (OrderItem item : order.getOrderItems()) {
+            order.setTotalPrice(order.getTotalPrice() + item.getPrice().getPrice());
+        }
         assertEquals(order, order1);
     }
 
     @Test
     public void deleteOrderTest() {
-        Offer offer = new Offer();
-        offer.setName("of1");
+        OrderItem orderItem = new OrderItem();
+
+        orderItem.setName("deleteOrder_offer1");
 
         Category category = new Category();
-        category.setCategory("cat1");
+        category.setCategory("deleteOrder_cat1");
 
         Price price = new Price();
         price.setPrice(1950d);
 
-        offer.setCategory(category);
-        offer.setPrice(price);
+        orderItem.setCategory(category);
+        orderItem.setPrice(price);
 
         Tag tag = new Tag();
-        tag.setTagname("tag1");
-        offer.addTag(tag);
+        tag.setTagname("deleteOrder_tag1");
+        orderItem.addTag(tag);
 
         tag = new Tag();
-        tag.setTagname("tag2");
-        offer.addTag(tag);
+        tag.setTagname("deleteOrder_tag2");
+        orderItem.addTag(tag);
 
-        Offer offer1 = new Offer();
-        offer1.setName("of2");
+        OrderItem orderItem1 = new OrderItem();
+        orderItem1.setName("deleteOrder_offer2");
 
         price = new Price();
         price.setPrice(2500d);
 
-        offer1.setCategory(category);
-        offer1.setPrice(price);
+        orderItem1.setCategory(category);
+        orderItem1.setPrice(price);
 
-        tag = offer.getTags().iterator().next();
-
-        offer1.addTag(tag);
-
-        Tag tag1 = new Tag();
-        tag1.setTagname("tag3");
-        offer1.addTag(tag1);
+        tag = new Tag();
+        tag.setTagname("deleteOrder_tag3");
+        orderItem1.addTag(tag);
 
         LocalDate date = LocalDate.of(2019, 04, 15);
 
         Customer customer = new Customer();
-        customer.setFio("FIO1");
+        customer.setFio("deleteOrder_FIO1");
         customer.setAge(100);
 
         Order order = new Order();
-        order.addOffer(offer);
-        order.addOffer(offer1);
+        order.addOffer(orderItem);
+        order.addOffer(orderItem1);
         order.setDate(date);
-
         order.setCustomer(customer);
+        order.setOrderStatus(OrderStatusEnum.SHIPPED);
+        order.setOrderPaymentStatus(OrderPaymentStatusEnum.PAID);
 
-        order.setOrderStatus(OrderStatusEnum.IN_PROCESS);
-        order.setOrderPaymentStatus(OrderPaymentStatusEnum.NOT_PAID);
+        orderItem.setOrder(order);
+        orderItem1.setOrder(order);
 
         order = orderDAO.create(order);
 
@@ -310,5 +344,4 @@ public class OrderDaoTest {
 
         assertNull(orderDAO.read(order.getId()));
     }
-
 }
