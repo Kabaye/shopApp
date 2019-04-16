@@ -2,7 +2,6 @@ package com.netcracker.edu.kulich.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -24,7 +23,6 @@ public class Category {
 
     @Getter
     @Setter
-    @NonNull
     @Column(nullable = false)
     private String category;
 
