@@ -55,7 +55,7 @@ public class OfferDAOManager implements OfferDAO {
         entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-        entityManager.merge(offer);
+        offer = entityManager.merge(offer);
         transaction.commit();
         entityManager.close();
         return offer;

@@ -53,7 +53,7 @@ public class CategoryDAOManager implements CategoryDAO {
         EntityTransaction transaction;
         transaction = entityManager.getTransaction();
         transaction.begin();
-        entityManager.merge(category);
+        category = entityManager.merge(category);
         transaction.commit();
         entityManager.close();
         return category;

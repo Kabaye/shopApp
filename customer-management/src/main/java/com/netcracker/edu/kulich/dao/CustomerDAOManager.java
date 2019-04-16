@@ -53,7 +53,7 @@ public class CustomerDAOManager implements CustomerDAO {
         EntityTransaction transaction;
         transaction = entityManager.getTransaction();
         transaction.begin();
-        entityManager.merge(customer);
+        customer = entityManager.merge(customer);
         transaction.commit();
         entityManager.close();
         return customer;
