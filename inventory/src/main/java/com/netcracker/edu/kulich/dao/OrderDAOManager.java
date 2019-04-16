@@ -56,7 +56,7 @@ public class OrderDAOManager implements OrderDAO {
         entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-        entityManager.merge(order);
+        order = entityManager.merge(order);
         transaction.commit();
         entityManager.close();
         return order;
