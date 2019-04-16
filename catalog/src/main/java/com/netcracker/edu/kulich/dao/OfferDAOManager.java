@@ -1,7 +1,7 @@
 package com.netcracker.edu.kulich.dao;
 
 import com.netcracker.edu.kulich.entity.Offer;
-import com.netcracker.edu.kulich.utils.PostgreSQLDatabaseManager;
+import com.netcracker.edu.kulich.utils.PostgreSQLEntityManagerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class OfferDAOManager implements OfferDAO {
 
-    private EntityManagerFactory entityManagerFactory = PostgreSQLDatabaseManager.getDatabaseManagerFactory();
+    private EntityManagerFactory entityManagerFactory = PostgreSQLEntityManagerFactory.getDatabaseManagerFactory();
     private EntityManager entityManager;
 
     @Override

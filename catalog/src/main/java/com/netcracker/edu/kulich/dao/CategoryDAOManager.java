@@ -1,7 +1,7 @@
 package com.netcracker.edu.kulich.dao;
 
 import com.netcracker.edu.kulich.entity.Category;
-import com.netcracker.edu.kulich.utils.PostgreSQLDatabaseManager;
+import com.netcracker.edu.kulich.utils.PostgreSQLEntityManagerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -9,7 +9,7 @@ import javax.persistence.EntityTransaction;
 import java.util.Set;
 
 public class CategoryDAOManager implements CategoryDAO {
-    private EntityManagerFactory entityManagerFactory = PostgreSQLDatabaseManager.getDatabaseManagerFactory();
+    private EntityManagerFactory entityManagerFactory = PostgreSQLEntityManagerFactory.getDatabaseManagerFactory();
     private EntityManager entityManager;
 
     @Override
