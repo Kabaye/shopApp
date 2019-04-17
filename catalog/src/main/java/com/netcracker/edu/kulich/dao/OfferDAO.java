@@ -1,7 +1,10 @@
 package com.netcracker.edu.kulich.dao;
 
+import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
+import com.netcracker.edu.kulich.entity.Tag;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface OfferDAO {
@@ -10,4 +13,10 @@ public interface OfferDAO {
     List<Offer> findAll();
     Offer update(Offer offer);
     void delete(Long id);
+
+    List<Offer> findOffersByCategory(Category category);
+
+    List<Offer> findOffersByTags(Collection<Tag> tags);
+
+    List<Offer> findOffersByRangeOfPrice(double lowerBound, double upperBound);
 }
