@@ -5,5 +5,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public enum OrderPaymentStatusEnum {
     NOT_PAID,
-    PAID
+    PAID,
+    PAYMENT_IS_CHECKED
 }

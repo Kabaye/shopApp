@@ -7,5 +7,6 @@ public enum OrderStatusEnum {
     IN_PROCESS, //в процессе сборки
     AGGREGATED, //собран
     SHIPPED, //отправлен
-    DELIVERED // доставлен
+    DELIVERED, // доставлен
+    CANCELED
 }
