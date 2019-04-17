@@ -1,6 +1,6 @@
 package com.netcracker.edu.kulich.dao;
 
-import com.netcracker.edu.kulich.entity.Order;
+import com.netcracker.edu.kulich.entity.*;
 
 import java.util.List;
 
@@ -14,4 +14,8 @@ public interface OrderDAO {
     Order update(Order order);
 
     void delete(Long id);
+
+    List<OrderItem> findCustomerOrdersByCategory(Customer customer, Category category);
+
+    List<OrderItem> findCustomerOrdersByTag(Customer customer, Tag tag);
 }
