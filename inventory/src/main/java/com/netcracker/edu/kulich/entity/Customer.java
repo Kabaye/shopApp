@@ -33,7 +33,7 @@ public class Customer {
 
     @Getter
     @Setter
-    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Order> orders = new HashSet<>();
 
     @Override

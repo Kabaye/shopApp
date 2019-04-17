@@ -52,7 +52,7 @@ public class Order {
     @Setter
     @Column(name = "status", nullable = false)
     @Enumerated(value = EnumType.ORDINAL)
-    private OrderStatusEnum orderStatus;
+    private OrderStatusEnum orderStatus = OrderStatusEnum.IN_PROCESS;
 
     @Getter
     @Setter
