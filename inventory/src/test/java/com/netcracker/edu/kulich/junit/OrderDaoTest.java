@@ -1,9 +1,12 @@
 package com.netcracker.edu.kulich.junit;
 
 import com.netcracker.edu.kulich.dao.OrderDAO;
-import com.netcracker.edu.kulich.dao.OrderDAOManager;
 import com.netcracker.edu.kulich.entity.*;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.util.Iterator;
@@ -12,8 +15,12 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+@SpringBootTest
+@RunWith(SpringRunner.class)
 public class OrderDaoTest {
-    private OrderDAO orderDAO = new OrderDAOManager();
+
+    @Autowired
+    private OrderDAO orderDAO;
 
     @Test
     public void createOrderTest() {
