@@ -1,17 +1,24 @@
 package com.netcracker.edu.kulich.junit;
 
 import com.netcracker.edu.kulich.dao.CustomerDAO;
-import com.netcracker.edu.kulich.dao.CustomerDAOManager;
 import com.netcracker.edu.kulich.entity.Customer;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class CustomerTests {
-    private CustomerDAO customerDAO = new CustomerDAOManager();
+
+    @Autowired
+    private CustomerDAO customerDAO;
 
     @Test
     public void createAndReadTwoCustomersTest() {
@@ -19,15 +26,15 @@ public class CustomerTests {
         customer.setFio("FIO1");
         customer.setAge(100);
 
-        customerDAO.create(customer);
+        customerDAO.save(customer);
 
         customer = new Customer();
         customer.setFio("FIO2");
         customer.setAge(80);
 
-        customer = customerDAO.create(customer);
+        customer = customerDAO.save(customer);
 
-        Customer customer1 = customerDAO.read(customer.getId());
+        Customer customer1 = customerDAO.getById(customer.getId());
 
         assertEquals(customer.toString(), customer1.toString());
     }
@@ -40,14 +47,14 @@ public class CustomerTests {
         customer.setFio("FIO1");
         customer.setAge(100);
 
-        customer = customerDAO.create(customer);
+        customer = customerDAO.save(customer);
         customers.add(customer);
 
         customer = new Customer();
         customer.setFio("FIO2");
         customer.setAge(80);
 
-        customer = customerDAO.create(customer);
+        customer = customerDAO.save(customer);
         customers.add(customer);
 
         List<Customer> customers1 = customerDAO.findAll();
@@ -61,13 +68,13 @@ public class CustomerTests {
         customer.setFio("FIO1");
         customer.setAge(100);
 
-        customer = customerDAO.create(customer);
+        customer = customerDAO.save(customer);
 
         Customer customer1 = new Customer();
         customer1.setFio("FIO2");
         customer1.setAge(80);
 
-        customer1 = customerDAO.create(customer1);
+        customer1 = customerDAO.save(customer1);
 
         customer1.setAge(500);
 
@@ -82,17 +89,17 @@ public class CustomerTests {
         customer.setFio("FIO1");
         customer.setAge(100);
 
-        customer = customerDAO.create(customer);
+        customer = customerDAO.save(customer);
 
         Customer customer1 = new Customer();
         customer1.setFio("FIO2");
         customer1.setAge(80);
 
-        customer1 = customerDAO.create(customer1);
+        customer1 = customerDAO.save(customer1);
 
-        customerDAO.delete(customer1.getId());
-        customerDAO.delete(customer.getId());
-        assertNull(customerDAO.read(customer.getId()));
-        assertNull(customerDAO.read(customer1.getId()));
+        customerDAO.deleteById(customer1.getId());
+        customerDAO.deleteById(customer.getId());
+        assertNull(customerDAO.getById(customer.getId()));
+        assertNull(customerDAO.getById(customer1.getId()));
     }
 }

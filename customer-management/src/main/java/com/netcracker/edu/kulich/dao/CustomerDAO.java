@@ -5,10 +5,11 @@ import com.netcracker.edu.kulich.entity.Customer;
 import java.util.List;
 
 public interface CustomerDAO {
-    Customer create(Customer customer);
-    Customer read(Long id);
+    Customer save(Customer customer);
+
+    Customer getById(Long id);
     List<Customer> findAll();
     Customer update(Customer customer);
 
-    void delete(Long id);
+    void deleteById(Long id);
 }
