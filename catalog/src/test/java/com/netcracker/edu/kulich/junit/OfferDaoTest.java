@@ -1,14 +1,16 @@
 package com.netcracker.edu.kulich.junit;
 
 import com.netcracker.edu.kulich.dao.OfferDAO;
-import com.netcracker.edu.kulich.dao.OfferDAOManager;
 import com.netcracker.edu.kulich.dao.TagDAO;
-import com.netcracker.edu.kulich.dao.TagDAOManager;
 import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Price;
 import com.netcracker.edu.kulich.entity.Tag;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,9 +18,13 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+@SpringBootTest
+@RunWith(SpringRunner.class)
 public class OfferDaoTest {
-    private OfferDAO offerDAO = new OfferDAOManager();
-    private TagDAO tagDAO = new TagDAOManager();
+    @Autowired
+    private OfferDAO offerDAO;
+    @Autowired
+    private TagDAO tagDAO;
 
     @Test
     public void testCreateAndReadTwoOffers() {
