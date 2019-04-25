@@ -9,25 +9,21 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "tags")
-@NoArgsConstructor
 public class Tag {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "tag_id", nullable = false)
     private long id;
 
-    @Getter
-    @Setter
     @Column(nullable = false, unique = true)
     private String tagname;
 
-    @Getter
-    @Setter
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "offers_tags",
             joinColumns = @JoinColumn(name = "tag_id"),
@@ -60,3 +56,5 @@ public class Tag {
         return result;
     }
 }
+
+

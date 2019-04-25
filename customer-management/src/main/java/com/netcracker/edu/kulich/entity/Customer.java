@@ -7,25 +7,21 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.StringJoiner;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "customers")
-@NoArgsConstructor
 public class Customer {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(nullable = false)
     private long id;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     private String fio;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     private int age;
 

@@ -2,6 +2,7 @@ package com.netcracker.edu.kulich.entity;
 
 import com.netcracker.edu.kulich.utils.LocalDateAttributeConverter;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -10,52 +11,40 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "orders")
 public class Order {
 
-    @Getter
-    @Setter
     @Id
     @Column(name = "order_id", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Getter
-    @Setter
     @Column(name = "date", nullable = false)
     @Convert(converter = LocalDateAttributeConverter.class)
     private LocalDate date;
 
-    @Getter
     @OneToMany(mappedBy = "order", orphanRemoval = true,
             cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<OrderItem> orderItems = new HashSet<>();
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @Getter
-    @Setter
     @Transient
     private double totalPrice;
 
-    @Getter
-    @Setter
     @Transient
     private int amountOfOrderItems;
 
-    @Getter
-    @Setter
     @Column(name = "status", nullable = false)
     @Enumerated(value = EnumType.ORDINAL)
     private OrderStatusEnum orderStatus = OrderStatusEnum.IN_PROCESS;
 
-    @Getter
-    @Setter
     @Column(name = "paid_status", nullable = false)
     @Enumerated(value = EnumType.ORDINAL)
     private OrderPaymentStatusEnum orderPaymentStatus;

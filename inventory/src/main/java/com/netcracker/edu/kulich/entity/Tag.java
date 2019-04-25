@@ -9,25 +9,21 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "tags")
-@NoArgsConstructor
 public class Tag {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "tag_id", nullable = false)
     private long id;
 
-    @Getter
-    @Setter
     @Column(nullable = false, unique = true)
     private String tagname;
 
-    @Getter
-    @Setter
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "tags")
     private Set<OrderItem> orderItems = new HashSet<>();
 

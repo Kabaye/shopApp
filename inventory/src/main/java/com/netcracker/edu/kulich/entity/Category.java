@@ -9,24 +9,21 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "categories")
-@NoArgsConstructor
 public class Category {
-    @Getter
-    @Setter
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "category_id", nullable = false)
     private long id;
 
-    @Getter
-    @Setter
     @Column(nullable = false, unique = true)
     private String category;
 
-    @Getter
-    @Setter
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<OrderItem> orderItems = new HashSet<>();
 

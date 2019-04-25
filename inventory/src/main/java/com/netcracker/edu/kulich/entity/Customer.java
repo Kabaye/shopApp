@@ -9,30 +9,24 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "customers")
-@NoArgsConstructor
 public class Customer {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(nullable = false, name = "customer_id")
     private long id;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     private String fio;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     private int age;
 
-    @Getter
-    @Setter
     @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Order> orders = new HashSet<>();
 
