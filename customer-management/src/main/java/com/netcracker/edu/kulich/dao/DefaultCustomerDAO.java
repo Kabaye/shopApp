@@ -2,13 +2,11 @@ package com.netcracker.edu.kulich.dao;
 
 import com.netcracker.edu.kulich.entity.Customer;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@Transactional
 @SuppressWarnings("ALL")
 @Repository(value = "customerDAO")
 public class DefaultCustomerDAO implements CustomerDAO {

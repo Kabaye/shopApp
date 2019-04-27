@@ -33,4 +33,24 @@ public class Customer {
                 .add("age=" + age)
                 .toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Customer customer = (Customer) o;
+
+        if (id != customer.id) return false;
+        if (age != customer.age) return false;
+        return fio != null ? fio.equals(customer.fio) : customer.fio == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (fio != null ? fio.hashCode() : 0);
+        result = 31 * result + age;
+        return result;
+    }
 }
