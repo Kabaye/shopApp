@@ -5,9 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.StringJoiner;
 
 @Getter
 @Setter
@@ -18,26 +15,14 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(nullable = false, name = "customer_id")
+    @Column(nullable = false)
     private long id;
 
     @Column(nullable = false)
-    private String fio;
+    private String fio = "";
 
     @Column(nullable = false)
     private int age;
-
-    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<Order> orders = new HashSet<>();
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", Customer.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("fio='" + fio + "'")
-                .add("age=" + age)
-                .toString();
-    }
 
     @Override
     public boolean equals(Object o) {

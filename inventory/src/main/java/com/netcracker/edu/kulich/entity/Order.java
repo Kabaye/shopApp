@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -56,10 +57,7 @@ public class Order {
         this.amountOfOrderItems = this.orderItems.size();
 
         totalPrice = 0;
-        for (OrderItem orderItem : this.orderItems) {
-            if (orderItem != null && orderItem.getPrice() != null)
-                totalPrice += orderItem.getPrice().getPrice();
-        }
+        this.orderItems.stream().filter(Objects::nonNull).forEach(orderItem -> totalPrice += orderItem.getPrice());
     }
 
     public void addOffer(OrderItem orderItem) {
