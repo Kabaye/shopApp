@@ -4,15 +4,14 @@ import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Tag;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.Collection;
 import java.util.List;
 
-@Transactional
 @Repository(value = "offerDAO")
 public class DefaultOfferDAO implements OfferDAO {
 
@@ -46,8 +45,10 @@ public class DefaultOfferDAO implements OfferDAO {
     }
 
     @Override
-    public void delete(Long id) {
-        Offer offer = entityManager.getReference(Offer.class, id);
+    public void delete(Long id) throws EntityNotFoundException {
+        Offer offer = entityManager.find(Offer.class, id);
+        if (offer == null)
+            throw new EntityNotFoundException();
         entityManager.remove(offer);
     }
 
