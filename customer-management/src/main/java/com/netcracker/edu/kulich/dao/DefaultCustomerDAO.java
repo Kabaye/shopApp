@@ -4,6 +4,7 @@ import com.netcracker.edu.kulich.entity.Customer;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
@@ -39,10 +40,11 @@ public class DefaultCustomerDAO implements CustomerDAO {
         return customer;
     }
 
-
     @Override
-    public void deleteById(Long id) {
-        Customer customer = entityManager.getReference(Customer.class, id);
+    public void deleteById(Long id) throws EntityNotFoundException {
+        Customer customer = entityManager.find(Customer.class, id);
+        if (customer == null)
+            throw new EntityNotFoundException();
         entityManager.remove(customer);
     }
 }
