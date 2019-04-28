@@ -22,7 +22,7 @@ public class Category {
     private long id;
 
     @Column(nullable = false, unique = true)
-    private String category;
+    private String category = "";
 
 
     @OneToMany (mappedBy = "category", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)

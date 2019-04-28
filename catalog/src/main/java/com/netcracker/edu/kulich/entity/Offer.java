@@ -22,7 +22,7 @@ public class Offer {
     private long id;
 
     @Column(nullable = false)
-    private String name;
+    private String name = "";
 
     @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "price_id")

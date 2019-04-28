@@ -22,7 +22,7 @@ public class Tag {
     private long id;
 
     @Column(nullable = false, unique = true)
-    private String tagname;
+    private String tagname = "";
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "offers_tags",
