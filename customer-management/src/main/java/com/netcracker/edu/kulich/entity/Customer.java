@@ -20,7 +20,7 @@ public class Customer {
     private long id;
 
     @Column(nullable = false)
-    private String fio;
+    private String fio = "";
 
     @Column(nullable = false)
     private int age;
