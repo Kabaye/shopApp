@@ -1,8 +1,8 @@
 package com.netcracker.edu.kulich.junit;
 
 import com.netcracker.edu.kulich.entity.Customer;
-import com.netcracker.edu.kulich.exception.InvalidCustomerDataException;
-import com.netcracker.edu.kulich.service.CustomerService;
+import com.netcracker.edu.kulich.service.DefaultCustomerService;
+import com.netcracker.edu.kulich.service.exception.CustomerServiceException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,55 +19,40 @@ import static org.junit.Assert.*;
 public class CustomerTests {
 
     @Autowired
-    private CustomerService customerService;
+    private DefaultCustomerService customerService;
 
     @Test
-    public void createAndReadTwoCustomersTest() {
+    public void createAndReadTwoCustomersTest() throws CustomerServiceException {
         Customer customer = new Customer();
         customer.setFio("FIO1");
         customer.setAge(100);
 
-        try {
-            customerService.save(customer);
-        } catch (InvalidCustomerDataException exc) {
-            fail();
-        }
+        customerService.saveCustomer(customer);
 
         customer = new Customer();
         customer.setFio("FIO2");
         customer.setAge(80);
-        try {
-            customer = customerService.save(customer);
-        } catch (InvalidCustomerDataException exc) {
-            fail();
-        }
-        Customer customer1 = customerService.getById(customer.getId());
+        customer = customerService.saveCustomer(customer);
+
+        Customer customer1 = customerService.getCustomerById(customer.getId());
 
         assertEquals(customer, customer1);
     }
 
     @Test
-    public void findAllCustomersTest() {
+    public void findAllCustomersTest() throws CustomerServiceException {
         List<Customer> customers = customerService.findAllCustomers();
 
         Customer customer = new Customer();
         customer.setFio("FIO1");
         customer.setAge(100);
-        try {
-            customer = customerService.save(customer);
-        } catch (InvalidCustomerDataException exc) {
-            fail();
-        }
+        customer = customerService.saveCustomer(customer);
         customers.add(customer);
 
         customer = new Customer();
         customer.setFio("FIO2");
         customer.setAge(80);
-        try {
-            customer = customerService.save(customer);
-        } catch (InvalidCustomerDataException exc) {
-            fail();
-        }
+        customer = customerService.saveCustomer(customer);
         customers.add(customer);
 
         List<Customer> customers1 = customerService.findAllCustomers();
@@ -76,64 +61,56 @@ public class CustomerTests {
     }
 
     @Test
-    public void updateCustomerTest() {
+    public void updateCustomerTest() throws CustomerServiceException {
         Customer customer = new Customer();
         customer.setFio("FIO1");
         customer.setAge(100);
-        try {
-            customer = customerService.save(customer);
-        } catch (InvalidCustomerDataException exc) {
-            fail();
-        }
+        customer = customerService.saveCustomer(customer);
         Customer customer1 = new Customer();
         customer1.setFio("FIO2");
         customer1.setAge(80);
-        try {
-            customer1 = customerService.save(customer1);
-        } catch (InvalidCustomerDataException exc) {
-            fail();
-        }
+
+        customer1 = customerService.saveCustomer(customer1);
+
         customer1.setAge(500);
 
         customer.setFio("new FIO1");
 
-        Customer customer2 = null;
-        Customer customer3 = null;
+        Customer customer2;
+        Customer customer3;
 
-        try {
-            customer2 = customerService.updateCustomer(customer);
-            customer3 = customerService.updateCustomer(customer1);
-        } catch (InvalidCustomerDataException exc) {
-            fail();
-        }
+        customer2 = customerService.updateCustomer(customer);
+        customer3 = customerService.updateCustomer(customer1);
+
         assertEquals(customer, customer2);
         assertEquals(customer1, customer3);
-
     }
 
     @Test
-    public void deleteCustomerTest() {
+    public void deleteCustomerTest() throws CustomerServiceException {
         Customer customer = new Customer();
         customer.setFio("FIO1");
         customer.setAge(100);
-        try {
-            customer = customerService.save(customer);
-        } catch (InvalidCustomerDataException exc) {
-            fail();
-        }
+
+        customer = customerService.saveCustomer(customer);
+
         Customer customer1 = new Customer();
         customer1.setFio("FIO2");
         customer1.setAge(80);
-        try {
-            customer1 = customerService.save(customer1);
-        } catch (InvalidCustomerDataException exc) {
-            fail();
-        }
+
+        customer1 = customerService.saveCustomer(customer1);
+
         customerService.deleteCustomerById(customer1.getId());
         customerService.deleteCustomerById(customer.getId());
 
-        assertNull(customerService.getById(customer.getId()));
-        assertNull(customerService.getById(customer1.getId()));
+        try {
+            customerService.deleteCustomerById(customer.getId());
+        } catch (CustomerServiceException exc) {
+            if (exc.getMessage().contains("existent"))
+                assertTrue(true);
+        }
+        assertNull(customerService.getCustomerById(customer.getId()));
+        assertNull(customerService.getCustomerById(customer1.getId()));
     }
 
     @Test
@@ -143,34 +120,27 @@ public class CustomerTests {
         customer.setAge(152);
 
         try {
-            customerService.save(customer);
-        } catch (InvalidCustomerDataException exc) {
-            if (exc.getMessage().equals(CustomerService.INCORRECT_AGE))
-                Assert.assertTrue(true);
-            else
-                fail();
+            customerService.saveCustomer(customer);
+        } catch (CustomerServiceException exc) {
+            assertTrue(true);
         }
 
         customer = new Customer();
         customer.setFio("");
         customer.setAge(80);
         try {
-            customerService.save(customer);
-        } catch (InvalidCustomerDataException exc) {
-            if (exc.getMessage().equals(CustomerService.NULL_FIO))
-                Assert.assertTrue(true);
-            else
-                fail();
+            customerService.saveCustomer(customer);
+        } catch (CustomerServiceException exc) {
+            Assert.assertTrue(true);
         }
 
         customer.setFio("");
         customer.setAge(13);
+
         try {
-            customerService.save(customer);
-        } catch (InvalidCustomerDataException exc) {
+            customerService.saveCustomer(customer);
+        } catch (CustomerServiceException exc) {
             assertTrue(true);
         }
-
-
     }
 }
