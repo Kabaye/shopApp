@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.StringJoiner;
 
 @Getter
 @Setter
@@ -25,14 +24,6 @@ public class Customer {
     @Column(nullable = false)
     private int age;
 
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", Customer.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("fio='" + fio + "'")
-                .add("age=" + age)
-                .toString();
-    }
 
     @Override
     public boolean equals(Object o) {

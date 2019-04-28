@@ -13,20 +13,18 @@ import java.util.List;
 @Service(value = "customerService")
 @Transactional
 public class DefaultCustomerService implements CustomerService {
-    private final String INCORRECT_AGE = "Age of customer is incorrect, please, write it properly.";
-    private final String NULL_FIO = "FIO of customer is empty, please set it not empty.";
-    private final String DELETING_NOT_EXISTENT_CUSTOMER = "You try to delete not existent customer!";
-    private final int MIN_AGE = 14;
-    private final int MAX_AGE = 122;
+    private static final String INCORRECT_AGE = "Age of customer is incorrect, please, write it properly.";
+    private static final String NULL_FIO = "FIO of customer is empty, please, set it not empty.";
+    private static final String DELETING_NOT_EXISTENT_CUSTOMER = "You try to delete not existent customer!";
+    private static final int MIN_AGE = 14;
+    private static final int MAX_AGE = 122;
 
     @Autowired
     private CustomerDAO customerDAO;
 
     public Customer saveCustomer(Customer customer) throws CustomerServiceException {
-        if (customer.getAge() < MIN_AGE && customer.getAge() > MAX_AGE)
-            throw new CustomerServiceException(INCORRECT_AGE);
-        if (customer.getFio().equals(""))
-            throw new CustomerServiceException(NULL_FIO);
+        customerChecking(customer);
+
         customer = customerDAO.save(customer);
         return customer;
     }
@@ -40,10 +38,7 @@ public class DefaultCustomerService implements CustomerService {
     }
 
     public Customer updateCustomer(Customer customer) throws CustomerServiceException {
-        if (customer.getAge() < MIN_AGE && customer.getAge() > MAX_AGE)
-            throw new CustomerServiceException(INCORRECT_AGE);
-        if (customer.getFio().equals(""))
-            throw new CustomerServiceException(NULL_FIO);
+        customerChecking(customer);
         customer = customerDAO.update(customer);
         return customer;
     }
@@ -54,5 +49,12 @@ public class DefaultCustomerService implements CustomerService {
         } catch (EntityNotFoundException exc) {
             throw new CustomerServiceException(DELETING_NOT_EXISTENT_CUSTOMER);
         }
+    }
+
+    private void customerChecking(Customer customer) throws CustomerServiceException {
+        if (customer.getAge() < MIN_AGE || customer.getAge() > MAX_AGE)
+            throw new CustomerServiceException(INCORRECT_AGE);
+        if (customer.getFio().equals(""))
+            throw new CustomerServiceException(NULL_FIO);
     }
 }

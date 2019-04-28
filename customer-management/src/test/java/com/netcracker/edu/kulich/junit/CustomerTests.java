@@ -66,21 +66,24 @@ public class CustomerTests {
         customer.setFio("FIO1");
         customer.setAge(100);
         customer = customerService.saveCustomer(customer);
+
         Customer customer1 = new Customer();
         customer1.setFio("FIO2");
         customer1.setAge(80);
-
         customer1 = customerService.saveCustomer(customer1);
 
-        customer1.setAge(500);
+        customer1.setAge(60);
 
         customer.setFio("new FIO1");
 
         Customer customer2;
         Customer customer3;
 
-        customer2 = customerService.updateCustomer(customer);
-        customer3 = customerService.updateCustomer(customer1);
+        customerService.updateCustomer(customer);
+        customerService.updateCustomer(customer1);
+
+        customer2 = customerService.getCustomerById(customer.getId());
+        customer3 = customerService.getCustomerById(customer1.getId());
 
         assertEquals(customer, customer2);
         assertEquals(customer1, customer3);
@@ -128,6 +131,7 @@ public class CustomerTests {
         customer = new Customer();
         customer.setFio("");
         customer.setAge(80);
+
         try {
             customerService.saveCustomer(customer);
         } catch (CustomerServiceException exc) {

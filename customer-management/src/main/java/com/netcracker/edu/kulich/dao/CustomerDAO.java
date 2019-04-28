@@ -10,6 +10,5 @@ public interface CustomerDAO {
     Customer getById(Long id);
     List<Customer> findAll();
     Customer update(Customer customer);
-
     void deleteById(Long id) throws EntityNotFoundException;
 }
