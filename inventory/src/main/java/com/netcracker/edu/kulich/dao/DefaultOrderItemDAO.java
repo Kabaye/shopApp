@@ -2,13 +2,11 @@ package com.netcracker.edu.kulich.dao;
 
 import com.netcracker.edu.kulich.entity.OrderItem;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@Transactional
 @Repository(value = "orderitemDAO")
 public class DefaultOrderItemDAO implements OrderItemDAO {
 

@@ -1,15 +1,17 @@
 package com.netcracker.edu.kulich.dao;
 
-import com.netcracker.edu.kulich.entity.*;
+import com.netcracker.edu.kulich.entity.Customer;
+import com.netcracker.edu.kulich.entity.Order;
+import com.netcracker.edu.kulich.entity.OrderItem;
+import com.netcracker.edu.kulich.entity.Tag;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
 
-@Transactional
 @Repository(value = "orderDAO")
 public class DefaultOrderDAO implements OrderDAO {
 
@@ -45,13 +47,15 @@ public class DefaultOrderDAO implements OrderDAO {
     }
 
     @Override
-    public void delete(Long id) {
-        Order order = entityManager.getReference(Order.class, id);
+    public void delete(Long id) throws EntityNotFoundException {
+        Order order = entityManager.find(Order.class, id);
+        if (order == null)
+            throw new EntityNotFoundException();
         entityManager.remove(order);
     }
 
     @Override
-    public List<OrderItem> findCustomerOrdersByCategory(Customer customer, Category category) {
+    public List<OrderItem> findCustomerOrdersByCategory(Customer customer, String category) {
         List<OrderItem> orderItems;
 
         Query query = entityManager.createQuery("SELECT o FROM OrderItem o" +

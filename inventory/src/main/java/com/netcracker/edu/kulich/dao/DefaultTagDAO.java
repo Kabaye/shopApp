@@ -3,14 +3,15 @@ package com.netcracker.edu.kulich.dao;
 import com.netcracker.edu.kulich.entity.OrderItem;
 import com.netcracker.edu.kulich.entity.Tag;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.util.List;
 import java.util.Set;
 
 @Repository(value = "tagDAO")
-@Transactional
 public class DefaultTagDAO implements TagDAO {
     @PersistenceContext
     private EntityManager entityManager;
@@ -24,6 +25,16 @@ public class DefaultTagDAO implements TagDAO {
     @Override
     public Tag read(Long id) {
         Tag tag = entityManager.find(Tag.class, id);
+        return tag;
+    }
+
+    @Override
+    public Tag readByName(String name) {
+        Query q = entityManager.createQuery("SELECT tag FROM Tag tag WHERE tag.tagname = :name").setParameter("name", name);
+        List objects = q.getResultList();
+        Tag tag = null;
+        if (objects.size() != 0)
+            tag = (Tag) objects.get(0);
         return tag;
     }
 
@@ -42,10 +53,12 @@ public class DefaultTagDAO implements TagDAO {
     }
 
     @Override
-    public void delete(Long id) {
-        Tag tag = entityManager.getReference(Tag.class, id);
-        for (OrderItem offer : tag.getOrderItems()) {
-            offer.getTags().remove(tag);
+    public void delete(Long id) throws EntityNotFoundException {
+        Tag tag = entityManager.find(Tag.class, id);
+        if (tag == null)
+            throw new EntityNotFoundException();
+        for (OrderItem orderItem : tag.getOrderItems()) {
+            orderItem.getTags().remove(tag);
         }
         entityManager.remove(tag);
     }

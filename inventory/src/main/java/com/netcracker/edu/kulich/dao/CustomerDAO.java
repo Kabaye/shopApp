@@ -2,16 +2,15 @@ package com.netcracker.edu.kulich.dao;
 
 import com.netcracker.edu.kulich.entity.Customer;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 public interface CustomerDAO {
-    Customer create(Customer customer);
+    Customer save(Customer customer);
 
-    Customer read(Long id);
-
+    Customer getById(Long id);
     List<Customer> findAll();
-
     Customer update(Customer customer);
 
-    void delete(Long id);
+    void deleteById(Long id) throws EntityNotFoundException;
 }
