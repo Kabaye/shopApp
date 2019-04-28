@@ -13,9 +13,9 @@ import java.util.Set;
 @Transactional
 @Service(value = "categoryService")
 public class DefaultCategoryService implements CategoryService {
-    private final String NULL_CATEGORY_NAME_EXCEPTION_MESSAGE = "Category name is empty, please set it not empty.";
-    private final String DELETING_NOT_EXISTENT_CATEGORY = "You try to delete not existent category.";
-    private final String INSERTING_OR_UPDATING_CATEGORY_WITH_NOT_UNIQUE_NAME = "You try to insert / update category with already existent name, please, set name unique.";
+    private static final String NULL_CATEGORY_NAME_EXCEPTION_MESSAGE = "Category name is empty, please, set it not empty.";
+    private static final String DELETING_NOT_EXISTENT_CATEGORY = "You try to delete not existent category.";
+    private static final String INSERTING_OR_UPDATING_CATEGORY_WITH_NOT_UNIQUE_NAME = "You try to insert / update category with already existent name, please, set name unique.";
 
     @Autowired
     private CategoryDAO categoryDAO;

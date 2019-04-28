@@ -8,15 +8,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Transactional
 @Service(value = "tagService")
 public class DefaultTagService implements TagService {
-    private final String NULL_TAG_NAME_EXCEPTION_MESSAGE = "Tag name is empty, please set it not empty.";
-    private final String DELETING_NOT_EXISTENT_TAG = "You try to delete not existent tag.";
-    private final String INSERTING_OR_UPDATING_TAG_WITH_NOT_UNIC_NAME = "You try to insert / update tag with already existent name, please, set name unique.";
+    private static final String NULL_TAG_NAME_EXCEPTION_MESSAGE = "Tag name is empty, please, set it not empty.";
+    private static final String DELETING_NOT_EXISTENT_TAG = "You try to delete not existent tag.";
+    private static final String INSERTING_OR_UPDATING_TAG_WITH_NOT_UNIC_NAME = "You try to insert / update tag with already existent name, please, set name unique.";
 
     @Autowired
     private TagDAO tagDAO;
@@ -40,7 +41,7 @@ public class DefaultTagService implements TagService {
 
     @Override
     public Set<Tag> saveTags(Set<Tag> tags) throws TagServiceException {
-        tags = tags.stream().filter(tag -> tag != null).collect(Collectors.toSet());
+        tags = tags.stream().filter(Objects::nonNull).collect(Collectors.toSet());
         for (Tag tag : tags) {
             checkTagHaveNotNullNameAndUnique(tag);
         }

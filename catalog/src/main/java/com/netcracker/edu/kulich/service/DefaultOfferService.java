@@ -10,21 +10,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional
 @Service(value = "offerService")
 public class DefaultOfferService implements OfferService {
-    private final String NULL_OFFER_CATEGORY_EXCEPTION_MESSAGE = "Category is empty, please set it not empty.";
-    private final String NULL_OFFER_CATEGORY_NAME_EXCEPTION_MESSAGE = "Category name is empty, please set it not empty.";
-    private final String NOT_CORRECT_PRICE_BOUNDS_EXCEPTION_MESSAGE = "You set uncorrect values of price, please set they correctly.";
-    private final String DELETING_NOT_EXISTENT_OFFER = "You try to delete not existent category.";
+    private static final String NULL_OFFER_CATEGORY_EXCEPTION_MESSAGE = "Category is empty, please, set it not empty.";
+    private static final String NULL_OFFER_CATEGORY_NAME_EXCEPTION_MESSAGE = "Category name is empty, please, set it not empty.";
+    private static final String NULL_OFFER_TAG_NAME_EXCEPTION_MESSAGE = "One of offer's tag has empty name, please, set it not empty.";
+    private static final String NOT_CORRECT_PRICE_BOUNDS_EXCEPTION_MESSAGE = "You set not correct values of price, please, set they correctly.";
+    private static final String DELETING_NOT_EXISTENT_OFFER = "You try to delete not existent category.";
 
-    private final int MIN_PRICE = 1;
+    private static final double MIN_PRICE = 1.0;
 
     @Autowired
     private OfferDAO offerDAO;
@@ -37,8 +35,7 @@ public class DefaultOfferService implements OfferService {
 
     @Override
     public Offer saveOffer(Offer offer) throws OfferServiceException {
-        offerRecreating(offer);
-
+        offerCheckingAndRecreating(offer);
         offer = offerDAO.create(offer);
         return offer;
     }
@@ -55,7 +52,7 @@ public class DefaultOfferService implements OfferService {
 
     @Override
     public Offer updateOffer(Offer offer) throws OfferServiceException {
-        offerRecreating(offer);
+        offerCheckingAndRecreating(offer);
 
         offer = offerDAO.update(offer);
         return offer;
@@ -77,7 +74,7 @@ public class DefaultOfferService implements OfferService {
 
     @Override
     public List<Offer> findOffersByTags(Collection<Tag> tags) {
-        tags = tags.stream().filter(tag -> tag != null).collect(Collectors.toSet());
+        tags = tags.stream().filter(Objects::nonNull).collect(Collectors.toSet());
         return offerDAO.findOffersByTags(tags);
     }
 
@@ -88,7 +85,7 @@ public class DefaultOfferService implements OfferService {
         return offerDAO.findOffersByRangeOfPrice(lowerBound, upperBound);
     }
 
-    private void offerRecreating(Offer offer) throws OfferServiceException {
+    private void offerCheckingAndRecreating(Offer offer) throws OfferServiceException {
         Category category = categoryRecreating(offer.getCategory());
         offer.setCategory(category);
         Set<Tag> tags = tagsRecreating(offer.getTags());
@@ -104,12 +101,14 @@ public class DefaultOfferService implements OfferService {
         return category1 == null ? category : category1;
     }
 
-    private Set<Tag> tagsRecreating(Set<Tag> tags) {
+    private Set<Tag> tagsRecreating(Set<Tag> tags) throws OfferServiceException {
         tags = tags.stream()
-                .filter(tag -> tag != null)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
         Set<Tag> tagSet = new HashSet<>();
         for (Tag tag : tags) {
+            if (tag.getTagname().equals(""))
+                throw new OfferServiceException(NULL_OFFER_TAG_NAME_EXCEPTION_MESSAGE);
             Tag t = tagService.getTagByName(tag.getTagname());
             tagSet.add(t == null ? tag : t);
         }
