@@ -92,8 +92,9 @@ public class DefaultOrderService implements OrderService {
     public List<OrderItem> findCustomerOrdersByCategory(Customer customer, String category) throws OrderServiceException {
         customerChecking(customer);
 
-        if (category.equals(""))
+        if (category.equals("")) {
             throw new OrderServiceException(NULL_CATEGORY_NAME);
+        }
 
         return orderDAO.findCustomerOrdersByCategory(customer, category);
     }
@@ -116,8 +117,9 @@ public class DefaultOrderService implements OrderService {
 
         statusChecking(order.getOrderStatus(), order.getOrderPaymentStatus());
 
-        if (order.getOrderItems().size() == 0)
+        if (order.getOrderItems().size() == 0) {
             throw new OrderServiceException(NULL_AMOUNT_OF_ORDER_ITEMS);
+        }
 
         Set<OrderItem> items = new HashSet<>();
 
@@ -128,40 +130,50 @@ public class DefaultOrderService implements OrderService {
     }
 
     private void customerChecking(Customer customer) throws OrderServiceException {
-        if (customer == null)
+        if (customer == null) {
             throw new OrderServiceException(NULL_ORDER_CUSTOMER_EXCEPTION_MESSAGE);
-        if (customer.getFio().equals(""))
+        }
+        if (customer.getFio().equals("")) {
             throw new OrderServiceException(NULL_ORDER_CUSTOMER_NAME_EXCEPTION_MESSAGE);
-        if (customer.getAge() < MIN_AGE || customer.getAge() > MAX_AGE)
+        }
+        if (customer.getAge() < MIN_AGE || customer.getAge() > MAX_AGE) {
             throw new OrderServiceException(NOT_CORRECT_CUSTOMER_AGE_IN_ORDER);
+        }
     }
 
     private void dateChecking(LocalDate date) throws OrderServiceException {
-        if (date == null)
+        if (date == null) {
             throw new OrderServiceException(NULL_ORDER_DATE);
-        if (date.isBefore(BEGINNING) || date.isAfter(ENDING))
+        }
+        if (date.isBefore(BEGINNING) || date.isAfter(ENDING)) {
             throw new OrderServiceException(NOT_CORRECT_DATE_IN_ORDER);
+        }
     }
 
     private void statusChecking(OrderStatusEnum orderStatus, OrderPaymentStatusEnum orderPaymentStatus) throws OrderServiceException {
-        if (orderStatus == null)
+        if (orderStatus == null) {
             throw new OrderServiceException(NULL_ORDER_SHIPPING_STATUS);
-        if (orderPaymentStatus == null)
+        }
+        if (orderPaymentStatus == null) {
             throw new OrderServiceException(NULL_ORDER_PAYMENT_STATUS);
+        }
     }
 
     private OrderItem orderItemCheckingAndRecreating(OrderItem item) throws OrderServiceException {
         Set<Tag> tags = tagsCheckingAndRecreating(item.getTags());
         item.setTags(tags);
 
-        if (item.getPrice() < MIN_PRICE)
+        if (item.getPrice() < MIN_PRICE) {
             throw new OrderServiceException(NOT_CORRECT_ORDER_ITEM_PRICE);
+        }
 
-        if (item.getCategory().equals(""))
+        if (item.getCategory().equals("")) {
             throw new OrderServiceException(NULL_ORDER_ITEM_CATEGORY_NAME);
+        }
 
-        if (item.getName().equals(""))
+        if (item.getName().equals("")) {
             throw new OrderServiceException(NULL_ORDER_ITEM_NAME);
+        }
 
         return item;
     }
@@ -170,8 +182,9 @@ public class DefaultOrderService implements OrderService {
         tags = tags.stream().filter(Objects::nonNull).collect(Collectors.toSet());
         Set<Tag> tagSet = new HashSet<>();
         for (Tag tag : tags) {
-            if (tag.getTagname().equals(""))
+            if (tag.getTagname().equals("")) {
                 throw new OrderServiceException(NULL_ORDER_TAG_NAME);
+            }
             Tag t = tagDAO.readByName(tag.getTagname());
             tagSet.add(t == null ? tag : t);
         }

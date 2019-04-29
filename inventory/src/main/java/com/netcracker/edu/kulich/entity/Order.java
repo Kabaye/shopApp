@@ -55,7 +55,6 @@ public class Order {
     @PostLoad
     private void postPersistAndUpdate() {
         this.amountOfOrderItems = this.orderItems.size();
-
         totalPrice = 0;
         this.orderItems.stream().filter(Objects::nonNull).forEach(orderItem -> totalPrice += orderItem.getPrice());
     }

@@ -49,8 +49,9 @@ public class DefaultOrderDAO implements OrderDAO {
     @Override
     public void delete(Long id) throws EntityNotFoundException {
         Order order = entityManager.find(Order.class, id);
-        if (order == null)
+        if (order == null) {
             throw new EntityNotFoundException();
+        }
         entityManager.remove(order);
     }
 

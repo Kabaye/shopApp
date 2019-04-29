@@ -4,6 +4,7 @@ import com.netcracker.edu.kulich.entity.OrderItem;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
@@ -41,8 +42,11 @@ public class DefaultOrderItemDAO implements OrderItemDAO {
     }
 
     @Override
-    public void delete(Long id) {
-        OrderItem orderItem = entityManager.getReference(OrderItem.class, id);
+    public void delete(Long id) throws EntityNotFoundException {
+        OrderItem orderItem = entityManager.find(OrderItem.class, id);
+        if (orderItem == null) {
+            throw new EntityNotFoundException();
+        }
         entityManager.remove(orderItem);
     }
 }
