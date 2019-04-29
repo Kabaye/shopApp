@@ -66,8 +66,9 @@ public class DefaultTagService implements TagService {
     }
 
     private void checkTagHaveNotNullNameAndUnique(Tag tag) throws TagServiceException {
-        if (tag.getTagname().equals(""))
+        if (tag.getTagname().equals("")) {
             throw new TagServiceException(NULL_TAG_NAME_EXCEPTION_MESSAGE);
+        }
         Tag tag1 = tagDAO.readByName(tag.getTagname());
         if (tag1 != null) {
             throw new TagServiceException(INSERTING_OR_UPDATING_TAG_WITH_NOT_UNIC_NAME);

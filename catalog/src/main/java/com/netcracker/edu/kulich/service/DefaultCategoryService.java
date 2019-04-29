@@ -63,8 +63,9 @@ public class DefaultCategoryService implements CategoryService {
     }
 
     private void checkCategoryHasNotNullNameAndUnique(Category category) throws CategoryServiceException {
-        if (category.getCategory().equals(""))
+        if (category.getCategory().equals("")) {
             throw new CategoryServiceException(NULL_CATEGORY_NAME_EXCEPTION_MESSAGE);
+        }
         Category category1 = categoryDAO.readByName(category.getCategory());
         if (category1 != null) {
             throw new CategoryServiceException(INSERTING_OR_UPDATING_CATEGORY_WITH_NOT_UNIQUE_NAME);

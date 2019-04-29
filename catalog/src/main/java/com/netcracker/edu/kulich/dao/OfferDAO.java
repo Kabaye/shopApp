@@ -10,8 +10,11 @@ import java.util.List;
 
 public interface OfferDAO {
     Offer create(Offer offer);
+
     Offer read(Long id);
+
     List<Offer> findAll();
+
     Offer update(Offer offer);
 
     void delete(Long id) throws EntityNotFoundException;

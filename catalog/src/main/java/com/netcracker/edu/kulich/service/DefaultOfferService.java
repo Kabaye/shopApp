@@ -53,7 +53,6 @@ public class DefaultOfferService implements OfferService {
     @Override
     public Offer updateOffer(Offer offer) throws OfferServiceException {
         offerCheckingAndRecreating(offer);
-
         offer = offerDAO.update(offer);
         return offer;
     }
@@ -93,10 +92,12 @@ public class DefaultOfferService implements OfferService {
     }
 
     private Category categoryRecreating(Category category) throws OfferServiceException {
-        if (category == null)
+        if (category == null) {
             throw new OfferServiceException(NULL_OFFER_CATEGORY_EXCEPTION_MESSAGE);
-        if (category.getCategory().equals(""))
+        }
+        if (category.getCategory().equals("")) {
             throw new OfferServiceException(NULL_OFFER_CATEGORY_NAME_EXCEPTION_MESSAGE);
+        }
         Category category1 = categoryService.getCategoryByName(category.getCategory());
         return category1 == null ? category : category1;
     }
@@ -107,8 +108,9 @@ public class DefaultOfferService implements OfferService {
                 .collect(Collectors.toSet());
         Set<Tag> tagSet = new HashSet<>();
         for (Tag tag : tags) {
-            if (tag.getTagname().equals(""))
+            if (tag.getTagname().equals("")) {
                 throw new OfferServiceException(NULL_OFFER_TAG_NAME_EXCEPTION_MESSAGE);
+            }
             Tag t = tagService.getTagByName(tag.getTagname());
             tagSet.add(t == null ? tag : t);
         }

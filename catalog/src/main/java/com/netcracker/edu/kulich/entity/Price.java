@@ -11,7 +11,7 @@ import java.util.StringJoiner;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table (name = "prices")
+@Table(name = "prices")
 public class Price {
 
     @Id

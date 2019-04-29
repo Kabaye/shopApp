@@ -24,8 +24,7 @@ public class Category {
     @Column(nullable = false, unique = true)
     private String category = "";
 
-
-    @OneToMany (mappedBy = "category", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "category", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Offer> offers = new HashSet<>();
 
     @Override
