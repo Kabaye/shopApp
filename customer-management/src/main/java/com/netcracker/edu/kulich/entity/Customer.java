@@ -24,7 +24,6 @@ public class Customer {
     @Column(nullable = false)
     private int age;
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
