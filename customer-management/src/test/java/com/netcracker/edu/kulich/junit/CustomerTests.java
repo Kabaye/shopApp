@@ -1,8 +1,8 @@
 package com.netcracker.edu.kulich.junit;
 
 import com.netcracker.edu.kulich.entity.Customer;
+import com.netcracker.edu.kulich.exception.service.CustomerServiceException;
 import com.netcracker.edu.kulich.service.DefaultCustomerService;
-import com.netcracker.edu.kulich.service.exception.CustomerServiceException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

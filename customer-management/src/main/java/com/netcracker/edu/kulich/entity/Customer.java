@@ -16,7 +16,7 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(nullable = false)
-    private long id;
+    private long id = 0L;
 
     @Column(nullable = false)
     private String fio = "";
