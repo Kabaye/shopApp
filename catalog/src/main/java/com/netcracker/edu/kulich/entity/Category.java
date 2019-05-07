@@ -19,7 +19,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "category_id", nullable = false, unique = true)
-    private long id;
+    private long id = 0L;
 
     @Column(nullable = false, unique = true)
     private String category = "";
@@ -42,14 +42,12 @@ public class Category {
 
         Category category1 = (Category) o;
 
-        if (id != category1.id) return false;
-        return category != null ? category.equals(category1.category) : category1.category == null;
+        return category.equals(category1.category);
+
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (category != null ? category.hashCode() : 0);
-        return result;
+        return category.hashCode();
     }
 }

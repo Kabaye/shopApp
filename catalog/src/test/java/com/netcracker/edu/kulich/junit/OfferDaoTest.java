@@ -4,10 +4,10 @@ import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Price;
 import com.netcracker.edu.kulich.entity.Tag;
+import com.netcracker.edu.kulich.exception.service.OfferServiceException;
+import com.netcracker.edu.kulich.exception.service.TagServiceException;
 import com.netcracker.edu.kulich.service.OfferService;
 import com.netcracker.edu.kulich.service.TagService;
-import com.netcracker.edu.kulich.service.exception.OfferServiceException;
-import com.netcracker.edu.kulich.service.exception.TagServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -461,10 +461,12 @@ public class OfferDaoTest {
         offer1.setPrice(price);
 
         tag = new Tag();
+        tag.setId(2);
         tag.setTagname("CreateOfferWithExistentCategoryAndTag_tag2");
         offer1.addTag(tag);
 
         tag = new Tag();
+        tag.setId(3);
         tag.setTagname("CreateOfferWithExistentCategoryAndTag_tag1");
         offer1.addTag(tag);
 

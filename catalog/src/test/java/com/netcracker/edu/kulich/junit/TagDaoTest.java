@@ -4,10 +4,10 @@ import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Price;
 import com.netcracker.edu.kulich.entity.Tag;
+import com.netcracker.edu.kulich.exception.service.OfferServiceException;
+import com.netcracker.edu.kulich.exception.service.TagServiceException;
 import com.netcracker.edu.kulich.service.OfferService;
 import com.netcracker.edu.kulich.service.TagService;
-import com.netcracker.edu.kulich.service.exception.OfferServiceException;
-import com.netcracker.edu.kulich.service.exception.TagServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,6 +129,7 @@ public class TagDaoTest {
                 break;
             }
         }
+
         tagService.deleteTagById(tag.getId());
 
         Tag tag1 = tagService.getTagById(tag.getId());

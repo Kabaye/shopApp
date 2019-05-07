@@ -19,7 +19,7 @@ public class Offer {
     @Id
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private long id = 0L;
 
     @Column(nullable = false)
     private String name = "";
@@ -28,11 +28,11 @@ public class Offer {
     @JoinColumn(name = "price_id")
     private Price price;
 
-    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.REFRESH, optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinTable(name = "offers_tags",
             joinColumns = @JoinColumn(name = "offer_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -40,6 +40,10 @@ public class Offer {
 
     public void addTag(Tag tag) {
         tags.add(tag);
+    }
+
+    public boolean removeTag(Tag tag) {
+        return tags.remove(tag);
     }
 
     @Override
@@ -61,16 +65,17 @@ public class Offer {
         Offer offer = (Offer) o;
 
         if (id != offer.id) return false;
-        if (name != null ? !name.equals(offer.name) : offer.name != null) return false;
+        if (!name.equals(offer.name)) return false;
         if (price != null ? !price.equals(offer.price) : offer.price != null) return false;
         if (category != null ? !category.equals(offer.category) : offer.category != null) return false;
         return tags.equals(offer.tags);
+
     }
 
     @Override
     public int hashCode() {
         int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + name.hashCode();
         result = 31 * result + (price != null ? price.hashCode() : 0);
         result = 31 * result + (category != null ? category.hashCode() : 0);
         result = 31 * result + tags.hashCode();

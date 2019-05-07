@@ -13,5 +13,8 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
+  mvc:
+    servlet:
+      path: /catalog
 server:
   port: 6668

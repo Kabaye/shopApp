@@ -1,20 +1,19 @@
 package com.netcracker.edu.kulich.service;
 
 import com.netcracker.edu.kulich.entity.Tag;
-import com.netcracker.edu.kulich.service.exception.TagServiceException;
 
 import java.util.Set;
 
 public interface TagService {
-    Tag saveTag(Tag tag) throws TagServiceException;
+    Tag saveTag(Tag tag);
 
     Tag getTagById(Long id);
 
     Tag getTagByName(String tagname);
 
-    Set<Tag> saveTags(Set<Tag> tags) throws TagServiceException;
+    Set<Tag> saveTags(Set<Tag> tags);
 
-    Tag updateTag(Tag tag) throws TagServiceException;
+    Tag updateTag(Tag tag);
 
-    void deleteTagById(Long id) throws TagServiceException;
+    void deleteTagById(Long id);
 }

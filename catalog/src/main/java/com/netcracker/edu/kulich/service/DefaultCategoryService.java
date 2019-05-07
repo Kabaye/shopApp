@@ -2,7 +2,7 @@ package com.netcracker.edu.kulich.service;
 
 import com.netcracker.edu.kulich.dao.CategoryDAO;
 import com.netcracker.edu.kulich.entity.Category;
-import com.netcracker.edu.kulich.service.exception.CategoryServiceException;
+import com.netcracker.edu.kulich.exception.service.CategoryServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,14 +14,14 @@ import java.util.Set;
 @Service(value = "categoryService")
 public class DefaultCategoryService implements CategoryService {
     private static final String NULL_CATEGORY_NAME_EXCEPTION_MESSAGE = "Category name is empty, please, set it not empty.";
-    private static final String DELETING_NOT_EXISTENT_CATEGORY = "You try to delete not existent category.";
+    private static final String DELETING_OR_UPDATING_NOT_EXISTENT_CATEGORY = "You try to delete / update not existent category.";
     private static final String INSERTING_OR_UPDATING_CATEGORY_WITH_NOT_UNIQUE_NAME = "You try to insert / update category with already existent name, please, set name unique.";
 
     @Autowired
     private CategoryDAO categoryDAO;
 
     @Override
-    public Category saveCategory(Category category) throws CategoryServiceException {
+    public Category saveCategory(Category category) {
         checkCategoryHasNotNullNameAndUnique(category);
         categoryDAO.create(category);
         return category;
@@ -38,7 +38,7 @@ public class DefaultCategoryService implements CategoryService {
     }
 
     @Override
-    public Set<Category> saveCategories(Set<Category> categories) throws CategoryServiceException {
+    public Set<Category> saveCategories(Set<Category> categories) {
         for (Category category : categories) {
             checkCategoryHasNotNullNameAndUnique(category);
         }
@@ -47,8 +47,13 @@ public class DefaultCategoryService implements CategoryService {
     }
 
     @Override
-    public Category updateCategory(Category category) throws CategoryServiceException {
+    public Category updateCategory(Category category) {
         checkCategoryHasNotNullNameAndUnique(category);
+        Category category1 = categoryDAO.read(category.getId());
+        if (category1 == null) {
+            throw new CategoryServiceException(DELETING_OR_UPDATING_NOT_EXISTENT_CATEGORY);
+        }
+        category.setOffers(category1.getOffers());
         category = categoryDAO.update(category);
         return category;
     }
@@ -58,7 +63,7 @@ public class DefaultCategoryService implements CategoryService {
         try {
             categoryDAO.delete(id);
         } catch (EntityNotFoundException exc) {
-            throw new CategoryServiceException(DELETING_NOT_EXISTENT_CATEGORY);
+            throw new CategoryServiceException(DELETING_OR_UPDATING_NOT_EXISTENT_CATEGORY);
         }
     }
 
