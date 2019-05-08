@@ -43,4 +43,8 @@ public class Customer {
         result = 31 * result + age;
         return result;
     }
+
+    public void fioFixing() {
+        fio = fio.trim().replaceAll(" +", " ");
+    }
 }

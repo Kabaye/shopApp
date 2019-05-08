@@ -13,7 +13,7 @@ import java.util.Set;
 @Transactional
 @Service(value = "categoryService")
 public class DefaultCategoryService implements CategoryService {
-    private static final String NULL_CATEGORY_NAME_EXCEPTION_MESSAGE = "Category name is empty, please, set it not empty.";
+    private static final String CATEGORY_NAME_NOT_VALID_EXCEPTION_MESSAGE = "Category name is empty or has lower than 3 symbols, please, set it not empty.";
     private static final String DELETING_OR_UPDATING_NOT_EXISTENT_CATEGORY = "You try to delete / update not existent category.";
     private static final String INSERTING_OR_UPDATING_CATEGORY_WITH_NOT_UNIQUE_NAME = "You try to insert / update category with already existent name, please, set name unique.";
 
@@ -68,8 +68,9 @@ public class DefaultCategoryService implements CategoryService {
     }
 
     private void checkCategoryHasNotNullNameAndUnique(Category category) throws CategoryServiceException {
-        if (category.getCategory().equals("")) {
-            throw new CategoryServiceException(NULL_CATEGORY_NAME_EXCEPTION_MESSAGE);
+        category.categoryNameFixing();
+        if (category.getCategory().length() < 2) {
+            throw new CategoryServiceException(CATEGORY_NAME_NOT_VALID_EXCEPTION_MESSAGE);
         }
         Category category1 = categoryDAO.readByName(category.getCategory());
         if (category1 != null) {

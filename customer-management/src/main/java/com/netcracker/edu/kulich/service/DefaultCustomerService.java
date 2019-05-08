@@ -2,6 +2,7 @@ package com.netcracker.edu.kulich.service;
 
 import com.netcracker.edu.kulich.dao.CustomerDAO;
 import com.netcracker.edu.kulich.entity.Customer;
+import com.netcracker.edu.kulich.exception.controller.CustomerControllerException;
 import com.netcracker.edu.kulich.exception.service.CustomerServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class DefaultCustomerService implements CustomerService {
     private CustomerDAO customerDAO;
 
     public Customer saveCustomer(Customer customer) {
+        customer.fioFixing();
         customerChecking(customer);
         customer = customerDAO.save(customer);
         return customer;
@@ -36,8 +38,19 @@ public class DefaultCustomerService implements CustomerService {
     }
 
     public Customer updateCustomer(Customer customer) {
-        if (customerDAO.getById(customer.getId()) == null) {
+        Customer customer1 = customerDAO.getById(customer.getId());
+        if (customer1 == null) {
             throw new CustomerServiceException(TRYING_TO_DO_SMTH_WITH_NOT_EXISTENT_CUSTOMER);
+        }
+        customer.fioFixing();
+        if (customer.getAge() == 0L && customer.getFio().equals("")) {
+            throw new CustomerControllerException(INVALID_PARAMS);
+        }
+        if (customer.getFio().equals("")) {
+            customer.setFio(customer1.getFio());
+        }
+        if (customer.getAge() == 0L) {
+            customer.setAge(customer1.getAge());
         }
         customerChecking(customer);
         customer = customerDAO.update(customer);

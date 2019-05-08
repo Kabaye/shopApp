@@ -53,6 +53,10 @@ public class Tag {
     public int hashCode() {
         return tagname.hashCode();
     }
+
+    public void tagNameFixing() {
+        tagname = tagname.trim().replaceAll(" +", " ");
+    }
 }
 
 

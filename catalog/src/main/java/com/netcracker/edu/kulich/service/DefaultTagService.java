@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Transactional
 @Service(value = "tagService")
 public class DefaultTagService implements TagService {
-    private static final String NULL_TAG_NAME_EXCEPTION_MESSAGE = "Tag name is empty, please, set it not empty.";
+    private static final String TAG_NAME_NOT_VALID_EXCEPTION_MESSAGE = "Tag name is empty or has lower than 3 symbols, please, set it not empty.";
     private static final String DELETING_OR_UPDATING_NOT_EXISTENT_TAG = "You try to delete / update not existent tag.";
     private static final String INSERTING_OR_UPDATING_TAG_WITH_NOT_UNIQUE_NAME = "You try to insert / update tag with already existent name, please, set name unique.";
 
@@ -71,8 +71,9 @@ public class DefaultTagService implements TagService {
     }
 
     private void checkTagHaveNotNullNameAndUnique(Tag tag) {
-        if (tag.getTagname().equals("")) {
-            throw new TagServiceException(NULL_TAG_NAME_EXCEPTION_MESSAGE);
+        tag.tagNameFixing();
+        if (tag.getTagname().length() < 3) {
+            throw new TagServiceException(TAG_NAME_NOT_VALID_EXCEPTION_MESSAGE);
         }
         Tag tag1 = tagDAO.readByName(tag.getTagname());
         if (tag1 != null) {

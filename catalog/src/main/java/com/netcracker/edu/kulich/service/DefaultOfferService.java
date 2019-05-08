@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 public class DefaultOfferService implements OfferService {
     private static final String NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE = "Offer's arguments are invalid, please, set them valid.";
     private static final String DELETING_OR_UPDATING_NOT_EXISTENT_OFFER = "You try to delete / update not existent offer.";
-    private final String UPDATING_NOT_EXISTENT_OFFER_WITH_TAG_OR_CATEGORY = "You try to add / delete tag or update category of not existent offer.";
+    private static final String ADDING_TO_OFFER_ALREADY_ADDED_TAG = "You try to add tag to offer, which already contains this tag.";
+    private static final String UPDATING_NOT_EXISTENT_OFFER_WITH_TAG_OR_CATEGORY = "You try to add / delete tag or update category of not existent offer.";
 
     private static final double MIN_PRICE = 1.0;
-
     @Autowired
     private OfferDAO offerDAO;
 
@@ -33,6 +33,7 @@ public class DefaultOfferService implements OfferService {
 
     @Override
     public Offer saveOffer(Offer offer) {
+        offer.offerNameFixing();
         offerNameAndPriceChecking(offer);
         offerCategoryAndTagCheckingAndRecreating(offer);
         offer = offerDAO.create(offer);
@@ -50,7 +51,9 @@ public class DefaultOfferService implements OfferService {
         if (offer == null) {
             throw new OfferServiceException(UPDATING_NOT_EXISTENT_OFFER_WITH_TAG_OR_CATEGORY);
         }
-        offer.addTag(tag);
+        if (!offer.addTag(tag)) {
+            throw new OfferServiceException(ADDING_TO_OFFER_ALREADY_ADDED_TAG);
+        }
         offer.setTags(tagsRecreating(offer.getTags()));
         offer = offerDAO.update(offer);
         return offer;
@@ -94,6 +97,16 @@ public class DefaultOfferService implements OfferService {
         Offer offer1 = offerDAO.read(offer.getId());
         if (offer1 == null) {
             throw new OfferServiceException(DELETING_OR_UPDATING_NOT_EXISTENT_OFFER);
+        }
+        offer.offerNameFixing();
+        if (offer.getName().equals("") && offer.getPrice().getPrice() == 0.0) {
+            throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
+        }
+        if (offer.getName().equals("")) {
+            offer.setName(offer1.getName());
+        }
+        if (offer.getPrice().getPrice() == 0.0) {
+            offer.setPrice(offer1.getPrice());
         }
 
         offer.setTags(offer1.getTags());
@@ -151,7 +164,8 @@ public class DefaultOfferService implements OfferService {
         if (category == null) {
             throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
         }
-        if (category.getCategory().equals("")) {
+        category.categoryNameFixing();
+        if (category.getCategory().length() < 2) {
             throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
         }
         Category category1 = categoryService.getCategoryByName(category.getCategory());
@@ -164,7 +178,8 @@ public class DefaultOfferService implements OfferService {
                 .collect(Collectors.toSet());
         Set<Tag> tagSet = new HashSet<>();
         for (Tag tag : tags) {
-            if (tag.getTagname().equals("")) {
+            tag.tagNameFixing();
+            if (tag.getTagname().length() < 3) {
                 throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
             }
             Tag t = tagService.getTagByName(tag.getTagname());

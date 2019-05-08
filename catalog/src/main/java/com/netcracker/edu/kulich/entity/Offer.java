@@ -28,18 +28,18 @@ public class Offer {
     @JoinColumn(name = "price_id")
     private Price price;
 
-    @ManyToOne(cascade = CascadeType.REFRESH, optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "offers_tags",
             joinColumns = @JoinColumn(name = "offer_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
 
-    public void addTag(Tag tag) {
-        tags.add(tag);
+    public boolean addTag(Tag tag) {
+        return tags.add(tag);
     }
 
     public boolean removeTag(Tag tag) {
@@ -80,5 +80,9 @@ public class Offer {
         result = 31 * result + (category != null ? category.hashCode() : 0);
         result = 31 * result + tags.hashCode();
         return result;
+    }
+
+    public void offerNameFixing() {
+        name = name.trim().replaceAll(" +", " ");
     }
 }

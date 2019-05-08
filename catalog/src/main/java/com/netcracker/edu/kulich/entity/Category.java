@@ -50,4 +50,8 @@ public class Category {
     public int hashCode() {
         return category.hashCode();
     }
+
+    public void categoryNameFixing() {
+        category = category.trim().replaceAll(" +", " ");
+    }
 }
