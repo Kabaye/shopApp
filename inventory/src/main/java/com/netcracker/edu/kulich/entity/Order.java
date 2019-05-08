@@ -32,7 +32,7 @@ public class Order {
             cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<OrderItem> orderItems = new HashSet<>();
 
-    @ManyToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
@@ -53,14 +53,14 @@ public class Order {
     @PostPersist
     @PostUpdate
     @PostLoad
-    private void postPersistAndUpdate() {
+    public void postPersistAndUpdate() {
         this.amountOfOrderItems = this.orderItems.size();
         totalPrice = 0;
         this.orderItems.stream().filter(Objects::nonNull).forEach(orderItem -> totalPrice += orderItem.getPrice());
     }
 
-    public void addOffer(OrderItem orderItem) {
-        orderItems.add(orderItem);
+    public boolean addOffer(OrderItem orderItem) {
+        return orderItems.add(orderItem);
     }
 
     @Override
@@ -106,5 +106,12 @@ public class Order {
         result = 31 * result + (orderStatus != null ? orderStatus.hashCode() : 0);
         result = 31 * result + (orderPaymentStatus != null ? orderPaymentStatus.hashCode() : 0);
         return result;
+    }
+
+    public void allNamesFixing() {
+        customer.nameFixing();
+        for (OrderItem item : orderItems) {
+            item.nameFixing();
+        }
     }
 }

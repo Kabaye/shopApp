@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+@Deprecated
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class OfferDaoTest {

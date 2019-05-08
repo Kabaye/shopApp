@@ -7,7 +7,7 @@ spring:
   jpa:
     database: POSTGRESQL
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         jdbc:

@@ -7,11 +7,14 @@ spring:
   jpa:
     database: POSTGRESQL
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         jdbc:
           lob:
             non_contextual_creation: true
+  mvc:
+    servlet:
+      path: /inventory
 server:
   port: 6669

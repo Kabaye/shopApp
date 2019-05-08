@@ -20,6 +20,7 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
+@Deprecated
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class CategoryDaoTest {

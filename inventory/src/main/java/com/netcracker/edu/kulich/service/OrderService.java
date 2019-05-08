@@ -4,22 +4,29 @@ import com.netcracker.edu.kulich.entity.Customer;
 import com.netcracker.edu.kulich.entity.Order;
 import com.netcracker.edu.kulich.entity.OrderItem;
 import com.netcracker.edu.kulich.entity.Tag;
-import com.netcracker.edu.kulich.service.exception.OrderServiceException;
 
 import java.util.List;
 
 public interface OrderService {
-    Order saveOrder(Order order) throws OrderServiceException;
+    Order saveOrder(Order order);
 
     Order getOrderById(Long id);
 
     List<Order> getAllOrders();
 
-    Order updateOrder(Order order) throws OrderServiceException;
+    Order updateCustomer(Long id, Customer customer);
 
-    void deleteOrderById(Long id) throws OrderServiceException;
+    Order updatePaymentStatus(Long id, String paymentStatus);
 
-    List<OrderItem> findCustomerOrdersByCategory(Customer customer, String category) throws OrderServiceException;
+    Order updateStatus(Long id, String status);
 
-    List<OrderItem> findCustomerOrdersByTag(Customer customer, Tag tag) throws OrderServiceException;
+    Order addOrderItem(Long id, OrderItem item);
+
+    Order deleteOrderItem(Long id, Long itemId);
+
+    void deleteOrderById(Long id);
+
+    List<OrderItem> findCustomerOrdersByCategory(Long customerId, String category);
+
+    List<OrderItem> findCustomerOrdersByTag(Long customerId, Tag tag);
 }

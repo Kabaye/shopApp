@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+@Deprecated
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class CustomerTests {

@@ -22,15 +22,15 @@ public class OrderItem {
     private long id;
 
     @Column(nullable = false)
-    private String name;
+    private String name = "";
 
     @Column(name = "price", nullable = false)
-    private double price;
+    private double price = 0.0;
 
     @Column(name = "category", nullable = false)
     private String category = "";
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinTable(name = "offers_tags",
             joinColumns = @JoinColumn(name = "offer_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -80,5 +80,13 @@ public class OrderItem {
         result = 31 * result + (category != null ? category.hashCode() : 0);
         result = 31 * result + (tags != null ? tags.hashCode() : 0);
         return result;
+    }
+
+    public void nameFixing() {
+        category = category.trim().replaceAll(" +", " ");
+        name = name.trim().replaceAll(" +", " ");
+        for (Tag tag : tags) {
+            tag.nameFixing();
+        }
     }
 }

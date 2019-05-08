@@ -2,9 +2,10 @@ package com.netcracker.edu.kulich.service;
 
 import com.netcracker.edu.kulich.dao.CustomerDAO;
 import com.netcracker.edu.kulich.dao.OrderDAO;
+import com.netcracker.edu.kulich.dao.OrderItemDAO;
 import com.netcracker.edu.kulich.dao.TagDAO;
 import com.netcracker.edu.kulich.entity.*;
-import com.netcracker.edu.kulich.service.exception.OrderServiceException;
+import com.netcracker.edu.kulich.exception.service.OrderServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,23 +22,15 @@ import java.util.stream.Collectors;
 @Service(value = "orderService")
 public class DefaultOrderService implements OrderService {
 
-    private static final String NULL_ORDER_CUSTOMER_EXCEPTION_MESSAGE = "Customer wasn't set, please, set his/her.";
-    private static final String NULL_ORDER_CUSTOMER_NAME_EXCEPTION_MESSAGE = "Customer name is empty, please, set it not empty.";
-    private static final String NULL_ORDER_DATE = "Order date wasn't set, please, set it.";
-    private static final String NULL_ORDER_PAYMENT_STATUS = "Order payment status wasn't set, please, set it.";
-    private static final String NULL_ORDER_SHIPPING_STATUS = "Order shipping status wasn't set, please, set it.";
-    private static final String NULL_ORDER_TAG_NAME = "Order tag name is empty, please, set it.";
-    private static final String NULL_ORDER_ITEM_CATEGORY_NAME = "One of order's items has empty category, please, set it.";
-    private static final String NULL_ORDER_ITEM_NAME = "One of order's items has empty name, please, set it";
-    private static final String NULL_CATEGORY_NAME = "Category name is empty, please, set it";
-    private static final String NULL_TAG_NAME = "Tag name is empty, please, set it";
-    private static final String NULL_AMOUNT_OF_ORDER_ITEMS = "Amount of order items is 0, please, add, at least, 1 order item to your order.";
+    private static final String NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE = "One of order's arguments wasn't set, please, set his/her.";
 
-    private static final String NOT_CORRECT_CUSTOMER_AGE_IN_ORDER = "You set not correct customer age, please, set it correctly.";
-    private static final String NOT_CORRECT_DATE_IN_ORDER = "You set not correct date, please, set it correctly.";
-    private static final String NOT_CORRECT_ORDER_ITEM_PRICE = "One of order's items has not correct price, please, set it correctly.";
+    private static final String ORDER_ARGUMENT_NOT_VALID = "One of order arguments is not valid, please, set it valid";
 
     private static final String DELETING_NOT_EXISTENT_ORDER = "You try to delete not existent order.";
+    private static final String DELETING_NOT_EXISTENT_ORDER_ITEM = "You try to delete not existent order item from order.";
+    private static final String DELETING_LAST_ORDER_ITEM = "You try to delete last order item from order, in such case, delete order.";
+    private static final String ID_OF_NOT_EXISTING_CUSTOMER = "Customer with such ID, that you set, doesn't exist.";
+    private static final String TAG_NOT_EXIST = "Tag with such tagname doesn't exist, so, you can't find anything with this tag. Please, set existent one.";
 
     private static final LocalDate BEGINNING = LocalDate.of(2000, 1, 1);
     private static final LocalDate ENDING = LocalDate.now();
@@ -55,8 +48,12 @@ public class DefaultOrderService implements OrderService {
     @Autowired
     private CustomerDAO customerDAO;
 
+    @Autowired
+    private OrderItemDAO orderItemDAO;
+
     @Override
-    public Order saveOrder(Order order) throws OrderServiceException {
+    public Order saveOrder(Order order) {
+        order.allNamesFixing();
         orderCheckingAndRecreating(order);
         order = orderDAO.create(order);
         return order;
@@ -73,14 +70,90 @@ public class DefaultOrderService implements OrderService {
     }
 
     @Override
-    public Order updateOrder(Order order) throws OrderServiceException {
-        orderCheckingAndRecreating(order);
+    public Order updateCustomer(Long id, Customer customer) {
+        Order order = orderDAO.read(id);
+        if (order == null) {
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
+        }
+        customer.nameFixing();
+        if (customer.getAge() == 0 && customer.getFio().length() == 0) {
+            throw new OrderServiceException(NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE);
+        }
+        if (customer.getAge() == 0) {
+            customer.setAge(order.getCustomer().getAge());
+        }
+        if (customer.getFio().length() == 0) {
+            customer.setFio(order.getCustomer().getFio());
+        }
+        customerChecking(customer);
+        customer.setId(order.getCustomer().getId());
+        order.setCustomer(customer);
         order = orderDAO.update(order);
         return order;
     }
 
     @Override
-    public void deleteOrderById(Long id) throws OrderServiceException {
+    public Order updatePaymentStatus(Long id, String paymentStatus) {
+        paymentStatus = paymentStatus.trim();
+        Order order = orderDAO.read(id);
+        if (order == null) {
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
+        }
+        order.setOrderPaymentStatus(OrderPaymentStatusEnum.valueOf(paymentStatus.toUpperCase()));
+        order = orderDAO.update(order);
+        return order;
+    }
+
+    @Override
+    public Order updateStatus(Long id, String status) {
+        status = status.trim();
+        Order order = orderDAO.read(id);
+        if (order == null) {
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
+        }
+        order.setOrderStatus(OrderStatusEnum.valueOf(status.toUpperCase()));
+        order = orderDAO.update(order);
+        return order;
+    }
+
+    @Override
+    public Order addOrderItem(Long id, OrderItem item) {
+        Order order = orderDAO.read(id);
+        if (order == null) {
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
+        }
+        item.nameFixing();
+        orderItemCheckingAndRecreating(item);
+        if (!order.addOffer(item)) {
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
+        }
+        item.setOrder(order);
+        order = orderDAO.update(order);
+        order.postPersistAndUpdate();
+        return order;
+    }
+
+    @Override
+    public Order deleteOrderItem(Long id, Long itemId) {
+        Order order = orderDAO.read(id);
+        if (order == null) {
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
+        }
+        OrderItem item = orderItemDAO.read(itemId);
+        if (item == null) {
+            throw new OrderServiceException(DELETING_NOT_EXISTENT_ORDER_ITEM);
+        }
+        if (order.getOrderItems().size() == 1 && order.getOrderItems().contains(item)) {
+            throw new OrderServiceException(DELETING_LAST_ORDER_ITEM);
+        }
+        order.getOrderItems().remove(item);
+        order = orderDAO.update(order);
+        order.postPersistAndUpdate();
+        return order;
+    }
+
+    @Override
+    public void deleteOrderById(Long id) {
         try {
             orderDAO.delete(id);
         } catch (EntityNotFoundException exc) {
@@ -89,27 +162,39 @@ public class DefaultOrderService implements OrderService {
     }
 
     @Override
-    public List<OrderItem> findCustomerOrdersByCategory(Customer customer, String category) throws OrderServiceException {
-        customerChecking(customer);
+    public List<OrderItem> findCustomerOrdersByCategory(Long customerId, String category) {
+        Customer customer = customerDAO.getById(customerId);
 
+        if (customer == null) {
+            throw new OrderServiceException(ID_OF_NOT_EXISTING_CUSTOMER);
+        }
+        category = category.trim();
         if (category.equals("")) {
-            throw new OrderServiceException(NULL_CATEGORY_NAME);
+            throw new OrderServiceException(NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE);
         }
 
         return orderDAO.findCustomerOrdersByCategory(customer, category);
     }
 
     @Override
-    public List<OrderItem> findCustomerOrdersByTag(Customer customer, Tag tag) throws OrderServiceException {
-        customerChecking(customer);
+    public List<OrderItem> findCustomerOrdersByTag(Long customerId, Tag tag) {
+        tag.nameFixing();
+        Customer customer = customerDAO.getById(customerId);
 
-        if (tag.getTagname().equals(""))
-            throw new OrderServiceException(NULL_TAG_NAME);
+        if (customer == null) {
+            throw new OrderServiceException(ID_OF_NOT_EXISTING_CUSTOMER);
+        }
+
+        if (tagDAO.readByName(tag.getTagname()) == null) {
+            throw new OrderServiceException(TAG_NOT_EXIST);
+        }
+
+        tag = tagCheckingAndRecreating(tag);
 
         return orderDAO.findCustomerOrdersByTag(customer, tag);
     }
 
-    private void orderCheckingAndRecreating(Order order) throws OrderServiceException {
+    private void orderCheckingAndRecreating(Order order) {
 
         customerChecking(order.getCustomer());
 
@@ -118,76 +203,85 @@ public class DefaultOrderService implements OrderService {
         statusChecking(order.getOrderStatus(), order.getOrderPaymentStatus());
 
         if (order.getOrderItems().size() == 0) {
-            throw new OrderServiceException(NULL_AMOUNT_OF_ORDER_ITEMS);
+            throw new OrderServiceException(NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE);
         }
 
         Set<OrderItem> items = new HashSet<>();
 
         for (OrderItem item : order.getOrderItems()) {
             items.add(orderItemCheckingAndRecreating(item));
+            item.setOrder(order);
         }
 
+        order.setOrderItems(items);
     }
 
-    private void customerChecking(Customer customer) throws OrderServiceException {
+    private void customerChecking(Customer customer) {
         if (customer == null) {
-            throw new OrderServiceException(NULL_ORDER_CUSTOMER_EXCEPTION_MESSAGE);
+            throw new OrderServiceException(NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE);
         }
-        if (customer.getFio().equals("")) {
-            throw new OrderServiceException(NULL_ORDER_CUSTOMER_NAME_EXCEPTION_MESSAGE);
+        if (customer.getFio().length() < 3) {
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
         }
         if (customer.getAge() < MIN_AGE || customer.getAge() > MAX_AGE) {
-            throw new OrderServiceException(NOT_CORRECT_CUSTOMER_AGE_IN_ORDER);
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
         }
     }
 
-    private void dateChecking(LocalDate date) throws OrderServiceException {
+    private void dateChecking(LocalDate date) {
         if (date == null) {
-            throw new OrderServiceException(NULL_ORDER_DATE);
+            throw new OrderServiceException(NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE);
         }
         if (date.isBefore(BEGINNING) || date.isAfter(ENDING)) {
-            throw new OrderServiceException(NOT_CORRECT_DATE_IN_ORDER);
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
         }
     }
 
-    private void statusChecking(OrderStatusEnum orderStatus, OrderPaymentStatusEnum orderPaymentStatus) throws OrderServiceException {
+    private void statusChecking(OrderStatusEnum orderStatus, OrderPaymentStatusEnum orderPaymentStatus) {
         if (orderStatus == null) {
-            throw new OrderServiceException(NULL_ORDER_SHIPPING_STATUS);
+            throw new OrderServiceException(NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE);
         }
         if (orderPaymentStatus == null) {
-            throw new OrderServiceException(NULL_ORDER_PAYMENT_STATUS);
+            throw new OrderServiceException(NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE);
         }
     }
 
-    private OrderItem orderItemCheckingAndRecreating(OrderItem item) throws OrderServiceException {
+    private OrderItem orderItemCheckingAndRecreating(OrderItem item) {
         Set<Tag> tags = tagsCheckingAndRecreating(item.getTags());
         item.setTags(tags);
 
         if (item.getPrice() < MIN_PRICE) {
-            throw new OrderServiceException(NOT_CORRECT_ORDER_ITEM_PRICE);
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
         }
 
-        if (item.getCategory().equals("")) {
-            throw new OrderServiceException(NULL_ORDER_ITEM_CATEGORY_NAME);
+        if (item.getCategory().length() < 2) {
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
         }
 
-        if (item.getName().equals("")) {
-            throw new OrderServiceException(NULL_ORDER_ITEM_NAME);
+        if (item.getName().length() < 3) {
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
         }
 
         return item;
     }
 
-    private Set<Tag> tagsCheckingAndRecreating(Set<Tag> tags) throws OrderServiceException {
+    private Set<Tag> tagsCheckingAndRecreating(Set<Tag> tags) {
         tags = tags.stream().filter(Objects::nonNull).collect(Collectors.toSet());
         Set<Tag> tagSet = new HashSet<>();
         for (Tag tag : tags) {
-            if (tag.getTagname().equals("")) {
-                throw new OrderServiceException(NULL_ORDER_TAG_NAME);
-            }
-            Tag t = tagDAO.readByName(tag.getTagname());
-            tagSet.add(t == null ? tag : t);
+            tagSet.add(tagCheckingAndRecreating(tag));
         }
         return tagSet;
+    }
+
+    private Tag tagCheckingAndRecreating(Tag tag) {
+        if (tag.getTagname().length() < 3) {
+            throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
+        }
+        Tag t = tagDAO.readByName(tag.getTagname());
+        if (t == null) {
+            t = tagDAO.create(tag);
+        }
+        return t;
     }
 }
