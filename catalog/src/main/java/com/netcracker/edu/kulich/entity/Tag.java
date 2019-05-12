@@ -54,7 +54,7 @@ public class Tag {
         return tagname.hashCode();
     }
 
-    public void tagNameFixing() {
+    public void fixTagName() {
         tagname = tagname.trim().replaceAll(" +", " ");
     }
 }

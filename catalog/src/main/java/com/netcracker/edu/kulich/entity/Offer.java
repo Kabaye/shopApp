@@ -82,7 +82,7 @@ public class Offer {
         return result;
     }
 
-    public void offerNameFixing() {
+    public void fixOfferName() {
         name = name.trim().replaceAll(" +", " ");
     }
 }

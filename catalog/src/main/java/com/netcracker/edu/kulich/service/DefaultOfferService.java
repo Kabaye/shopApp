@@ -20,6 +20,7 @@ public class DefaultOfferService implements OfferService {
     private static final String DELETING_OR_UPDATING_NOT_EXISTENT_OFFER = "You try to delete / update not existent offer.";
     private static final String ADDING_TO_OFFER_ALREADY_ADDED_TAG = "You try to add tag to offer, which already contains this tag.";
     private static final String UPDATING_NOT_EXISTENT_OFFER_WITH_TAG_OR_CATEGORY = "You try to add / delete tag or update category of not existent offer.";
+    private static final String OFFER_WITH_NOT_EXISTING_TAG_CATEGORY = "You try to add offer with not existing tag or category. Please, add them firstly, and then, add this offer.";
 
     private static final double MIN_PRICE = 1.0;
     @Autowired
@@ -33,9 +34,9 @@ public class DefaultOfferService implements OfferService {
 
     @Override
     public Offer saveOffer(Offer offer) {
-        offer.offerNameFixing();
-        offerNameAndPriceChecking(offer);
-        offerCategoryAndTagCheckingAndRecreating(offer);
+        offer.fixOfferName();
+        checkOfferNameAndPrice(offer);
+        checkAndRecreateOfferCategoryAndTag(offer);
         offer = offerDAO.create(offer);
         return offer;
     }
@@ -54,7 +55,7 @@ public class DefaultOfferService implements OfferService {
         if (!offer.addTag(tag)) {
             throw new OfferServiceException(ADDING_TO_OFFER_ALREADY_ADDED_TAG);
         }
-        offer.setTags(tagsRecreating(offer.getTags()));
+        offer.setTags(checkAndRecreateTags(offer.getTags()));
         offer = offerDAO.update(offer);
         return offer;
     }
@@ -82,7 +83,7 @@ public class DefaultOfferService implements OfferService {
         if (offer.getCategory().getCategory().equals(category.getCategory())) {
             throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
         }
-        offer.setCategory(categoryRecreating(category));
+        offer.setCategory(checkAndRecreateCategory(category));
         offer = offerDAO.update(offer);
         return offer;
     }
@@ -98,7 +99,7 @@ public class DefaultOfferService implements OfferService {
         if (offer1 == null) {
             throw new OfferServiceException(DELETING_OR_UPDATING_NOT_EXISTENT_OFFER);
         }
-        offer.offerNameFixing();
+        offer.fixOfferName();
         if (offer.getName().equals("") && offer.getPrice().getPrice() == 0.0) {
             throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
         }
@@ -112,7 +113,7 @@ public class DefaultOfferService implements OfferService {
         offer.setTags(offer1.getTags());
         offer.setCategory(offer1.getCategory());
 
-        offerNameAndPriceChecking(offer);
+        checkOfferNameAndPrice(offer);
         offer = offerDAO.update(offer);
         return offer;
     }
@@ -144,7 +145,7 @@ public class DefaultOfferService implements OfferService {
         return offerDAO.findOffersByRangeOfPrice(lowerBound, upperBound);
     }
 
-    private void offerNameAndPriceChecking(Offer offer) {
+    private void checkOfferNameAndPrice(Offer offer) {
         if (offer.getName().length() <= 3) {
             throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
         }
@@ -153,37 +154,43 @@ public class DefaultOfferService implements OfferService {
         }
     }
 
-    private void offerCategoryAndTagCheckingAndRecreating(Offer offer) {
-        Category category = categoryRecreating(offer.getCategory());
+    private void checkAndRecreateOfferCategoryAndTag(Offer offer) {
+        Category category = checkAndRecreateCategory(offer.getCategory());
         offer.setCategory(category);
-        Set<Tag> tags = tagsRecreating(offer.getTags());
+        Set<Tag> tags = checkAndRecreateTags(offer.getTags());
         offer.setTags(tags);
     }
 
-    private Category categoryRecreating(Category category) {
+    private Category checkAndRecreateCategory(Category category) {
         if (category == null) {
             throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
         }
-        category.categoryNameFixing();
+        category.fixCategoryName();
         if (category.getCategory().length() < 2) {
             throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
         }
         Category category1 = categoryService.getCategoryByName(category.getCategory());
-        return category1 == null ? category : category1;
+        if (category1 == null) {
+            throw new OfferServiceException(OFFER_WITH_NOT_EXISTING_TAG_CATEGORY);
+        }
+        return category1;
     }
 
-    private Set<Tag> tagsRecreating(Set<Tag> tags) {
+    private Set<Tag> checkAndRecreateTags(Set<Tag> tags) {
         tags = tags.stream()
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
         Set<Tag> tagSet = new HashSet<>();
         for (Tag tag : tags) {
-            tag.tagNameFixing();
+            tag.fixTagName();
             if (tag.getTagname().length() < 3) {
                 throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
             }
             Tag t = tagService.getTagByName(tag.getTagname());
-            tagSet.add(t == null ? tag : t);
+            if (t == null) {
+                throw new OfferServiceException(OFFER_WITH_NOT_EXISTING_TAG_CATEGORY);
+            }
+            tagSet.add(t);
         }
         return tagSet;
     }

@@ -22,7 +22,7 @@ public class DefaultCategoryService implements CategoryService {
 
     @Override
     public Category saveCategory(Category category) {
-        checkCategoryHasNotNullNameAndUnique(category);
+        checkCategory(category);
         categoryDAO.create(category);
         return category;
     }
@@ -40,7 +40,7 @@ public class DefaultCategoryService implements CategoryService {
     @Override
     public Set<Category> saveCategories(Set<Category> categories) {
         for (Category category : categories) {
-            checkCategoryHasNotNullNameAndUnique(category);
+            checkCategory(category);
         }
         categoryDAO.create(categories);
         return categories;
@@ -48,7 +48,7 @@ public class DefaultCategoryService implements CategoryService {
 
     @Override
     public Category updateCategory(Category category) {
-        checkCategoryHasNotNullNameAndUnique(category);
+        checkCategory(category);
         Category category1 = categoryDAO.read(category.getId());
         if (category1 == null) {
             throw new CategoryServiceException(DELETING_OR_UPDATING_NOT_EXISTENT_CATEGORY);
@@ -67,8 +67,8 @@ public class DefaultCategoryService implements CategoryService {
         }
     }
 
-    private void checkCategoryHasNotNullNameAndUnique(Category category) throws CategoryServiceException {
-        category.categoryNameFixing();
+    private void checkCategory(Category category) throws CategoryServiceException {
+        category.fixCategoryName();
         if (category.getCategory().length() < 2) {
             throw new CategoryServiceException(CATEGORY_NAME_NOT_VALID_EXCEPTION_MESSAGE);
         }

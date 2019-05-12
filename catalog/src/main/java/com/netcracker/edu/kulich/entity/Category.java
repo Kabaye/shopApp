@@ -51,7 +51,7 @@ public class Category {
         return category.hashCode();
     }
 
-    public void categoryNameFixing() {
+    public void fixCategoryName() {
         category = category.trim().replaceAll(" +", " ");
     }
 }

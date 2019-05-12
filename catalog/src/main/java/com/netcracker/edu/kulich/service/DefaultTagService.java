@@ -71,7 +71,7 @@ public class DefaultTagService implements TagService {
     }
 
     private void checkTagHaveNotNullNameAndUnique(Tag tag) {
-        tag.tagNameFixing();
+        tag.fixTagName();
         if (tag.getTagname().length() < 3) {
             throw new TagServiceException(TAG_NAME_NOT_VALID_EXCEPTION_MESSAGE);
         }
