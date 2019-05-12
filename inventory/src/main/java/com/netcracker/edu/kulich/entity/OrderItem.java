@@ -82,11 +82,11 @@ public class OrderItem {
         return result;
     }
 
-    public void nameFixing() {
+    public void fixName() {
         category = category.trim().replaceAll(" +", " ");
         name = name.trim().replaceAll(" +", " ");
         for (Tag tag : tags) {
-            tag.nameFixing();
+            tag.fixName();
         }
     }
 }

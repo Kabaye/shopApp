@@ -108,10 +108,10 @@ public class Order {
         return result;
     }
 
-    public void allNamesFixing() {
-        customer.nameFixing();
+    public void fixAllNames() {
+        customer.fixName();
         for (OrderItem item : orderItems) {
-            item.nameFixing();
+            item.fixName();
         }
     }
 }

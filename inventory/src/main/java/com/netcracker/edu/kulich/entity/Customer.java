@@ -44,7 +44,7 @@ public class Customer {
         return result;
     }
 
-    public void nameFixing() {
+    public void fixName() {
         fio = fio.trim().replaceAll(" +", " ");
     }
 }

@@ -53,7 +53,7 @@ public class Tag {
         return result;
     }
 
-    public void nameFixing() {
+    public void fixName() {
         tagname = tagname.trim().replaceAll(" +", " ");
     }
 }

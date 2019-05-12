@@ -53,8 +53,8 @@ public class DefaultOrderService implements OrderService {
 
     @Override
     public Order saveOrder(Order order) {
-        order.allNamesFixing();
-        orderCheckingAndRecreating(order);
+        order.fixAllNames();
+        checkAndRecreateOrder(order);
         order = orderDAO.create(order);
         return order;
     }
@@ -75,7 +75,7 @@ public class DefaultOrderService implements OrderService {
         if (order == null) {
             throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
         }
-        customer.nameFixing();
+        customer.fixName();
         if (customer.getAge() == 0 && customer.getFio().length() == 0) {
             throw new OrderServiceException(NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE);
         }
@@ -85,7 +85,7 @@ public class DefaultOrderService implements OrderService {
         if (customer.getFio().length() == 0) {
             customer.setFio(order.getCustomer().getFio());
         }
-        customerChecking(customer);
+        checkCustomer(customer);
         customer.setId(order.getCustomer().getId());
         order.setCustomer(customer);
         order = orderDAO.update(order);
@@ -122,8 +122,8 @@ public class DefaultOrderService implements OrderService {
         if (order == null) {
             throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
         }
-        item.nameFixing();
-        orderItemCheckingAndRecreating(item);
+        item.fixName();
+        checkAndRecreateOrderItem(item);
         if (!order.addOffer(item)) {
             throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
         }
@@ -178,7 +178,7 @@ public class DefaultOrderService implements OrderService {
 
     @Override
     public List<OrderItem> findCustomerOrdersByTag(Long customerId, Tag tag) {
-        tag.nameFixing();
+        tag.fixName();
         Customer customer = customerDAO.getById(customerId);
 
         if (customer == null) {
@@ -189,18 +189,18 @@ public class DefaultOrderService implements OrderService {
             throw new OrderServiceException(TAG_NOT_EXIST);
         }
 
-        tag = tagCheckingAndRecreating(tag);
+        tag = checkAndRecreateTag(tag);
 
         return orderDAO.findCustomerOrdersByTag(customer, tag);
     }
 
-    private void orderCheckingAndRecreating(Order order) {
+    private void checkAndRecreateOrder(Order order) {
 
-        customerChecking(order.getCustomer());
+        checkCustomer(order.getCustomer());
 
-        dateChecking(order.getDate());
+        checkDate(order.getDate());
 
-        statusChecking(order.getOrderStatus(), order.getOrderPaymentStatus());
+        checkStatuses(order.getOrderStatus(), order.getOrderPaymentStatus());
 
         if (order.getOrderItems().size() == 0) {
             throw new OrderServiceException(NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE);
@@ -209,14 +209,14 @@ public class DefaultOrderService implements OrderService {
         Set<OrderItem> items = new HashSet<>();
 
         for (OrderItem item : order.getOrderItems()) {
-            items.add(orderItemCheckingAndRecreating(item));
+            items.add(checkAndRecreateOrderItem(item));
             item.setOrder(order);
         }
 
         order.setOrderItems(items);
     }
 
-    private void customerChecking(Customer customer) {
+    private void checkCustomer(Customer customer) {
         if (customer == null) {
             throw new OrderServiceException(NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE);
         }
@@ -228,7 +228,7 @@ public class DefaultOrderService implements OrderService {
         }
     }
 
-    private void dateChecking(LocalDate date) {
+    private void checkDate(LocalDate date) {
         if (date == null) {
             throw new OrderServiceException(NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE);
         }
@@ -237,7 +237,7 @@ public class DefaultOrderService implements OrderService {
         }
     }
 
-    private void statusChecking(OrderStatusEnum orderStatus, OrderPaymentStatusEnum orderPaymentStatus) {
+    private void checkStatuses(OrderStatusEnum orderStatus, OrderPaymentStatusEnum orderPaymentStatus) {
         if (orderStatus == null) {
             throw new OrderServiceException(NULL_ORDER_ARGUMENT_EXCEPTION_MESSAGE);
         }
@@ -246,8 +246,8 @@ public class DefaultOrderService implements OrderService {
         }
     }
 
-    private OrderItem orderItemCheckingAndRecreating(OrderItem item) {
-        Set<Tag> tags = tagsCheckingAndRecreating(item.getTags());
+    private OrderItem checkAndRecreateOrderItem(OrderItem item) {
+        Set<Tag> tags = checkAndRecreateTags(item.getTags());
         item.setTags(tags);
 
         if (item.getPrice() < MIN_PRICE) {
@@ -265,16 +265,16 @@ public class DefaultOrderService implements OrderService {
         return item;
     }
 
-    private Set<Tag> tagsCheckingAndRecreating(Set<Tag> tags) {
+    private Set<Tag> checkAndRecreateTags(Set<Tag> tags) {
         tags = tags.stream().filter(Objects::nonNull).collect(Collectors.toSet());
         Set<Tag> tagSet = new HashSet<>();
         for (Tag tag : tags) {
-            tagSet.add(tagCheckingAndRecreating(tag));
+            tagSet.add(checkAndRecreateTag(tag));
         }
         return tagSet;
     }
 
-    private Tag tagCheckingAndRecreating(Tag tag) {
+    private Tag checkAndRecreateTag(Tag tag) {
         if (tag.getTagname().length() < 3) {
             throw new OrderServiceException(ORDER_ARGUMENT_NOT_VALID);
         }
