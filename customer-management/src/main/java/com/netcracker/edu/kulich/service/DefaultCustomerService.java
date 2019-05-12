@@ -24,7 +24,7 @@ public class DefaultCustomerService implements CustomerService {
 
     public Customer saveCustomer(Customer customer) {
         customer.fioFixing();
-        customerChecking(customer);
+        checkCustomer(customer);
         customer = customerDAO.save(customer);
         return customer;
     }
@@ -52,7 +52,7 @@ public class DefaultCustomerService implements CustomerService {
         if (customer.getAge() == 0L) {
             customer.setAge(customer1.getAge());
         }
-        customerChecking(customer);
+        checkCustomer(customer);
         customer = customerDAO.update(customer);
         return customer;
     }
@@ -65,7 +65,7 @@ public class DefaultCustomerService implements CustomerService {
         }
     }
 
-    private void customerChecking(Customer customer) {
+    private void checkCustomer(Customer customer) {
         if (customer.getAge() < MIN_AGE || customer.getAge() > MAX_AGE || customer.getFio().equals(""))
             throw new CustomerServiceException(INVALID_PARAMS);
     }
