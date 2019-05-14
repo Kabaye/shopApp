@@ -19,10 +19,10 @@ public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "tag_id", nullable = false)
-    private long id;
+    private long id = 0L;
 
     @Column(nullable = false, unique = true)
-    private String tagname;
+    private String tagname = "";
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "offers_tags",
@@ -45,15 +45,17 @@ public class Tag {
 
         Tag tag = (Tag) o;
 
-        if (id != tag.id) return false;
-        return tagname != null ? tagname.equals(tag.tagname) : tag.tagname == null;
+        return tagname.equals(tag.tagname);
+
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (tagname != null ? tagname.hashCode() : 0);
-        return result;
+        return tagname.hashCode();
+    }
+
+    public void fixTagName() {
+        tagname = tagname.trim().replaceAll(" +", " ");
     }
 }
 

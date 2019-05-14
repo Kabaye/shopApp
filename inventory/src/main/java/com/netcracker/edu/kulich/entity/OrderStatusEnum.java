@@ -4,9 +4,9 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public enum OrderStatusEnum {
-    IN_PROCESS, //в процессе сборки
-    AGGREGATED, //собран
-    SHIPPED, //отправлен
+    IN_PROCESS, // в процессе сборки
+    AGGREGATED, // собран
+    SHIPPED, // отправлен
     DELIVERED, // доставлен
-    CANCELED
+    CANCELED // отменен
 }

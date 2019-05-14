@@ -2,13 +2,13 @@ package com.netcracker.edu.kulich.dao;
 
 import com.netcracker.edu.kulich.entity.Category;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 import java.util.Set;
 
-@Transactional
 @Repository(value = "categoryDAO")
 public class DefaultCategoryDAO implements CategoryDAO {
 
@@ -28,6 +28,19 @@ public class DefaultCategoryDAO implements CategoryDAO {
     }
 
     @Override
+    public Category readByName(String name) {
+        Category category;
+        List objects = entityManager.createQuery("SELECT c FROM Category c WHERE c.category = :name ")
+                .setParameter("name", name)
+                .getResultList();
+        if (objects.size() == 0)
+            category = null;
+        else
+            category = (Category) objects.get(0);
+        return category;
+    }
+
+    @Override
     public Set<Category> create(Set<Category> categories) {
         for (Category elem : categories) {
             entityManager.persist(elem);
@@ -42,8 +55,10 @@ public class DefaultCategoryDAO implements CategoryDAO {
     }
 
     @Override
-    public void delete(Long id) {
-        Category category = entityManager.getReference(Category.class, id);
+    public void delete(Long id) throws EntityNotFoundException {
+        Category category = entityManager.find(Category.class, id);
+        if (category == null)
+            throw new EntityNotFoundException();
         entityManager.refresh(category);
         entityManager.remove(category);
     }

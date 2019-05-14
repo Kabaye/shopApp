@@ -11,16 +11,16 @@ import java.util.StringJoiner;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table (name = "prices")
+@Table(name = "prices")
 public class Price {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "price_id", nullable = false)
-    private long id;
+    private long id = 0L;
 
     @Column(nullable = false)
-    private double price;
+    private double price = 0.0;
 
     @Override
     public String toString() {
@@ -39,6 +39,7 @@ public class Price {
 
         if (id != price1.id) return false;
         return Double.compare(price1.price, price) == 0;
+
     }
 
     @Override

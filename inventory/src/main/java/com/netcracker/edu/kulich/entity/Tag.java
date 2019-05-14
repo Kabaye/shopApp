@@ -52,4 +52,8 @@ public class Tag {
         result = 31 * result + (tagname != null ? tagname.hashCode() : 0);
         return result;
     }
+
+    public void fixName() {
+        tagname = tagname.trim().replaceAll(" +", " ");
+    }
 }

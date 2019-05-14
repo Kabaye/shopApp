@@ -1,11 +1,13 @@
 package com.netcracker.edu.kulich.junit;
 
-import com.netcracker.edu.kulich.dao.OfferDAO;
-import com.netcracker.edu.kulich.dao.TagDAO;
 import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Price;
 import com.netcracker.edu.kulich.entity.Tag;
+import com.netcracker.edu.kulich.exception.service.OfferServiceException;
+import com.netcracker.edu.kulich.exception.service.TagServiceException;
+import com.netcracker.edu.kulich.service.OfferService;
+import com.netcracker.edu.kulich.service.TagService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +20,18 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+@Deprecated
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class OfferDaoTest {
+
     @Autowired
-    private OfferDAO offerDAO;
+    private OfferService offerService;
     @Autowired
-    private TagDAO tagDAO;
+    private TagService tagService;
 
     @Test
-    public void testCreateAndReadTwoOffers() {
+    public void testCreateAndReadTwoOffers() throws OfferServiceException {
         Offer offer = new Offer();
         offer.setName("CreateAndReadTwoOffers_offer1");
 
@@ -48,7 +52,7 @@ public class OfferDaoTest {
         tag.setTagname("CreateAndReadTwoOffers_tag2");
         offer.addTag(tag);
 
-        offer = offerDAO.create(offer);
+        offer = offerService.saveOffer(offer);
 
         category = offer.getCategory();
 
@@ -65,16 +69,16 @@ public class OfferDaoTest {
         tag.setTagname("CreateAndReadTwoOffers_tag3");
         offer.addTag(tag);
 
-        offer = offerDAO.create(offer);
+        offer = offerService.saveOffer(offer);
 
-        Offer offer2 = offerDAO.read(offer.getId());
+        Offer offer2 = offerService.getOfferById(offer.getId());
         assertNotNull(offer);
         assertEquals(offer, offer2);
     }
 
     @Test
-    public void testFindAllOffers() {
-        List<Offer> offerList = offerDAO.findAll();
+    public void testFindAllOffers() throws OfferServiceException {
+        List<Offer> offerList = offerService.getAllOffers();
 
         Offer offer = new Offer();
         offer.setName("FindAllOffers_offer1");
@@ -97,7 +101,7 @@ public class OfferDaoTest {
         tag.setTagname("FindAllOffers_tag2");
         offer.addTag(tag);
 
-        offer = offerDAO.create(offer);
+        offer = offerService.saveOffer(offer);
 
         offerList.add(offer);
 
@@ -118,11 +122,11 @@ public class OfferDaoTest {
         tag.setTagname("FindAllOffers_tag3");
         offer.addTag(tag);
 
-        offer = offerDAO.create(offer);
+        offer = offerService.saveOffer(offer);
 
         offerList.add(offer);
 
-        List<Offer> offers = offerDAO.findAll();
+        List<Offer> offers = offerService.getAllOffers();
 
 
         if (offers.size() != offerList.size())
@@ -135,7 +139,7 @@ public class OfferDaoTest {
     }
 
     @Test
-    public void testUpdateOffer() {
+    public void testUpdateOffer() throws OfferServiceException {
         Offer offer = new Offer();
         offer.setName("UpdateOffer_offer1");
 
@@ -156,23 +160,23 @@ public class OfferDaoTest {
         tag.setTagname("UpdateOffer_tag2");
         offer.addTag(tag);
 
-        offer = offerDAO.create(offer);
+        offer = offerService.saveOffer(offer);
 
         offer.setName("new UpdateOffer_offer1");
         offer.getPrice().setPrice(666d);
         offer.getCategory().setCategory("new UpdateOffer_category1");
         offer.getTags().clear();
 
-        offerDAO.update(offer);
+        offerService.updateOffer(offer);
 
-        Offer offer1 = offerDAO.read(offer.getId());
+        Offer offer1 = offerService.getOfferById(offer.getId());
         assertNotNull(offer1);
         assertEquals(offer, offer1);
     }
 
     @Test
-    public void testDeleteOffer() {
-        List<Offer> offerList = offerDAO.findAll();
+    public void testDeleteOffer() throws OfferServiceException {
+        List<Offer> offerList = offerService.getAllOffers();
 
         Offer offer = new Offer();
         offer.setName("DeleteOffer_offer1");
@@ -194,11 +198,11 @@ public class OfferDaoTest {
         tag.setTagname("DeleteOffer_tag2");
         offer.addTag(tag);
 
-        offer = offerDAO.create(offer);
+        offer = offerService.saveOffer(offer);
 
-        offerDAO.delete(offer.getId());
+        offerService.deleteOfferById(offer.getId());
 
-        List<Offer> offers = offerDAO.findAll();
+        List<Offer> offers = offerService.getAllOffers();
 
         if (offers.size() != offerList.size())
             fail();
@@ -210,7 +214,7 @@ public class OfferDaoTest {
     }
 
     @Test
-    public void testFindAllOffersWithCategory() {
+    public void testFindAllOffersWithCategory() throws OfferServiceException {
         List<Offer> offerList = new ArrayList<>();
 
         Offer offer = new Offer();
@@ -233,11 +237,11 @@ public class OfferDaoTest {
         tag1.setTagname("FindAllOffersWithCategory_tag2");
         offer.addTag(tag1);
 
-        offer = offerDAO.create(offer);
+        offer = offerService.saveOffer(offer);
 
         offerList.add(offer);
 
-        category = offer.getCategory();
+        //category = offer.getCategory();
 
         tag = (Tag) offer.getTags().toArray()[0];
         tag1 = (Tag) offer.getTags().toArray()[1];
@@ -256,7 +260,7 @@ public class OfferDaoTest {
         offer.addTag(tag);
         offer.addTag(tag1);
 
-        offer = offerDAO.create(offer);
+        offer = offerService.saveOffer(offer);
 
         offerList.add(offer);
 
@@ -277,9 +281,9 @@ public class OfferDaoTest {
         offer.addTag(tag);
         offer.addTag(tag1);
 
-        offerDAO.create(offer);
+        offerService.saveOffer(offer);
 
-        List<Offer> offers = offerDAO.findOffersByCategory(category);
+        List<Offer> offers = offerService.findOffersByCategory(category);
 
         assertEquals(offerList.size(), offers.size());
         for (int i = 0; i < offerList.size(); i++) {
@@ -289,14 +293,15 @@ public class OfferDaoTest {
     }
 
     @Test
-    public void testFindAllOffersWithTags() {
-        Tag[] tags = new Tag[5];
+    public void testFindAllOffersWithTags() throws OfferServiceException, TagServiceException {
+        Tag[] tags = new Tag[6];
 
         for (int i = 0; i < 5; i++) {
             tags[i] = new Tag();
             tags[i].setTagname("FindAllOffersWithTags_tag" + (i + 1));
-            tags[i] = tagDAO.create(tags[i]);
+            tags[i] = tagService.saveTag(tags[i]);
         }
+        tags[5] = null;
 
         Category category = new Category();
         category.setCategory("FindAllOffersWithTags_category1");
@@ -316,10 +321,10 @@ public class OfferDaoTest {
         offers[0].addTag(tags[1]);
         offers[0].addTag(tags[4]);
 
-        offers[0] = offerDAO.create(offers[0]);
+        offers[0] = offerService.saveOffer(offers[0]);
         category = offers[0].getCategory();
 
-        //1,3,4
+        //1,3,4,5
 
         offers[1] = new Offer();
         offers[1].setName("FindAllOffersWithTags_offer2");
@@ -328,8 +333,9 @@ public class OfferDaoTest {
         offers[1].addTag(tags[1]);
         offers[1].addTag(tags[3]);
         offers[1].addTag(tags[4]);
+        offers[1].addTag(tags[5]);
 
-        offerDAO.create(offers[1]);
+        offerService.saveOffer(offers[1]);
 
         //2,3,4
 
@@ -340,9 +346,9 @@ public class OfferDaoTest {
         offers[2].addTag(tags[2]);
         offers[2].addTag(tags[3]);
         offers[2].addTag(tags[4]);
-        offerDAO.create(offers[2]);
+        offerService.saveOffer(offers[2]);
 
-        //0,4
+        //0,4,5
 
         offers[3] = new Offer();
         offers[3].setName("FindAllOffersWithTags_offer4");
@@ -350,24 +356,26 @@ public class OfferDaoTest {
         offers[3].setCategory(category);
         offers[3].addTag(tags[0]);
         offers[3].addTag(tags[4]);
-        offerDAO.create(offers[3]);
+        offers[3].addTag(tags[5]);
+        offerService.saveOffer(offers[3]);
 
-        assertEquals(2, offerDAO.findOffersByTags(Arrays.asList(tags[0])).size());
-        assertEquals(4, offerDAO.findOffersByTags(Arrays.asList(tags[4])).size());
-        assertEquals(2, offerDAO.findOffersByTags(Arrays.asList(tags[0], tags[4])).size());
-        assertEquals(1, offerDAO.findOffersByTags(Arrays.asList(tags[2], tags[3], tags[4])).size());
-        assertEquals(1, offerDAO.findOffersByTags(Arrays.asList(tags[2], tags[3], tags[4])).size());
-        assertEquals(2, offerDAO.findOffersByTags(Arrays.asList(tags[1], tags[4])).size());
+
+        assertEquals(2, offerService.findOffersByTags(Arrays.asList(tags[0])).size());
+        assertEquals(4, offerService.findOffersByTags(Arrays.asList(tags[4])).size());
+        assertEquals(2, offerService.findOffersByTags(Arrays.asList(tags[0], tags[4])).size());
+        assertEquals(1, offerService.findOffersByTags(Arrays.asList(tags[2], tags[3], tags[4])).size());
+        assertEquals(1, offerService.findOffersByTags(Arrays.asList(tags[2], tags[3], tags[4])).size());
+        assertEquals(2, offerService.findOffersByTags(Arrays.asList(tags[1], tags[4])).size());
     }
 
     @Test
-    public void testFindAllOffersInRangeOfPrice() {
+    public void testFindAllOffersInRangeOfPrice() throws OfferServiceException {
         int i1, i2, i3, i4, i5;
-        i1 = offerDAO.findOffersByRangeOfPrice(1500d, 1900d).size();
-        i2 = offerDAO.findOffersByRangeOfPrice(1000d, 1000d).size();
-        i3 = offerDAO.findOffersByRangeOfPrice(900d, 1100d).size();
-        i4 = offerDAO.findOffersByRangeOfPrice(900d, 2600d).size();
-        i5 = offerDAO.findOffersByRangeOfPrice(1001d, 2600d).size();
+        i1 = offerService.findOffersByRangeOfPrice(1500d, 1900d).size();
+        i2 = offerService.findOffersByRangeOfPrice(1000d, 1000d).size();
+        i3 = offerService.findOffersByRangeOfPrice(900d, 1100d).size();
+        i4 = offerService.findOffersByRangeOfPrice(900d, 2600d).size();
+        i5 = offerService.findOffersByRangeOfPrice(1001d, 2600d).size();
 
         Offer offer = new Offer();
         offer.setName("FindAllOffersInRangeOfPrice_offer1");
@@ -389,7 +397,7 @@ public class OfferDaoTest {
         tag.setTagname("FindAllOffersInRangeOfPrice_tag2");
         offer.addTag(tag);
 
-        offer = offerDAO.create(offer);
+        offer = offerService.saveOffer(offer);
 
         category = offer.getCategory();
 
@@ -406,14 +414,78 @@ public class OfferDaoTest {
         tag.setTagname("FindAllOffersInRangeOfPrice_tag3");
         offer1.addTag(tag);
 
-        offerDAO.create(offer1);
+        offerService.saveOffer(offer1);
 
-        assertEquals(0 + i1, offerDAO.findOffersByRangeOfPrice(1500d, 1900d).size());
-        assertEquals(1 + i2, offerDAO.findOffersByRangeOfPrice(1000d, 1000d).size());
-        assertEquals(1 + i3, offerDAO.findOffersByRangeOfPrice(900d, 1100d).size());
-        assertEquals(2 + i4, offerDAO.findOffersByRangeOfPrice(900d, 2600d).size());
-        assertEquals(1 + i5, offerDAO.findOffersByRangeOfPrice(1001d, 2600d).size());
+        assertEquals(0 + i1, offerService.findOffersByRangeOfPrice(1500d, 1900d).size());
+        assertEquals(1 + i2, offerService.findOffersByRangeOfPrice(1000d, 1000d).size());
+        assertEquals(1 + i3, offerService.findOffersByRangeOfPrice(900d, 1100d).size());
+        assertEquals(2 + i4, offerService.findOffersByRangeOfPrice(900d, 2600d).size());
+        assertEquals(1 + i5, offerService.findOffersByRangeOfPrice(1001d, 2600d).size());
 
+
+    }
+
+    @Test
+    public void testCreateOfferWithExistentCategoryAndTag() throws OfferServiceException, TagServiceException {
+        Offer offer = new Offer();
+        offer.setName("CreateOfferWithExistentCategoryAndTag_offer1");
+
+        Category category = new Category();
+        category.setCategory("CreateOfferWithExistentCategoryAndTag_category1");
+
+        Price price = new Price();
+        price.setPrice(1950d);
+
+        offer.setCategory(category);
+        offer.setPrice(price);
+
+        Tag tag = new Tag();
+        tag.setTagname("CreateOfferWithExistentCategoryAndTag_tag1");
+        offer.addTag(tag);
+
+        tag = new Tag();
+        tag.setTagname("CreateOfferWithExistentCategoryAndTag_tag2");
+        offer.addTag(tag);
+
+        offer = offerService.saveOffer(offer);
+
+        Offer offer1 = new Offer();
+        offer1.setName("CreateOfferWithExistentCategoryAndTag_offer2");
+
+        price = new Price();
+        price.setPrice(2500d);
+
+        category = new Category();
+        category.setCategory("CreateOfferWithExistentCategoryAndTag_category1");
+        offer1.setCategory(category);
+
+        offer1.setPrice(price);
+
+        tag = new Tag();
+        tag.setId(2);
+        tag.setTagname("CreateOfferWithExistentCategoryAndTag_tag2");
+        offer1.addTag(tag);
+
+        tag = new Tag();
+        tag.setId(3);
+        tag.setTagname("CreateOfferWithExistentCategoryAndTag_tag1");
+        offer1.addTag(tag);
+
+        offer1.addTag(null);
+
+        offer1 = offerService.saveOffer(offer1);
+
+        offer1.getTags().remove(null);
+
+        assertEquals(offer.getTags(), offerService.getOfferById(offer.getId()).getTags());
+        assertEquals(offer1.getTags(), offerService.getOfferById(offer1.getId()).getTags());
+        assertEquals(offer.getTags(), offerService.getOfferById(offer1.getId()).getTags());
+
+        tagService.deleteTagById(((Tag) offer1.getTags().toArray()[0]).getId());
+        tagService.deleteTagById(((Tag) offer1.getTags().toArray()[1]).getId());
+
+        assertEquals(0, offerService.getOfferById(offer1.getId()).getTags().size());
+        assertEquals(0, offerService.getOfferById(offer.getId()).getTags().size());
 
     }
 }

@@ -2,13 +2,13 @@ package com.netcracker.edu.kulich.dao;
 
 import com.netcracker.edu.kulich.entity.Customer;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@Transactional
+@SuppressWarnings("ALL")
 @Repository(value = "customerDAO")
 public class DefaultCustomerDAO implements CustomerDAO {
 
@@ -16,13 +16,13 @@ public class DefaultCustomerDAO implements CustomerDAO {
     private EntityManager entityManager;
 
     @Override
-    public Customer create(Customer customer) {
+    public Customer save(Customer customer) {
         customer = entityManager.merge(customer);
         return customer;
     }
 
     @Override
-    public Customer read(Long id) {
+    public Customer getById(Long id) {
         Customer foundCustomer = entityManager.find(Customer.class, id);
         return foundCustomer;
     }
@@ -41,8 +41,10 @@ public class DefaultCustomerDAO implements CustomerDAO {
     }
 
     @Override
-    public void delete(Long id) {
-        Customer customer = entityManager.getReference(Customer.class, id);
+    public void deleteById(Long id) throws EntityNotFoundException {
+        Customer customer = entityManager.find(Customer.class, id);
+        if (customer == null)
+            throw new EntityNotFoundException();
         entityManager.remove(customer);
     }
 }

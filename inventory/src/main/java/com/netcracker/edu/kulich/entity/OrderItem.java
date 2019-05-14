@@ -22,17 +22,15 @@ public class OrderItem {
     private long id;
 
     @Column(nullable = false)
-    private String name;
+    private String name = "";
 
-    @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "price_id")
-    private Price price;
+    @Column(name = "price", nullable = false)
+    private double price = 0.0;
 
-    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @Column(name = "category", nullable = false)
+    private String category = "";
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinTable(name = "offers_tags",
             joinColumns = @JoinColumn(name = "offer_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -65,19 +63,30 @@ public class OrderItem {
         OrderItem orderItem = (OrderItem) o;
 
         if (id != orderItem.id) return false;
+        if (Double.compare(orderItem.price, price) != 0) return false;
         if (name != null ? !name.equals(orderItem.name) : orderItem.name != null) return false;
-        if (price != null ? !price.equals(orderItem.price) : orderItem.price != null) return false;
         if (category != null ? !category.equals(orderItem.category) : orderItem.category != null) return false;
-        return tags.equals(orderItem.tags);
+        return tags != null ? tags.equals(orderItem.tags) : orderItem.tags == null;
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
+        int result;
+        long temp;
+        result = (int) (id ^ (id >>> 32));
         result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (price != null ? price.hashCode() : 0);
+        temp = Double.doubleToLongBits(price);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (category != null ? category.hashCode() : 0);
-        result = 31 * result + tags.hashCode();
+        result = 31 * result + (tags != null ? tags.hashCode() : 0);
         return result;
+    }
+
+    public void fixName() {
+        category = category.trim().replaceAll(" +", " ");
+        name = name.trim().replaceAll(" +", " ");
+        for (Tag tag : tags) {
+            tag.fixName();
+        }
     }
 }
