@@ -2,9 +2,11 @@ package com.netcracker.edu.kulich.service;
 
 import com.netcracker.edu.kulich.dao.CustomerDAO;
 import com.netcracker.edu.kulich.entity.Customer;
-import com.netcracker.edu.kulich.exception.controller.CustomerControllerException;
 import com.netcracker.edu.kulich.exception.service.CustomerServiceException;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.netcracker.edu.kulich.service.validation.AgeValidator;
+import com.netcracker.edu.kulich.service.validation.CustomerValidator;
+import com.netcracker.edu.kulich.service.validation.EmailValidator;
+import com.netcracker.edu.kulich.service.validation.NameValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,23 +16,33 @@ import java.util.List;
 @Service(value = "customerService")
 @Transactional
 public class DefaultCustomerService implements CustomerService {
-    private static final String INVALID_PARAMS = "Parameters of customer are invalid, please, set them valid!";
-    private static final String TRYING_TO_DO_SMTH_WITH_NOT_EXISTENT_CUSTOMER = "You try to delete / update not existent customer!";
-    private static final int MIN_AGE = 14;
-    private static final int MAX_AGE = 122;
-
-    @Autowired
     private CustomerDAO customerDAO;
+    private CustomerValidator customerValidator;
+    private EmailValidator customerEmailValidator;
+    private AgeValidator customerAgeValidator;
+    private NameValidator customerNameValidator;
+
+    public DefaultCustomerService(CustomerDAO customerDAO, CustomerValidator customerValidator, EmailValidator customerEmailValidator, AgeValidator customerAgeValidator, NameValidator customerNameValidator) {
+        this.customerDAO = customerDAO;
+        this.customerValidator = customerValidator;
+        this.customerEmailValidator = customerEmailValidator;
+        this.customerAgeValidator = customerAgeValidator;
+        this.customerNameValidator = customerNameValidator;
+    }
 
     public Customer saveCustomer(Customer customer) {
         customer.fioFixing();
-        checkCustomer(customer);
+        customerValidator.checkForPersist(customer);
+        if (checkIfEmailWasAlreadyUsed(customer.getEmail())) {
+            throw new CustomerServiceException("E-mail: \'" + customer.getEmail() + "\' is already in use.");
+        }
         customer = customerDAO.save(customer);
         return customer;
     }
 
-    public Customer getCustomerById(Long id) {
-        return customerDAO.getById(id);
+    public Customer getCustomerById(String email) {
+        customerEmailValidator.check(email);
+        return customerDAO.getById(email);
     }
 
     public List<Customer> findAllCustomers() {
@@ -38,35 +50,31 @@ public class DefaultCustomerService implements CustomerService {
     }
 
     public Customer updateCustomer(Customer customer) {
-        Customer customer1 = customerDAO.getById(customer.getId());
-        if (customer1 == null) {
-            throw new CustomerServiceException(TRYING_TO_DO_SMTH_WITH_NOT_EXISTENT_CUSTOMER);
-        }
         customer.fioFixing();
-        if (customer.getAge() == 0L && customer.getFio().equals("")) {
-            throw new CustomerControllerException(INVALID_PARAMS);
+        customerValidator.checkForUpdate(customer);
+        Customer foundedCustomer = customerDAO.getById(customer.getEmail());
+        customerValidator.checkFoundById(foundedCustomer);
+        if (!customer.getFio().equals("")) {
+            customerNameValidator.check(customer.getFio());
+            foundedCustomer.setFio(customer.getFio());
         }
-        if (customer.getFio().equals("")) {
-            customer.setFio(customer1.getFio());
+        if (customer.getAge() != 0) {
+            customerAgeValidator.check(customer.getAge());
+            foundedCustomer.setAge(customer.getAge());
         }
-        if (customer.getAge() == 0L) {
-            customer.setAge(customer1.getAge());
-        }
-        checkCustomer(customer);
-        customer = customerDAO.update(customer);
-        return customer;
+        return foundedCustomer;
     }
 
-    public void deleteCustomerById(Long id) {
+    public void deleteCustomerById(String email) {
         try {
-            customerDAO.deleteById(id);
+            customerDAO.deleteById(email);
         } catch (EntityNotFoundException exc) {
-            throw new CustomerServiceException(TRYING_TO_DO_SMTH_WITH_NOT_EXISTENT_CUSTOMER);
+            throw new CustomerServiceException("Customer with e-mail: \"" + email + "\" doesn't exist. You can't delete not existent customer.");
         }
     }
 
-    private void checkCustomer(Customer customer) {
-        if (customer.getAge() < MIN_AGE || customer.getAge() > MAX_AGE || customer.getFio().equals(""))
-            throw new CustomerServiceException(INVALID_PARAMS);
+    private boolean checkIfEmailWasAlreadyUsed(String email) {
+        Customer customer = getCustomerById(email);
+        return customer != null;
     }
 }

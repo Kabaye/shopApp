@@ -4,7 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Getter
 @Setter
@@ -14,9 +17,8 @@ import javax.persistence.*;
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(nullable = false)
-    private long id = 0L;
+    @Column(nullable = false, unique = true)
+    private String email = "";
 
     @Column(nullable = false)
     private String fio = "";
@@ -31,17 +33,13 @@ public class Customer {
 
         Customer customer = (Customer) o;
 
-        if (id != customer.id) return false;
-        if (age != customer.age) return false;
-        return fio != null ? fio.equals(customer.fio) : customer.fio == null;
+        return email != null ? email.equals(customer.email) : customer.email == null;
+
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (fio != null ? fio.hashCode() : 0);
-        result = 31 * result + age;
-        return result;
+        return email != null ? email.hashCode() : 0;
     }
 
     public void fioFixing() {

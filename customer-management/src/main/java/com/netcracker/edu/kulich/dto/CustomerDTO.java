@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class CustomerDTO {
-    private Long id = 0L;
+    private String email = "";
     private String fio = "";
     private Integer age = 0;
 }

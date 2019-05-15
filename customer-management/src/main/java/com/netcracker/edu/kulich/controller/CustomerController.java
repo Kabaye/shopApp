@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
-    private final String GETTING_NOT_EXISTENT_CUSTOMER = "You try to get not existent customer.";
-
     private final Transformator transformator;
 
     private final CustomerService customerService;
@@ -26,11 +24,11 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
-    @GetMapping(value = "/{id:[\\d]+}")
-    public ResponseEntity<CustomerDTO> getCustomer(@PathVariable("id") Long id) {
-        Customer customer = customerService.getCustomerById(id);
+    @GetMapping(value = "/{email}")
+    public ResponseEntity<CustomerDTO> getCustomer(@PathVariable("email") String email) {
+        Customer customer = customerService.getCustomerById(email);
         if (customer == null) {
-            throw new CustomerControllerException(GETTING_NOT_EXISTENT_CUSTOMER);
+            throw new CustomerControllerException("Customer with e-mail: \'" + email + "\' doesn't exist.");
         }
         return new ResponseEntity<>(transformator.convertToDto(customer), HttpStatus.OK);
     }
@@ -41,9 +39,9 @@ public class CustomerController {
         return new ResponseEntity<>(transformator.convertToDto(customer), HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value = "/{id:[\\d]+}")
-    public ResponseEntity deleteCustomer(@PathVariable("id") Long id) {
-        customerService.deleteCustomerById(id);
+    @DeleteMapping(value = "/{email}")
+    public ResponseEntity deleteCustomer(@PathVariable("email") String email) {
+        customerService.deleteCustomerById(email);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -56,10 +54,10 @@ public class CustomerController {
         return new ResponseEntity<>(customerDTOs, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id:[\\d]+}")
-    public ResponseEntity<CustomerDTO> updateCustomer(@RequestBody CustomerDTO customerDTO, @PathVariable("id") Long id) {
+    @PutMapping(value = "/{email}")
+    public ResponseEntity<CustomerDTO> updateCustomer(@RequestBody CustomerDTO customerDTO, @PathVariable("email") String email) {
         Customer customer = transformator.convertToEntity(customerDTO);
-        customer.setId(id);
+        customer.setEmail(email);
         customer = customerService.updateCustomer(customer);
         return new ResponseEntity<>(transformator.convertToDto(customer), HttpStatus.OK);
     }

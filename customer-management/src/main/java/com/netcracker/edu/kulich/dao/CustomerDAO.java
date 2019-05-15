@@ -8,11 +8,11 @@ import java.util.List;
 public interface CustomerDAO {
     Customer save(Customer customer);
 
-    Customer getById(Long id);
+    Customer getById(String email);
 
     List<Customer> findAll();
 
     Customer update(Customer customer);
 
-    void deleteById(Long id) throws EntityNotFoundException;
+    void deleteById(String email) throws EntityNotFoundException;
 }

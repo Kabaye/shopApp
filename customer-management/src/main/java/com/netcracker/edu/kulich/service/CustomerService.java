@@ -7,11 +7,11 @@ import java.util.List;
 public interface CustomerService {
     Customer saveCustomer(Customer customer);
 
-    Customer getCustomerById(Long id);
+    Customer getCustomerById(String email);
 
     List<Customer> findAllCustomers();
 
     Customer updateCustomer(Customer customer);
 
-    void deleteCustomerById(Long id);
+    void deleteCustomerById(String email);
 }

@@ -22,8 +22,8 @@ public class DefaultCustomerDAO implements CustomerDAO {
     }
 
     @Override
-    public Customer getById(Long id) {
-        Customer foundCustomer = entityManager.find(Customer.class, id);
+    public Customer getById(String email) {
+        Customer foundCustomer = entityManager.find(Customer.class, email);
         return foundCustomer;
     }
 
@@ -41,8 +41,8 @@ public class DefaultCustomerDAO implements CustomerDAO {
     }
 
     @Override
-    public void deleteById(Long id) throws EntityNotFoundException {
-        Customer customer = entityManager.find(Customer.class, id);
+    public void deleteById(String email) throws EntityNotFoundException {
+        Customer customer = entityManager.find(Customer.class, email);
         if (customer == null)
             throw new EntityNotFoundException();
         entityManager.remove(customer);

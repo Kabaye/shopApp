@@ -11,7 +11,7 @@ public class Transformator {
         Customer customer = new Customer();
         customer.setAge(customerDTO.getAge());
         customer.setFio(customerDTO.getFio());
-        customer.setId(customerDTO.getId());
+        customer.setEmail(customerDTO.getEmail());
         return customer;
     }
 
@@ -19,7 +19,7 @@ public class Transformator {
         CustomerDTO customerDTO = new CustomerDTO();
         customerDTO.setAge(customer.getAge());
         customerDTO.setFio(customer.getFio());
-        customerDTO.setId(customer.getId());
+        customerDTO.setEmail(customer.getEmail());
         return customerDTO;
     }
 
