@@ -1,2 +1,14 @@
 server:
   port: 6666
+catalog:
+  host: http://localhost
+  port: 6668
+  url: ${catalog.host}:${catalog.port}/catalog
+inventory:
+  host: http://localhost
+  port: 6669
+  url: ${inventory.host}:${inventory.port}/inventory
+customer:
+  host: http://localhost
+  port: 6667
+  url: ${customer.host}:${customer.port}/customer-management
