@@ -1,8 +1,8 @@
 package com.netcracker.edu.kulich.dao;
 
-import com.netcracker.edu.kulich.entity.Customer;
 import com.netcracker.edu.kulich.entity.Order;
 import com.netcracker.edu.kulich.entity.OrderItem;
+import com.netcracker.edu.kulich.entity.OrderPaymentStatusEnum;
 import com.netcracker.edu.kulich.entity.Tag;
 import org.springframework.stereotype.Repository;
 
@@ -56,13 +56,13 @@ public class DefaultOrderDAO implements OrderDAO {
     }
 
     @Override
-    public List<OrderItem> findCustomerOrdersByCategory(Customer customer, String category) {
+    public List<OrderItem> findCustomerOrderItemsByCategory(String email, String category) {
         List<OrderItem> orderItems;
 
         Query query = entityManager.createQuery("SELECT o FROM OrderItem o" +
-                " where o.category=:category AND o.order.customer = :customer");
+                " where o.category=:category AND o.order.email = :email");
 
-        query.setParameter("customer", customer);
+        query.setParameter("email", email);
         query.setParameter("category", category);
 
         orderItems = query.getResultList();
@@ -71,17 +71,29 @@ public class DefaultOrderDAO implements OrderDAO {
     }
 
     @Override
-    public List<OrderItem> findCustomerOrdersByTag(Customer customer, Tag tag) {
+    public List<OrderItem> findCustomerOrderItemsByTag(String email, Tag tag) {
         List<OrderItem> orderItems;
 
         Query query = entityManager.createQuery("SELECT o FROM OrderItem o" +
-                " where o.order.customer = :customer AND :tag MEMBER OF o.tags");
+                " where o.order.email = :email AND :tag MEMBER OF o.tags");
 
-        query.setParameter("customer", customer);
+        query.setParameter("email", email);
         query.setParameter("tag", tag);
 
         orderItems = query.getResultList();
 
         return orderItems;
+    }
+
+    @Override
+    public List<Order> getAllOrdersByPaymentStatus(OrderPaymentStatusEnum paymentStatus) {
+        return entityManager.createQuery("SELECT order FROM Order order WHERE order.orderPaymentStatus = :status")
+                .setParameter("status", paymentStatus).getResultList();
+    }
+
+    @Override
+    public List<Order> getAllOrdersByEmail(String email) {
+        return entityManager.createQuery("SELECT order FROM Order order WHERE order.email = :email")
+                .setParameter("email", email).getResultList();
     }
 }

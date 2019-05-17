@@ -12,7 +12,7 @@ import java.util.Set;
 public class OrderDTO {
     private Long id = 0L;
     private LocalDate date = LocalDate.now();
-    private CustomerDTO customer = new CustomerDTO();
+    private String email = "";
     private String orderStatus = "";
     private String orderPaymentStatus = "";
     private Set<OrderItemDTO> orderItems = new HashSet<>();

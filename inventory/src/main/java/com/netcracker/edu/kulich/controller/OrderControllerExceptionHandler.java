@@ -19,7 +19,7 @@ public class OrderControllerExceptionHandler extends ResponseEntityExceptionHand
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     private ResponseEntity handleEnumUncorrectValue(IllegalArgumentException ex, WebRequest request) {
-        return handleExceptionInternal(ex, ex.getMessage(),
+        return handleExceptionInternal(ex, "Order status has invalid value. Please, set valid.",
                 new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 }

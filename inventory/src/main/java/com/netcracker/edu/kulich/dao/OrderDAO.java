@@ -1,8 +1,8 @@
 package com.netcracker.edu.kulich.dao;
 
-import com.netcracker.edu.kulich.entity.Customer;
 import com.netcracker.edu.kulich.entity.Order;
 import com.netcracker.edu.kulich.entity.OrderItem;
+import com.netcracker.edu.kulich.entity.OrderPaymentStatusEnum;
 import com.netcracker.edu.kulich.entity.Tag;
 
 import javax.persistence.EntityNotFoundException;
@@ -19,7 +19,11 @@ public interface OrderDAO {
 
     void delete(Long id) throws EntityNotFoundException;
 
-    List<OrderItem> findCustomerOrdersByCategory(Customer customer, String category);
+    List<OrderItem> findCustomerOrderItemsByCategory(String email, String category);
 
-    List<OrderItem> findCustomerOrdersByTag(Customer customer, Tag tag);
+    List<OrderItem> findCustomerOrderItemsByTag(String email, Tag tag);
+
+    List<Order> getAllOrdersByPaymentStatus(OrderPaymentStatusEnum paymentStatus);
+
+    List<Order> getAllOrdersByEmail(String email);
 }

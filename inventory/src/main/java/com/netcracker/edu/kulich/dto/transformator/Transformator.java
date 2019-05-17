@@ -1,6 +1,5 @@
 package com.netcracker.edu.kulich.dto.transformator;
 
-import com.netcracker.edu.kulich.dto.CustomerDTO;
 import com.netcracker.edu.kulich.dto.OrderDTO;
 import com.netcracker.edu.kulich.dto.OrderItemDTO;
 import com.netcracker.edu.kulich.dto.PairIdNameDTO;
@@ -15,23 +14,20 @@ public class Transformator {
     public Order convertToOrderEntity(OrderDTO orderDTO) {
         Order order = new Order();
 
-        Customer customer = new Customer();
-        customer.setAge(orderDTO.getCustomer().getAge());
-        customer.setFio(orderDTO.getCustomer().getFio());
-        order.setCustomer(customer);
+        order.setEmail(orderDTO.getEmail());
 
         order.setDate(orderDTO.getDate());
 
         for (OrderItemDTO orderItem : orderDTO.getOrderItems()) {
             OrderItem item = convertToOrderItemEntity(orderItem);
             item.setOrder(order);
-            order.addOffer(item);
+            order.addItem(item);
         }
 
         orderDTO.fixOrderStatusAndPaymentStatus();
 
-        order.setOrderPaymentStatus(OrderPaymentStatusEnum.valueOf(orderDTO.getOrderPaymentStatus().toUpperCase()));
-        order.setOrderStatus(OrderStatusEnum.valueOf(orderDTO.getOrderStatus().toUpperCase()));
+        order.setOrderPaymentStatus(OrderPaymentStatusEnum.NOT_PAID);
+        order.setOrderStatus(OrderStatusEnum.IN_PROCESS);
 
         return order;
     }
@@ -39,11 +35,7 @@ public class Transformator {
     public OrderDTO convertToOrderDto(Order order) {
         OrderDTO orderDTO = new OrderDTO();
 
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setAge(order.getCustomer().getAge());
-        customerDTO.setFio(order.getCustomer().getFio());
-        customerDTO.setId(order.getCustomer().getId());
-        orderDTO.setCustomer(customerDTO);
+        orderDTO.setEmail(order.getEmail());
 
         orderDTO.setAmountOfItems(order.getAmountOfOrderItems());
 
@@ -98,20 +90,5 @@ public class Transformator {
                 .collect(Collectors.toSet())
         );
         return item;
-    }
-
-    public Customer convertToCustomerEntity(CustomerDTO customerDTO) {
-        Customer customer = new Customer();
-        customer.setAge(customerDTO.getAge());
-        customer.setFio(customerDTO.getFio());
-        return customer;
-    }
-
-    public CustomerDTO convertToCustomerDto(Customer customer) {
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setAge(customer.getAge());
-        customerDTO.setFio(customer.getFio());
-        customerDTO.setId(customer.getId());
-        return customerDTO;
     }
 }

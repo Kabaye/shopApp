@@ -1,6 +1,5 @@
 package com.netcracker.edu.kulich.service;
 
-import com.netcracker.edu.kulich.entity.Customer;
 import com.netcracker.edu.kulich.entity.Order;
 import com.netcracker.edu.kulich.entity.OrderItem;
 import com.netcracker.edu.kulich.entity.Tag;
@@ -14,11 +13,9 @@ public interface OrderService {
 
     List<Order> getAllOrders();
 
-    Order updateCustomer(Long id, Customer customer);
+    Order payForOrder(Long id);
 
-    Order updatePaymentStatus(Long id, String paymentStatus);
-
-    Order updateStatus(Long id, String status);
+    Order nextStatus(Long id);
 
     Order addOrderItem(Long id, OrderItem item);
 
@@ -26,7 +23,15 @@ public interface OrderService {
 
     void deleteOrderById(Long id);
 
-    List<OrderItem> findCustomerOrdersByCategory(Long customerId, String category);
+    List<OrderItem> findCustomerOrderItemsByCategory(String customerEmail, String category);
 
-    List<OrderItem> findCustomerOrdersByTag(Long customerId, Tag tag);
+    List<OrderItem> findCustomerOrderItemsByTag(String customerEmail, Tag tag);
+
+    List<Order> getAllOrdersByPaymentStatus(String paymentStatus);
+
+    List<Order> getAllOrdersByEmail(String email);
+
+    Integer getAmountOfItemsBoughtByCustomerWithEmail(String email);
+
+    Double GetFullPriceOfItemsBoughtByCustomerWithEmail(String email);
 }
