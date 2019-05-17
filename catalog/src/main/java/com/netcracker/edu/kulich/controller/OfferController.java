@@ -9,9 +9,8 @@ import com.netcracker.edu.kulich.dto.transformator.OfferTransformator;
 import com.netcracker.edu.kulich.dto.transformator.TagTransformator;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Tag;
-import com.netcracker.edu.kulich.exception.controller.OfferControllerException;
+import com.netcracker.edu.kulich.exception.controller.ControllerException;
 import com.netcracker.edu.kulich.service.OfferService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,22 +24,23 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/offers")
 public class OfferController {
-    private final String GETTING_NOT_EXISTENT_OFFER = "You try to get not existent offer.";
-
-    @Autowired
     private OfferTransformator offerTransformator;
-    @Autowired
     private TagTransformator tagTransformator;
-    @Autowired
     private CategoryTransformator categoryTransformator;
-    @Autowired
     private OfferService offerService;
+
+    public OfferController(OfferTransformator offerTransformator, TagTransformator tagTransformator, CategoryTransformator categoryTransformator, OfferService offerService) {
+        this.offerTransformator = offerTransformator;
+        this.tagTransformator = tagTransformator;
+        this.categoryTransformator = categoryTransformator;
+        this.offerService = offerService;
+    }
 
     @GetMapping(value = "/{id:[\\d]+}")
     public ResponseEntity<OfferDTO> getOffer(@PathVariable("id") Long id) {
         Offer offer = offerService.getOfferById(id);
         if (offer == null) {
-            throw new OfferControllerException(GETTING_NOT_EXISTENT_OFFER);
+            throw new ControllerException("There is no offer with id: \'" + id + "\'.");
         }
         return new ResponseEntity<>(offerTransformator.convertToDto(offer), HttpStatus.OK);
     }

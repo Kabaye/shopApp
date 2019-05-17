@@ -13,7 +13,7 @@ public interface CategoryService {
 
     Set<Category> saveCategories(Set<Category> categories);
 
-    Category updateCategory(Category category);
+    Category updateCategoryByName(Category category);
 
     void deleteCategoryById(Long id);
 }

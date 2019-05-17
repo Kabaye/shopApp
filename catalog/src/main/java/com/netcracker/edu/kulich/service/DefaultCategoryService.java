@@ -2,79 +2,80 @@ package com.netcracker.edu.kulich.service;
 
 import com.netcracker.edu.kulich.dao.CategoryDAO;
 import com.netcracker.edu.kulich.entity.Category;
-import com.netcracker.edu.kulich.exception.service.CategoryServiceException;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.netcracker.edu.kulich.exception.service.ServiceException;
+import com.netcracker.edu.kulich.service.validation.CategoryValidator;
+import com.netcracker.edu.kulich.service.validation.NameValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service(value = "categoryService")
 public class DefaultCategoryService implements CategoryService {
-    private static final String CATEGORY_NAME_NOT_VALID_EXCEPTION_MESSAGE = "Category name is empty or has lower than 3 symbols, please, set it not empty.";
-    private static final String DELETING_OR_UPDATING_NOT_EXISTENT_CATEGORY = "You try to delete / update not existent category.";
-    private static final String INSERTING_OR_UPDATING_CATEGORY_WITH_NOT_UNIQUE_NAME = "You try to insert / update category with already existent name, please, set name unique.";
 
-    @Autowired
     private CategoryDAO categoryDAO;
+    private CategoryValidator categoryValidator;
+    private NameValidator categoryNameValidator;
+
+    public DefaultCategoryService(CategoryDAO categoryDAO, CategoryValidator categoryValidator, NameValidator categoryNameValidator) {
+        this.categoryDAO = categoryDAO;
+        this.categoryValidator = categoryValidator;
+        this.categoryNameValidator = categoryNameValidator;
+    }
 
     @Override
     public Category saveCategory(Category category) {
-        checkCategory(category);
-        categoryDAO.create(category);
+        category.fixCategoryName();
+        categoryValidator.checkForPersist(category);
+        Category findedCategory = categoryDAO.readByName(category.getCategory());
+        if (findedCategory != null) {
+            return findedCategory;
+        }
+        category = categoryDAO.create(category);
         return category;
     }
 
     @Override
     public Category getCategoryById(Long id) {
+        categoryValidator.checkIdIsNotNull(id);
         return categoryDAO.read(id);
     }
 
     @Override
     public Category getCategoryByName(String name) {
+        categoryNameValidator.check(name);
         return categoryDAO.readByName(name);
     }
 
     @Override
     public Set<Category> saveCategories(Set<Category> categories) {
-        for (Category category : categories) {
-            checkCategory(category);
-        }
-        categoryDAO.create(categories);
+        categories = categories.stream().filter(Objects::nonNull).collect(Collectors.toSet());
+        categories = categories.stream().map(this::saveCategory).collect(Collectors.toSet());
         return categories;
     }
 
     @Override
-    public Category updateCategory(Category category) {
-        checkCategory(category);
-        Category category1 = categoryDAO.read(category.getId());
-        if (category1 == null) {
-            throw new CategoryServiceException(DELETING_OR_UPDATING_NOT_EXISTENT_CATEGORY);
-        }
-        category.setOffers(category1.getOffers());
+    public Category updateCategoryByName(Category category) {
+        category.fixCategoryName();
+        categoryValidator.checkForUpdate(category);
+        Category foundedCategory = categoryDAO.read(category.getId());
+        categoryValidator.checkFoundById(foundedCategory);
+        category.setOffers(foundedCategory.getOffers());
         category = categoryDAO.update(category);
         return category;
     }
 
     @Override
-    public void deleteCategoryById(Long id) throws CategoryServiceException {
+    public void deleteCategoryById(Long id) throws ServiceException {
+        categoryValidator.checkIdIsNotNull(id);
         try {
             categoryDAO.delete(id);
         } catch (EntityNotFoundException exc) {
-            throw new CategoryServiceException(DELETING_OR_UPDATING_NOT_EXISTENT_CATEGORY);
-        }
-    }
-
-    private void checkCategory(Category category) throws CategoryServiceException {
-        category.fixCategoryName();
-        if (category.getCategory().length() < 2) {
-            throw new CategoryServiceException(CATEGORY_NAME_NOT_VALID_EXCEPTION_MESSAGE);
-        }
-        Category category1 = categoryDAO.readByName(category.getCategory());
-        if (category1 != null) {
-            throw new CategoryServiceException(INSERTING_OR_UPDATING_CATEGORY_WITH_NOT_UNIQUE_NAME);
+            throw new ServiceException("Category with id: \"" + id + "\" doesn't exist. You can't delete not existent category.");
         }
     }
 }

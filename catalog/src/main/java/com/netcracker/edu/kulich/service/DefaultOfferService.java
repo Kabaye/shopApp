@@ -4,8 +4,8 @@ import com.netcracker.edu.kulich.dao.OfferDAO;
 import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Tag;
-import com.netcracker.edu.kulich.exception.service.OfferServiceException;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.netcracker.edu.kulich.exception.service.ServiceException;
+import com.netcracker.edu.kulich.service.validation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,74 +16,76 @@ import java.util.stream.Collectors;
 @Transactional
 @Service(value = "offerService")
 public class DefaultOfferService implements OfferService {
-    private static final String NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE = "Offer's arguments are invalid, please, set them valid.";
-    private static final String DELETING_OR_UPDATING_NOT_EXISTENT_OFFER = "You try to delete / update not existent offer.";
-    private static final String ADDING_TO_OFFER_ALREADY_ADDED_TAG = "You try to add tag to offer, which already contains this tag.";
-    private static final String UPDATING_NOT_EXISTENT_OFFER_WITH_TAG_OR_CATEGORY = "You try to add / delete tag or update category of not existent offer.";
-    private static final String OFFER_WITH_NOT_EXISTING_TAG_CATEGORY = "You try to add offer with not existing tag or category. Please, add them firstly, and then, add this offer.";
 
-    private static final double MIN_PRICE = 1.0;
-    @Autowired
     private OfferDAO offerDAO;
-
-    @Autowired
     private CategoryService categoryService;
-
-    @Autowired
     private TagService tagService;
+    private OfferValidator offerValidator;
+    private NameValidator offerNameValidator;
+    private PriceValidator offerPriceValidator;
+    private CategoryValidator categoryValidator;
+    private TagValidator tagValidator;
+    private PriceRangeValidator priceRangeValidator;
+
+    public DefaultOfferService(OfferDAO offerDAO, CategoryService categoryService, TagService tagService, OfferValidator offerValidator,
+                               NameValidator offerNameValidator, PriceValidator offerPriceValidator, CategoryValidator categoryValidator,
+                               TagValidator tagValidator, PriceRangeValidator priceRangeValidator) {
+        this.offerDAO = offerDAO;
+        this.categoryService = categoryService;
+        this.tagService = tagService;
+        this.offerValidator = offerValidator;
+        this.offerNameValidator = offerNameValidator;
+        this.offerPriceValidator = offerPriceValidator;
+        this.categoryValidator = categoryValidator;
+        this.tagValidator = tagValidator;
+        this.priceRangeValidator = priceRangeValidator;
+    }
 
     @Override
     public Offer saveOffer(Offer offer) {
-        offer.fixOfferName();
-        checkOfferNameAndPrice(offer);
-        checkAndRecreateOfferCategoryAndTag(offer);
+        offer.fixNames();
+        offerValidator.checkForPersist(offer);
+        recreateOfferCategoryAndTags(offer);
         offer = offerDAO.create(offer);
         return offer;
     }
 
     @Override
     public Offer getOfferById(Long id) {
+        offerValidator.checkIdIsNotNull(id);
         return offerDAO.read(id);
     }
 
     @Override
     public Offer addTag(Long id, Tag tag) {
+        offerValidator.checkIdIsNotNull(id);
+        tagValidator.checkProperties(tag);
         Offer offer = getOfferById(id);
-        if (offer == null) {
-            throw new OfferServiceException(UPDATING_NOT_EXISTENT_OFFER_WITH_TAG_OR_CATEGORY);
-        }
-        if (!offer.addTag(tag)) {
-            throw new OfferServiceException(ADDING_TO_OFFER_ALREADY_ADDED_TAG);
-        }
-        offer.setTags(checkAndRecreateTags(offer.getTags()));
+        offerValidator.checkFoundById(offer);
+        offer.addTag(tag);
+        offer.setTags(recreateTags(offer.getTags()));
         offer = offerDAO.update(offer);
         return offer;
     }
 
     @Override
     public Offer removeTag(Long id, Tag tag) {
+        offerValidator.checkIdIsNotNull(id);
+        tagValidator.checkProperties(tag);
         Offer offer = getOfferById(id);
-        if (offer == null) {
-            throw new OfferServiceException(UPDATING_NOT_EXISTENT_OFFER_WITH_TAG_OR_CATEGORY);
-        }
-        if (offer.removeTag(tag)) {
-            offer = offerDAO.update(offer);
-        } else {
-            throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
-        }
+        offerValidator.checkFoundById(offer);
+        offer.removeTag(tag);
+        offer = offerDAO.update(offer);
         return offer;
     }
 
     @Override
     public Offer updateCategory(Long id, Category category) {
+        offerValidator.checkIdIsNotNull(id);
+        categoryValidator.checkProperties(category);
         Offer offer = getOfferById(id);
-        if (offer == null) {
-            throw new OfferServiceException(UPDATING_NOT_EXISTENT_OFFER_WITH_TAG_OR_CATEGORY);
-        }
-        if (offer.getCategory().getCategory().equals(category.getCategory())) {
-            throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
-        }
-        offer.setCategory(checkAndRecreateCategory(category));
+        offerValidator.checkFoundById(offer);
+        offer.setCategory(recreateCategory(category));
         offer = offerDAO.update(offer);
         return offer;
     }
@@ -95,101 +97,72 @@ public class DefaultOfferService implements OfferService {
 
     @Override
     public Offer updateOffer(Offer offer) {
-        Offer offer1 = offerDAO.read(offer.getId());
-        if (offer1 == null) {
-            throw new OfferServiceException(DELETING_OR_UPDATING_NOT_EXISTENT_OFFER);
+        offer.fixNames();
+        offerValidator.checkForUpdate(offer);
+        Offer foundedOffer = offerDAO.read(offer.getId());
+        offerValidator.checkFoundById(foundedOffer);
+        if (!offer.getName().equals("")) {
+            offerNameValidator.check(offer.getName());
+            foundedOffer.setName(offer.getName());
         }
-        offer.fixOfferName();
-        if (offer.getName().equals("") && offer.getPrice().getPrice() == 0.0) {
-            throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
+        if (offer.getPrice().getPrice() != 0L) {
+            offerPriceValidator.check(offer.getPrice());
+            foundedOffer.setPrice(offer.getPrice());
         }
-        if (offer.getName().equals("")) {
-            offer.setName(offer1.getName());
-        }
-        if (offer.getPrice().getPrice() == 0.0) {
-            offer.setPrice(offer1.getPrice());
-        }
-
-        offer.setTags(offer1.getTags());
-        offer.setCategory(offer1.getCategory());
-
-        checkOfferNameAndPrice(offer);
-        offer = offerDAO.update(offer);
-        return offer;
+        return foundedOffer;
     }
 
     @Override
     public void deleteOfferById(Long id) {
+        offerValidator.checkIdIsNotNull(id);
         try {
             offerDAO.delete(id);
         } catch (EntityNotFoundException exc) {
-            throw new OfferServiceException(DELETING_OR_UPDATING_NOT_EXISTENT_OFFER);
+            throw new ServiceException("Offer with id: \"" + id + "\" doesn't exist. You can't delete not existent offer.");
         }
     }
 
     @Override
     public List<Offer> findOffersByCategory(Category category) {
+        categoryValidator.checkProperties(category);
         return offerDAO.findOffersByCategory(category);
     }
 
     @Override
     public List<Offer> findOffersByTags(Collection<Tag> tags) {
         tags = tags.stream().filter(Objects::nonNull).collect(Collectors.toSet());
+        if (tags.size() == 0) {
+            throw new ServiceException("Tags can't be empty. Please, add, at least, one tag.");
+        }
+        tags.forEach(tagValidator::checkProperties);
         return offerDAO.findOffersByTags(tags);
     }
 
     @Override
     public List<Offer> findOffersByRangeOfPrice(double lowerBound, double upperBound) {
-        if (lowerBound < MIN_PRICE || lowerBound > upperBound || upperBound < MIN_PRICE)
-            throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
+        priceRangeValidator.check(lowerBound, upperBound);
         return offerDAO.findOffersByRangeOfPrice(lowerBound, upperBound);
     }
 
-    private void checkOfferNameAndPrice(Offer offer) {
-        if (offer.getName().length() <= 3) {
-            throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
-        }
-        if (offer.getPrice().getPrice() < MIN_PRICE) {
-            throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
-        }
-    }
 
-    private void checkAndRecreateOfferCategoryAndTag(Offer offer) {
-        Category category = checkAndRecreateCategory(offer.getCategory());
+    private void recreateOfferCategoryAndTags(Offer offer) {
+        Category category = recreateCategory(offer.getCategory());
         offer.setCategory(category);
-        Set<Tag> tags = checkAndRecreateTags(offer.getTags());
+        Set<Tag> tags = recreateTags(offer.getTags());
         offer.setTags(tags);
     }
 
-    private Category checkAndRecreateCategory(Category category) {
-        if (category == null) {
-            throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
-        }
-        category.fixCategoryName();
-        if (category.getCategory().length() < 2) {
-            throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
-        }
-        Category category1 = categoryService.getCategoryByName(category.getCategory());
-        if (category1 == null) {
-            throw new OfferServiceException(OFFER_WITH_NOT_EXISTING_TAG_CATEGORY);
-        }
-        return category1;
+    private Category recreateCategory(Category category) {
+        Category foundedCategory = categoryService.getCategoryByName(category.getCategory());
+        categoryValidator.checkFoundByName(foundedCategory, category.getCategory());
+        return foundedCategory;
     }
 
-    private Set<Tag> checkAndRecreateTags(Set<Tag> tags) {
-        tags = tags.stream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+    private Set<Tag> recreateTags(Set<Tag> tags) {
         Set<Tag> tagSet = new HashSet<>();
         for (Tag tag : tags) {
-            tag.fixTagName();
-            if (tag.getTagname().length() < 3) {
-                throw new OfferServiceException(NOT_CORRECT_ARGUMENT_EXCEPTION_MESSAGE);
-            }
             Tag t = tagService.getTagByName(tag.getTagname());
-            if (t == null) {
-                throw new OfferServiceException(OFFER_WITH_NOT_EXISTING_TAG_CATEGORY);
-            }
+            tagValidator.checkFoundByName(t, tag.getTagname());
             tagSet.add(t);
         }
         return tagSet;

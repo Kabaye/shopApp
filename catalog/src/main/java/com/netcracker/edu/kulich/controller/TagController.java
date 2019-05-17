@@ -3,9 +3,8 @@ package com.netcracker.edu.kulich.controller;
 import com.netcracker.edu.kulich.dto.TagDTO;
 import com.netcracker.edu.kulich.dto.transformator.TagTransformator;
 import com.netcracker.edu.kulich.entity.Tag;
-import com.netcracker.edu.kulich.exception.controller.TagControllerException;
+import com.netcracker.edu.kulich.exception.controller.ControllerException;
 import com.netcracker.edu.kulich.service.TagService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,18 +16,19 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/tags")
 public class TagController {
-    private final String GETTING_NOT_EXISTENT_TAG = "You try to get not existent tag.";
-    private final String EMPTY_BODY_SAVING_REQUEST = "You try to call \"save\" method with empty body.";
-    @Autowired
     private TagTransformator tagTransformator;
-    @Autowired
     private TagService tagService;
+
+    public TagController(TagTransformator tagTransformator, TagService tagService) {
+        this.tagTransformator = tagTransformator;
+        this.tagService = tagService;
+    }
 
     @GetMapping(value = "/{id:[\\d]+}")
     public ResponseEntity<TagDTO> getTag(@PathVariable("id") Long id) {
         Tag tag = tagService.getTagById(id);
         if (tag == null) {
-            throw new TagControllerException(GETTING_NOT_EXISTENT_TAG);
+            throw new ControllerException("There is no tag with id: \'" + id + "\'.");
         }
         return new ResponseEntity<>(tagTransformator.convertToDto(tag), HttpStatus.OK);
     }
@@ -41,9 +41,6 @@ public class TagController {
 
     @PostMapping(value = "/tags")
     public ResponseEntity<List<TagDTO>> saveTags(@RequestBody List<TagDTO> tags) {
-        if ((tags == null) || (tags.size() == 0)) {
-            throw new TagControllerException(EMPTY_BODY_SAVING_REQUEST);
-        }
         List<Tag> tagList = new ArrayList<>();
         tags.forEach(tagDTO -> tagList.add(tagService.saveTag(tagTransformator.convertToEntity(tagDTO))));
         List<TagDTO> tagDTOList = tagList.stream()

@@ -27,7 +27,9 @@ public class DefaultOfferDAO implements OfferDAO {
     @Override
     public Offer read(Long id) {
         Offer foundOffer = entityManager.find(Offer.class, id);
-        entityManager.refresh(foundOffer);
+        if (foundOffer != null) {
+            entityManager.refresh(foundOffer);
+        }
         return foundOffer;
     }
 

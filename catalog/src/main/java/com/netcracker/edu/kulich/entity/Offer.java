@@ -6,8 +6,10 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Getter
@@ -82,7 +84,10 @@ public class Offer {
         return result;
     }
 
-    public void fixOfferName() {
+    public void fixNames() {
         name = name.trim().replaceAll(" +", " ");
+        category.fixCategoryName();
+        tags = tags.stream().filter(Objects::nonNull).collect(Collectors.toSet());
+        tags.forEach(Tag::fixTagName);
     }
 }
