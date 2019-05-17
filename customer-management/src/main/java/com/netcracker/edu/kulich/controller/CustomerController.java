@@ -28,7 +28,7 @@ public class CustomerController {
     public ResponseEntity<CustomerDTO> getCustomer(@PathVariable("email") String email) {
         Customer customer = customerService.getCustomerById(email);
         if (customer == null) {
-            throw new CustomerControllerException("Customer with e-mail: \'" + email + "\' doesn't exist.");
+            throw new CustomerControllerException("Customer with e-mail: \'" + email + "\' doesn't exist. Please, sign up, if you want to buy offers.");
         }
         return new ResponseEntity<>(transformator.convertToDto(customer), HttpStatus.OK);
     }

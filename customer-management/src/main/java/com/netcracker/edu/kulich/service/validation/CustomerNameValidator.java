@@ -20,7 +20,7 @@ public class CustomerNameValidator implements NameValidator {
             throw new CustomerServiceException("Name \"" + name + "\" is too short.");
         }
         if (name.matches(".*[" + getForbiddenSymbols() + "].*")) {
-            throw new CustomerServiceException(name + "must not contain symbols {" + getForbiddenSymbols() + "}");
+            throw new CustomerServiceException(name + " must not contain symbols {" + getForbiddenSymbols() + "}");
         }
     }
 }
