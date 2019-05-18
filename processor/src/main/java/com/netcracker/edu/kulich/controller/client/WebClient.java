@@ -2,6 +2,8 @@ package com.netcracker.edu.kulich.controller.client;
 
 import com.netcracker.edu.kulich.dto.*;
 import com.netcracker.edu.kulich.dto.transformator.Transformator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -17,11 +19,13 @@ import java.util.stream.Collectors;
 
 @Component
 public class WebClient {
-    private final RestTemplate restTemplate;
-    private final String inventory;
-    private final String catalog;
-    private final String customerManagement;
-    private final Transformator transformator;
+    private static final Logger logger = LoggerFactory.getLogger(WebClient.class);
+
+    private RestTemplate restTemplate;
+    private String inventory;
+    private String catalog;
+    private String customerManagement;
+    private Transformator transformator;
 
     public WebClient(@Value("${inventory.url}") String inventory, @Value("${catalog.url}") String catalog,
                      @Value("${customer.url}") String customerManagement, RestTemplate restTemplate, ResponseErrorHandler restTemplateResponseErrorHandler, Transformator transformator) {
@@ -34,53 +38,63 @@ public class WebClient {
     }
 
     public List<OfferDTO> getAllOffers() {
+        logger.info("Sending request to get all offers.");
         ResponseEntity<List<OfferDTO>> response = restTemplate.exchange(
                 catalog + "/offers",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<OfferDTO>>() {
                 });
+        logger.info("Response received.");
         return response.getBody();
     }
 
     public OfferDTO getOfferById(Long id) {
+        logger.info("Sending request to get offer by id.");
         ResponseEntity<OfferDTO> response = restTemplate.exchange(
                 catalog + "/offers/" + id,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<OfferDTO>() {
                 });
+        logger.info("Response received.");
         return response.getBody();
     }
 
     public List<CustomerDTO> getAllCustomers() {
+        logger.info("Sending request to get all customers.");
         ResponseEntity<List<CustomerDTO>> response = restTemplate.exchange(
                 customerManagement + "/customers",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<CustomerDTO>>() {
                 });
+        logger.info("Response received.");
         return response.getBody();
     }
 
     public CustomerDTO getCustomerByEmail(String email) {
+        logger.info("Sending request to get customer by email.");
         ResponseEntity<CustomerDTO> response = restTemplate.exchange(
                 customerManagement + "/customers/" + email,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<CustomerDTO>() {
                 });
+        logger.info("Response received.");
         return response.getBody();
     }
 
     public CustomerDTO signUpWithEmail(CustomerDTO customer) {
-        return restTemplate.exchange(
+        logger.info("Sending request for user registration...");
+        ResponseEntity<CustomerDTO> response = restTemplate.exchange(
                 customerManagement + "/customers",
                 HttpMethod.POST,
                 new HttpEntity<>(customer),
                 new ParameterizedTypeReference<CustomerDTO>() {
-                }
-        ).getBody();
+                });
+        logger.info("Response received.");
+        return response.getBody();
     }
 
     public OrderDTO createOrder(SimplifiedOrderDTO simplifiedOrder) {
@@ -150,7 +164,7 @@ public class WebClient {
                 }).getBody();
     }
 
-    public Integer getAmountOfItemsBoughtByCustomerWithEmail(String email) {
+    public Integer getAmountOfItemsPurchasedByCustomerWithEmail(String email) {
         return restTemplate.exchange(inventory + "/emails/" + email + "/amount",
                 HttpMethod.GET,
                 null,
@@ -168,10 +182,19 @@ public class WebClient {
 
     public OrderDTO setNextOrderStatus(Long orderId) {
         return restTemplate.exchange(inventory + "/orders/" + orderId + "/status/next",
-                HttpMethod.PUT,
+                HttpMethod.POST,
                 null,
                 new ParameterizedTypeReference<OrderDTO>() {
                 }).getBody();
+    }
+
+    public OrderDTO cancelOrder(Long orderId) {
+        OrderDTO orderDTO = restTemplate.exchange(inventory + "/orders/" + orderId + "/status/cancel",
+                HttpMethod.POST,
+                null,
+                new ParameterizedTypeReference<OrderDTO>() {
+                }).getBody();
+        return orderDTO;
     }
 
     private OrderDTO saveOrder(OrderDTO orderDTO) {
