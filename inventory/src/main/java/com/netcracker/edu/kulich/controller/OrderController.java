@@ -45,9 +45,15 @@ public class OrderController {
         return new ResponseEntity<>(transformator.convertToOrderDto(order), HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "/orders/{id:[\\d]+}/status/next")
+    @PostMapping(value = "/orders/{id:[\\d]+}/status/next")
     public ResponseEntity<OrderDTO> updateOrderByStatus(@PathVariable("id") Long id) {
         Order order = orderService.nextStatus(id);
+        return new ResponseEntity<>(transformator.convertToOrderDto(order), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/orders/{id:[\\d]+}/status/cancel")
+    public ResponseEntity<OrderDTO> cancelOrder(@PathVariable("id") Long id) {
+        Order order = orderService.cancelOrder(id);
         return new ResponseEntity<>(transformator.convertToOrderDto(order), HttpStatus.OK);
     }
 

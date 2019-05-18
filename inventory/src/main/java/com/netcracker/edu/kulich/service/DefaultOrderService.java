@@ -87,6 +87,19 @@ public class DefaultOrderService implements OrderService {
     }
 
     @Override
+    public Order cancelOrder(Long id) {
+        orderValidator.checkIdIsNotNull(id);
+        Order order = orderDAO.read(id);
+        orderValidator.checkFoundById(order);
+        if (order.getOrderPaymentStatus() == OrderPaymentStatusEnum.PAID && order.getOrderStatus() != OrderStatusEnum.IN_PROCESS && order.getOrderStatus() != OrderStatusEnum.AGGREGATED) {
+            throw new ServiceException("We can't cancel shipped order.");
+        }
+        order.setOrderStatus(OrderStatusEnum.CANCELED);
+        order = orderDAO.update(order);
+        return order;
+    }
+
+    @Override
     public Order addOrderItem(Long id, OrderItem item) {
         orderValidator.checkIdIsNotNull(id);
         Order order = orderDAO.read(id);

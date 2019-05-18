@@ -17,6 +17,8 @@ public interface OrderService {
 
     Order nextStatus(Long id);
 
+    Order cancelOrder(Long id);
+
     Order addOrderItem(Long id, OrderItem item);
 
     Order deleteOrderItem(Long id, Long itemId);
