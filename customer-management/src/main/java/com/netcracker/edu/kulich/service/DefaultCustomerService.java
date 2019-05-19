@@ -3,10 +3,11 @@ package com.netcracker.edu.kulich.service;
 import com.netcracker.edu.kulich.dao.CustomerDAO;
 import com.netcracker.edu.kulich.entity.Customer;
 import com.netcracker.edu.kulich.exception.service.CustomerServiceException;
-import com.netcracker.edu.kulich.service.validation.AgeValidator;
-import com.netcracker.edu.kulich.service.validation.CustomerValidator;
-import com.netcracker.edu.kulich.service.validation.EmailValidator;
-import com.netcracker.edu.kulich.service.validation.NameValidator;
+import com.netcracker.edu.kulich.logging.DefaultLogging;
+import com.netcracker.edu.kulich.logging.Logging;
+import com.netcracker.edu.kulich.service.validation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,12 +16,14 @@ import java.util.List;
 
 @Service(value = "customerService")
 @Transactional
+@DefaultLogging
 public class DefaultCustomerService implements CustomerService {
     private CustomerDAO customerDAO;
-    private CustomerValidator customerValidator;
+    private static final Logger logger = LoggerFactory.getLogger(CustomerService.class);
     private EmailValidator customerEmailValidator;
     private AgeValidator customerAgeValidator;
     private NameValidator customerNameValidator;
+    private ServiceValidator<Customer, String> customerValidator;
 
     public DefaultCustomerService(CustomerDAO customerDAO, CustomerValidator customerValidator, EmailValidator customerEmailValidator, AgeValidator customerAgeValidator, NameValidator customerNameValidator) {
         this.customerDAO = customerDAO;
@@ -30,25 +33,30 @@ public class DefaultCustomerService implements CustomerService {
         this.customerNameValidator = customerNameValidator;
     }
 
+    @Logging(startMessage = "Request on saving customer to database is received.", endMessage = "Customer is successfully saved to database.")
     public Customer saveCustomer(Customer customer) {
         customer.fioFixing();
         customerValidator.checkForPersist(customer);
         if (checkIfEmailWasAlreadyUsed(customer.getEmail())) {
+            logger.error("Attempt to save customer with not unique e-mail.");
             throw new CustomerServiceException("E-mail: \'" + customer.getEmail() + "\' is already in use.");
         }
         customer = customerDAO.save(customer);
         return customer;
     }
 
+    @Logging(startMessage = "Request on getting customer by id from database is received.", endMessage = "Customer is successfully get from database.")
     public Customer getCustomerById(String email) {
         customerEmailValidator.check(email);
         return customerDAO.getById(email);
     }
 
+    @Logging(startMessage = "Request on getting all customers from database is received.", endMessage = "Customers are successfully get from database.")
     public List<Customer> findAllCustomers() {
         return customerDAO.findAll();
     }
 
+    @Logging(startMessage = "Request on updating customer in database is received.", endMessage = "Customer is successfully updated in database.")
     public Customer updateCustomer(Customer customer) {
         customer.fioFixing();
         customerValidator.checkForUpdate(customer);
@@ -65,10 +73,12 @@ public class DefaultCustomerService implements CustomerService {
         return foundedCustomer;
     }
 
+    @Logging(startMessage = "Request on deleting customer from database is received.", endMessage = "Customer is successfully deleted from database.")
     public void deleteCustomerById(String email) {
         try {
             customerDAO.deleteById(email);
         } catch (EntityNotFoundException exc) {
+            logger.error("Attempt to delete not existent customer.");
             throw new CustomerServiceException("Customer with e-mail: \"" + email + "\" doesn't exist. You can't delete not existent customer.");
         }
     }

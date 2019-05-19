@@ -2,12 +2,15 @@ package com.netcracker.edu.kulich.service.validation;
 
 import com.netcracker.edu.kulich.entity.Customer;
 import com.netcracker.edu.kulich.exception.service.CustomerServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Validator
 public class CustomerValidator implements ServiceValidator<Customer, String> {
     private static final String EMAIL_NOT_NULL = "E-mail must be initialized.";
     private static final String CUSTOMER_DOESNT_EXIST = "Customer with such e-mail doesn't exist. Please, set e-mail valid.";
     private static final String CUSTOMER_NOT_NULL = "Customer can't be null.";
+    private final static Logger logger = LoggerFactory.getLogger(ServiceValidator.class);
 
     private CustomerAgeValidator customerAgeValidator;
     private CustomerEmailValidator customerEmailValidator;
@@ -27,6 +30,7 @@ public class CustomerValidator implements ServiceValidator<Customer, String> {
     @Override
     public void checkIdIsNotNull(String id) {
         if (id == null) {
+            logger.error("Id of customer is NULL.");
             throw new CustomerServiceException(EMAIL_NOT_NULL);
         }
     }
@@ -34,6 +38,7 @@ public class CustomerValidator implements ServiceValidator<Customer, String> {
     @Override
     public void checkNotNull(Customer resource) {
         if (resource == null) {
+            logger.error("Customer is NULL.");
             throw new CustomerServiceException(CUSTOMER_NOT_NULL);
         }
     }
@@ -41,6 +46,7 @@ public class CustomerValidator implements ServiceValidator<Customer, String> {
     @Override
     public void checkNotNull(Customer resource, String errorMessage) {
         if (resource == null) {
+            logger.error("Customer is NULL");
             throw new CustomerServiceException(errorMessage);
         }
     }
