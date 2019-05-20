@@ -23,8 +23,7 @@ public class DefaultCategoryDAO implements CategoryDAO {
 
     @Override
     public Category read(Long id) {
-        Category category = entityManager.find(Category.class, id);
-        return category;
+        return entityManager.find(Category.class, id);
     }
 
     @Override

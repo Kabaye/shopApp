@@ -5,10 +5,13 @@ import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Tag;
 import com.netcracker.edu.kulich.exception.service.ServiceException;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Getter
 @Validator
 public class OfferValidator implements ServiceValidator<Offer, Long> {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceValidator.class);
     private static final String ID_NOT_NULL = "Offer id must be initialized.";
     private static final String ID_NULL = "Offer id must not be initialized.";
     private static final String OFFER_DOESNT_EXIST = "Offer with such id doesn't exist. Please, set id valid.";
@@ -33,6 +36,7 @@ public class OfferValidator implements ServiceValidator<Offer, Long> {
     @Override
     public void checkIdIsNull(Long id) {
         if (id != 0L) {
+            logger.error("Id of offer is not NULL.");
             throw new ServiceException(ID_NULL);
         }
     }
@@ -40,6 +44,7 @@ public class OfferValidator implements ServiceValidator<Offer, Long> {
     @Override
     public void checkIdIsNotNull(Long id) {
         if (id == 0L) {
+            logger.error("Id of offer is NULL.");
             throw new ServiceException(ID_NOT_NULL);
         }
     }
@@ -47,6 +52,7 @@ public class OfferValidator implements ServiceValidator<Offer, Long> {
     @Override
     public void checkNotNull(Offer resource) {
         if (resource == null) {
+            logger.error("Offer is NULL.");
             throw new ServiceException(OFFER_NOT_NULL);
         }
     }
@@ -54,6 +60,7 @@ public class OfferValidator implements ServiceValidator<Offer, Long> {
     @Override
     public void checkNotNull(Offer resource, String errorMessage) {
         if (resource == null) {
+            logger.error("Offer is NULL.");
             throw new ServiceException(errorMessage);
         }
     }

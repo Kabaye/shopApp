@@ -3,11 +3,13 @@ package com.netcracker.edu.kulich.service.validation;
 import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.exception.service.ServiceException;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Getter
 @Validator
 public class CategoryValidator implements ServiceValidator<Category, Long> {
-
+    private static final Logger logger = LoggerFactory.getLogger(ServiceValidator.class);
     private static final String ID_NOT_NULL = "Category id must be initialized.";
     private static final String ID_NULL = "Category id must not be initialized.";
     private static final String CATEGORY_DOESNT_EXIST = "Category with such id doesn't exist. Please, set id valid.";
@@ -27,6 +29,7 @@ public class CategoryValidator implements ServiceValidator<Category, Long> {
     @Override
     public void checkIdIsNull(Long id) {
         if (id != 0L) {
+            logger.error("Id of category is not NULL.");
             throw new ServiceException(ID_NULL);
         }
     }
@@ -34,6 +37,7 @@ public class CategoryValidator implements ServiceValidator<Category, Long> {
     @Override
     public void checkIdIsNotNull(Long id) {
         if (id == 0L) {
+            logger.error("Id of category is NULL.");
             throw new ServiceException(ID_NOT_NULL);
         }
     }
@@ -41,6 +45,7 @@ public class CategoryValidator implements ServiceValidator<Category, Long> {
     @Override
     public void checkNotNull(Category resource) {
         if (resource == null) {
+            logger.error("Category is NULL.");
             throw new ServiceException(CATEGORY_NOT_NULL);
         }
     }
@@ -48,6 +53,7 @@ public class CategoryValidator implements ServiceValidator<Category, Long> {
     @Override
     public void checkNotNull(Category resource, String errorMessage) {
         if (resource == null) {
+            logger.error("Category is NULL.");
             throw new ServiceException(errorMessage);
         }
     }

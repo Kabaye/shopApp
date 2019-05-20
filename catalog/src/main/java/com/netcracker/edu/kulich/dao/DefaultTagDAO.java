@@ -23,8 +23,7 @@ public class DefaultTagDAO implements TagDAO {
 
     @Override
     public Tag read(Long id) {
-        Tag tag = entityManager.find(Tag.class, id);
-        return tag;
+        return entityManager.find(Tag.class, id);
     }
 
     @Override

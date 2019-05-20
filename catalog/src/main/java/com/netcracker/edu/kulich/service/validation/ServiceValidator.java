@@ -15,6 +15,10 @@ public interface ServiceValidator<T, I> {
 
     void checkProperties(T resource);
 
+    default void checkFoundByName(T resource, String name) {
+
+    }
+
     default void checkForPersist(T resource) {
         checkNotNull(resource);
         checkIdIsNull(extractId(resource));

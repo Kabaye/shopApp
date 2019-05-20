@@ -15,6 +15,10 @@ public class CategoryDTO {
     private String name = "";
     private Set<PairIdNameDTO> offers = new HashSet<>();
 
+    public CategoryDTO(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

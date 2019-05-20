@@ -1,9 +1,11 @@
 package com.netcracker.edu.kulich.service;
 
 import com.netcracker.edu.kulich.entity.Tag;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
+@Transactional
 public interface TagService {
     Tag saveTag(Tag tag);
 

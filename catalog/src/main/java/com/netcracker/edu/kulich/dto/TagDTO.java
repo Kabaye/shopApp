@@ -15,6 +15,10 @@ public class TagDTO {
     private String name = "";
     private Set<PairIdNameDTO> offers = new HashSet<>();
 
+    public TagDTO(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
