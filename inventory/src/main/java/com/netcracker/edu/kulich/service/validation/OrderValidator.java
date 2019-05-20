@@ -2,9 +2,12 @@ package com.netcracker.edu.kulich.service.validation;
 
 import com.netcracker.edu.kulich.entity.Order;
 import com.netcracker.edu.kulich.exception.service.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Validator
 public class OrderValidator implements ServiceValidator<Order, Long> {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceValidator.class);
     private static final String ID_NOT_NULL = "Order id must be initialized.";
     private static final String ID_NULL = "Order id must not be initialized.";
     private static final String ORDER_DOESNT_EXIST = "Order with such id doesn't exist. Please, set id valid.";
@@ -30,6 +33,7 @@ public class OrderValidator implements ServiceValidator<Order, Long> {
     @Override
     public void checkIdIsNull(Long id) {
         if (id != 0L) {
+            logger.error("Id of order isn't NULL.");
             throw new ServiceException(ID_NULL);
         }
     }
@@ -37,6 +41,7 @@ public class OrderValidator implements ServiceValidator<Order, Long> {
     @Override
     public void checkIdIsNotNull(Long id) {
         if (id == 0L) {
+            logger.error("Id of order is NULL.");
             throw new ServiceException(ID_NOT_NULL);
         }
     }
@@ -44,6 +49,7 @@ public class OrderValidator implements ServiceValidator<Order, Long> {
     @Override
     public void checkNotNull(Order resource) {
         if (resource == null) {
+            logger.error("Order is NULL.");
             throw new ServiceException(ORDER_NOT_NULL);
         }
     }
@@ -51,6 +57,7 @@ public class OrderValidator implements ServiceValidator<Order, Long> {
     @Override
     public void checkNotNull(Order resource, String errorMessage) {
         if (resource == null) {
+            logger.error("Order is NULL.");
             throw new ServiceException(errorMessage);
         }
     }

@@ -23,7 +23,8 @@ public class DefaultOrderItemDAO implements OrderItemDAO {
     @Override
     public OrderItem read(Long id) {
         OrderItem foundOrderItem = entityManager.find(OrderItem.class, id);
-        entityManager.refresh(foundOrderItem);
+        if (foundOrderItem != null)
+            entityManager.refresh(foundOrderItem);
         return foundOrderItem;
     }
 

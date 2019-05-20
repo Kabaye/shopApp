@@ -2,9 +2,12 @@ package com.netcracker.edu.kulich.service.validation;
 
 import com.netcracker.edu.kulich.entity.Tag;
 import com.netcracker.edu.kulich.exception.service.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Validator
 public class TagValidator implements ServiceValidator<Tag, Long> {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceValidator.class);
     private static final String ID_NOT_NULL = "Tag id must be initialized.";
     private static final String ID_NULL = "Tag id must not be initialized.";
     private static final String TAG_DOESNT_EXIST = "Tag with such id doesn't exist. Please, set id valid.";
@@ -24,6 +27,7 @@ public class TagValidator implements ServiceValidator<Tag, Long> {
     @Override
     public void checkIdIsNull(Long id) {
         if (id != 0L) {
+            logger.error("Id of tag is not NULL");
             throw new ServiceException(ID_NULL);
         }
     }
@@ -31,6 +35,7 @@ public class TagValidator implements ServiceValidator<Tag, Long> {
     @Override
     public void checkIdIsNotNull(Long id) {
         if (id == 0L) {
+            logger.error("Id of tag is NULL");
             throw new ServiceException(ID_NOT_NULL);
         }
     }
@@ -38,6 +43,7 @@ public class TagValidator implements ServiceValidator<Tag, Long> {
     @Override
     public void checkNotNull(Tag resource) {
         if (resource == null) {
+            logger.error("Tag is NULL");
             throw new ServiceException(TAG_NOT_NULL);
         }
     }
@@ -45,6 +51,7 @@ public class TagValidator implements ServiceValidator<Tag, Long> {
     @Override
     public void checkNotNull(Tag resource, String errorMessage) {
         if (resource == null) {
+            logger.error("Tag is NULL");
             throw new ServiceException(errorMessage);
         }
     }
@@ -55,7 +62,7 @@ public class TagValidator implements ServiceValidator<Tag, Long> {
     }
 
     public void checkFoundByName(Tag resource, String name) {
-        checkNotNull(resource, "Tag with name: \"" + name + "\" doesn't exist.");
+        checkNotNull(resource, "Tag with name: \"" + name + "\" doesn't exist. Please, firstly, create tag and then, create offer with such tag.");
     }
 
     @Override
