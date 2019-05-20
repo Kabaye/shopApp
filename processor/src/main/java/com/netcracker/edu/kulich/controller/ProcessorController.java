@@ -17,11 +17,11 @@ import java.util.List;
 @DefaultLogging
 @RestController
 @NoArgsConstructor
-public class DefaultProcessorController /*implements ProcessorController*/ {
+public class ProcessorController {
     private WebClient defaultWebClient;
 
     @Autowired
-    public DefaultProcessorController(WebClient defaultWebClient) {
+    public ProcessorController(WebClient defaultWebClient) {
         this.defaultWebClient = defaultWebClient;
     }
 
@@ -77,7 +77,14 @@ public class DefaultProcessorController /*implements ProcessorController*/ {
     @GetMapping(value = "/orders")
     @ResponseStatus(HttpStatus.OK)
     @Logging(startMessage = "Getting all orders...", endMessage = "Orders received.", startFromNewLine = true)
-    public List<OrderDTO> getAllOrders() {
+    public List<OrderDTO> getAllOrders(@RequestParam(required = false) String email,
+                                       @RequestParam(required = false) String status) {
+        if (email != null) {
+            return getAllOrdersByEmail(email);
+        }
+        if (status != null) {
+            return getAllOrdersByPaymentStatus(status);
+        }
         return defaultWebClient.getAllOrders();
     }
 
@@ -95,7 +102,7 @@ public class DefaultProcessorController /*implements ProcessorController*/ {
         defaultWebClient.removeItemFromOrder(id, itemId);
     }
 
-    @PutMapping(value = "/orders/{id:[\\d]+}/pay")
+    @PostMapping(value = "/orders/{id:[\\d]+}/pay")
     @ResponseStatus(HttpStatus.OK)
     @Logging(startMessage = "Paying for order...", endMessage = "Order is paid.", startFromNewLine = true)
     public OrderDTO payForOrder(@PathVariable("id") Long id) {
@@ -103,21 +110,17 @@ public class DefaultProcessorController /*implements ProcessorController*/ {
     }
 
 
-    @GetMapping(value = "/statuses/{payStatus}")
-    @ResponseStatus(HttpStatus.OK)
-    @Logging(startMessage = "Getting all orders by payment status...", endMessage = "All orders received.", startFromNewLine = true)
-    public List<OrderDTO> getAllOrdersByPaymentStatus(@PathVariable("payStatus") String status) {
+    @Logging(startMessage = "Getting all orders by payment status...", endMessage = "All orders received.")
+    public List<OrderDTO> getAllOrdersByPaymentStatus(String status) {
         return defaultWebClient.getAllOrdersByPaymentStatus(status);
     }
 
-    @GetMapping(value = "/emails/{email}")
-    @ResponseStatus(HttpStatus.OK)
-    @Logging(startMessage = "Getting all orders by e-mail...", endMessage = "All orders received.", startFromNewLine = true)
-    public List<OrderDTO> getAllOrdersByEmail(@PathVariable("email") String email) {
+    @Logging(startMessage = "Getting all orders by e-mail...", endMessage = "All orders received.")
+    public List<OrderDTO> getAllOrdersByEmail(String email) {
         return defaultWebClient.getAllOrdersByEmail(email);
     }
 
-    @GetMapping(value = "/emails/{email}/amount")
+    @GetMapping(value = "/orders/{email}/amount")
     @ResponseStatus(HttpStatus.OK)
     @Logging(startMessage = "Getting amount of items, purchased by customer...", endMessage = "Amount of items, purchased by customer, received.", startFromNewLine = true)
     public String getAmountOfItemsPurchasedByCustomerWithEmail(@PathVariable("email") String email) {
@@ -125,7 +128,7 @@ public class DefaultProcessorController /*implements ProcessorController*/ {
         return "The number of offers purchased by the customer with e-mail: \"" + email + "\" is: " + amount + ";";
     }
 
-    @GetMapping(value = "/emails/{email}/price")
+    @GetMapping(value = "/orders/{email}/price")
     @ResponseStatus(HttpStatus.OK)
     @Logging(startMessage = "Getting full price of items, purchased by customer...", endMessage = "Full price of items, purchased by customer, received.", startFromNewLine = true)
     public String GetFullPriceOfItemsBoughtByCustomerWithEmail(@PathVariable("email") String email) {
@@ -133,7 +136,7 @@ public class DefaultProcessorController /*implements ProcessorController*/ {
         return "The total price of goods purchased by the customer with e-mail: \"" + email + "\" is: " + String.format("%.2f", fullPrice) + " Belorussian rubles;";
     }
 
-    @PostMapping(value = "/orders/{id:[\\d]+}/status/next")
+    @PostMapping(value = "/orders/{id:[\\d]+}/next")
     @ResponseStatus(HttpStatus.OK)
     @Logging(startMessage = "Setting next order status...", endMessage = "Next order status installed.", startFromNewLine = true)
     public OrderDTO setNextOrderStatus(@PathVariable("id") Long id) {

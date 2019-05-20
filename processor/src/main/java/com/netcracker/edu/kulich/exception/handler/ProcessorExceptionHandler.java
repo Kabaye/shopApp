@@ -14,7 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @DefaultLogging
 @ControllerAdvice
-public class ProcessorExceptionHandler extends ResponseEntityExceptionHandler/* implements ConflictHandleable */ {
+public class ProcessorExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = ProcessorException.class)
     @Logging(startMessage = "Handling global controller exceptions...", endMessage = "Global controller exception handled.", level = LogLevel.WARN)
     public ResponseEntity handleConflict(ProcessorException ex, WebRequest request) {

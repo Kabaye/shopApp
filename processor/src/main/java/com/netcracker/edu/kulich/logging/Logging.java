@@ -39,7 +39,7 @@ import java.lang.annotation.Target;
  *
  * @author Kulich Svyatoslav
  * @see DefaultLogging
- * @since 1.8.0_201
+ * @since 5.1.6
  */
 
 @Retention(RetentionPolicy.RUNTIME)

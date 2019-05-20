@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Component
 public class DefaultLoggingAnnotationHandlerBeanPostProcessor implements BeanPostProcessor {
-    private final static Logger logger = LoggerFactory.getLogger(DefaultLoggingAnnotationHandlerBeanPostProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(Logging.class);
     private Map<String, Class> classMap = new HashMap<>();
     private Map<String, Map<String, Method>> methodsMap = new HashMap<>();
 
@@ -45,12 +45,12 @@ public class DefaultLoggingAnnotationHandlerBeanPostProcessor implements BeanPos
         Class<?> beanClass = classMap.get(beanName);
         if (beanClass != null) {
             if (beanClass.getInterfaces().length != 0) {
-                logger.info("JDK Dynamic Proxy used to replace bean: \"" + beanClass.getName() + "\".");
+                logger.debug("JDK Dynamic Proxy used to replace bean: \"" + beanClass.getName() + "\".");
                 return Proxy.newProxyInstance(beanClass.getClassLoader(), beanClass.getInterfaces(), (proxy, method, args) -> {
                     Method m = methodsMap.get(beanName).get(method.getName());
                     if (m != null) {
                         Logging annotation = m.getAnnotation(Logging.class);
-                        logMessage(beanClass.getCanonicalName() + ": \"" + annotation.startMessage() + "\"", annotation.level(),
+                        logMessage(beanClass.getSimpleName() + ": " + annotation.startMessage(), annotation.level(),
                                 annotation.startFromNewLine());
                         Object retVal;
                         try {
@@ -58,14 +58,14 @@ public class DefaultLoggingAnnotationHandlerBeanPostProcessor implements BeanPos
                         } catch (InvocationTargetException ite) {
                             throw ite.getCause();
                         }
-                        logMessage(beanClass.getCanonicalName() + ": \"" + annotation.endMessage() + "\"", annotation.level(),
+                        logMessage(beanClass.getSimpleName() + ": " + annotation.endMessage(), annotation.level(),
                                 false);
                         return retVal;
                     }
                     return method.invoke(bean, args);
                 });
             } else {
-                logger.info("CGLib (Subclass) used to replace bean: \"" + beanClass.getName() + "\".");
+                logger.debug("CGLib (Subclass) used to replace bean: \"" + beanClass.getName() + "\".");
                 Enhancer enhancer = new Enhancer();
                 enhancer.setSuperclass(beanClass);
                 enhancer.setInterfaces(beanClass.getInterfaces());
@@ -73,17 +73,17 @@ public class DefaultLoggingAnnotationHandlerBeanPostProcessor implements BeanPos
                     Method m = methodsMap.get(beanName).get(method.getName());
                     if (m != null) {
                         Logging annotation = m.getAnnotation(Logging.class);
-                        logMessage(beanClass.getCanonicalName() + ": \"" + annotation.startMessage() + "\"", annotation.level(),
+                        logMessage(beanClass.getSimpleName() + ": " + annotation.startMessage(), annotation.level(),
                                 annotation.startFromNewLine());
                         Object retVal;
                         try {
                             retVal = methodProxy.invokeSuper(o, objects);
                         } catch (InvocationTargetException ite) {
-                            logMessage(beanClass.getCanonicalName() + ": \"" + annotation.endMessage() + "\"", annotation.level(),
+                            logMessage(beanClass.getSimpleName() + ": " + annotation.endMessage(), annotation.level(),
                                     false);
                             return ite.getCause();
                         }
-                        logMessage(beanClass.getCanonicalName() + ": \"" + annotation.endMessage() + "\"", annotation.level(),
+                        logMessage(beanClass.getSimpleName() + ": " + annotation.endMessage(), annotation.level(),
                                 false);
                         return retVal;
                     }

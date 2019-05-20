@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Set;
@@ -148,7 +149,10 @@ public class DefaultWebClient implements WebClient {
 
     @Logging(startMessage = "Sending request to get orders by payment status...", endMessage = "Response on request for getting orders by payment status received.")
     public List<OrderDTO> getAllOrdersByPaymentStatus(String status) {
-        return restTemplate.exchange(inventory + "/statuses/" + status,
+        return restTemplate.exchange(UriComponentsBuilder.fromHttpUrl(inventory)
+                        .path("/orders")
+                        .queryParam("status", status)
+                        .toUriString(),
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<OrderDTO>>() {
@@ -157,7 +161,10 @@ public class DefaultWebClient implements WebClient {
 
     @Logging(startMessage = "Sending request to get orders by e-mail...", endMessage = "Response on request for getting orders by e-mail received.")
     public List<OrderDTO> getAllOrdersByEmail(String email) {
-        return restTemplate.exchange(inventory + "/emails/" + email,
+        return restTemplate.exchange(UriComponentsBuilder.fromHttpUrl(inventory)
+                        .path("/orders")
+                        .queryParam("email", email)
+                        .toUriString(),
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<OrderDTO>>() {
@@ -166,7 +173,7 @@ public class DefaultWebClient implements WebClient {
 
     @Logging(startMessage = "Sending request to get amount of items, purchased by e-mail...", endMessage = "Response on request for getting amount of items, purchased by e-mail, received.")
     public Integer getAmountOfItemsPurchasedByCustomerWithEmail(String email) {
-        return restTemplate.exchange(inventory + "/emails/" + email + "/amount",
+        return restTemplate.exchange(inventory + "/orders/" + email + "/amount",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<Integer>() {
@@ -175,7 +182,7 @@ public class DefaultWebClient implements WebClient {
 
     @Logging(startMessage = "Sending request to get full price of items, purchased by e-mail...", endMessage = "Response on request for getting full price of items, purchased by e-mail, received.")
     public Double GetFullPriceOfItemsBoughtByCustomerWithEmail(String email) {
-        return restTemplate.exchange(inventory + "/emails/" + email + "/full-price",
+        return restTemplate.exchange(inventory + "/orders/" + email + "/full-price",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<Double>() {
@@ -184,7 +191,7 @@ public class DefaultWebClient implements WebClient {
 
     @Logging(startMessage = "Sending request to set next status to order...", endMessage = "Response on request for installing next status to order received.")
     public OrderDTO setNextOrderStatus(Long orderId) {
-        return restTemplate.exchange(inventory + "/orders/" + orderId + "/status/next",
+        return restTemplate.exchange(inventory + "/orders/" + orderId + "/next",
                 HttpMethod.POST,
                 null,
                 new ParameterizedTypeReference<OrderDTO>() {
@@ -193,7 +200,7 @@ public class DefaultWebClient implements WebClient {
 
     @Logging(startMessage = "Sending request to cancel order...", endMessage = "Response on request for cancelling order received.")
     public OrderDTO cancelOrder(Long orderId) {
-        return restTemplate.exchange(inventory + "/orders/" + orderId + "/status/cancel",
+        return restTemplate.exchange(inventory + "/orders/" + orderId + "/cancel",
                 HttpMethod.POST,
                 null,
                 new ParameterizedTypeReference<OrderDTO>() {
