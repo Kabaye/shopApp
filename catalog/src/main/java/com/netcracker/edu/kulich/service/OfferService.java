@@ -3,12 +3,10 @@ package com.netcracker.edu.kulich.service;
 import com.netcracker.edu.kulich.entity.Category;
 import com.netcracker.edu.kulich.entity.Offer;
 import com.netcracker.edu.kulich.entity.Tag;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
 
-@Transactional
 public interface OfferService {
     Offer saveOffer(Offer offer);
 

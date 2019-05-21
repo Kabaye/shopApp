@@ -168,7 +168,6 @@ public class DefaultOfferService implements OfferService {
         return offers;
     }
 
-
     private void recreateOfferCategoryAndTags(Offer offer) {
         Category category = recreateCategory(offer.getCategory());
         offer.setCategory(category);
