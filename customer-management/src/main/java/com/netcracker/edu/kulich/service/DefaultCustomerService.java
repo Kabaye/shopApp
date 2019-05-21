@@ -75,6 +75,7 @@ public class DefaultCustomerService implements CustomerService {
 
     @Logging(startMessage = "Request on deleting customer from database is received.", endMessage = "Customer is successfully deleted from database.")
     public void deleteCustomerById(String email) {
+        customerEmailValidator.check(email);
         try {
             customerDAO.deleteById(email);
         } catch (EntityNotFoundException exc) {

@@ -21,21 +21,12 @@ import java.util.Map;
 public class DefaultLoggingAnnotationHandlerBeanPostProcessor implements BeanPostProcessor {
     private static final Logger logger = LoggerFactory.getLogger(Logging.class);
     private Map<String, Class> classMap = new HashMap<>();
-    private Map<String, Map<String, Method>> methodsMap = new HashMap<>();
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         Class<?> beanClass = bean.getClass();
         if (beanClass.isAnnotationPresent(DefaultLogging.class)) {
             classMap.put(beanName, beanClass);
-            Method[] methods = beanClass.getMethods();
-            Map<String, Method> smMap = new HashMap<>();
-            for (Method method : methods) {
-                if (method.isAnnotationPresent(Logging.class)) {
-                    smMap.put(method.getName(), method);
-                }
-            }
-            methodsMap.put(beanName, smMap);
         }
         return bean;
     }
@@ -45,10 +36,11 @@ public class DefaultLoggingAnnotationHandlerBeanPostProcessor implements BeanPos
         Class<?> beanClass = classMap.get(beanName);
         if (beanClass != null) {
             if (beanClass.getInterfaces().length != 0) {
-                logger.debug("JDK Dynamic Proxy used to replace bean: \"" + beanClass.getName() + "\".");
-                return Proxy.newProxyInstance(beanClass.getClassLoader(), beanClass.getInterfaces(), (proxy, method, args) -> {
-                    Method m = methodsMap.get(beanName).get(method.getName());
-                    if (m != null) {
+
+                logger.info("JDK Dynamic Proxy used to enhance bean: \"" + beanClass.getName() + "\".");
+                return Proxy.newProxyInstance(beanClass.getClassLoader(), beanClass.getInterfaces(), (proxy /*my proxy*/, method /*origin method*/, args) -> {
+                    Method m = beanClass.getMethod(method.getName(), method.getParameterTypes());
+                    if (m.isAnnotationPresent(Logging.class)) {
                         Logging annotation = m.getAnnotation(Logging.class);
                         logMessage(beanClass.getSimpleName() + ": " + annotation.startMessage(), annotation.level(),
                                 annotation.startFromNewLine());
@@ -56,6 +48,7 @@ public class DefaultLoggingAnnotationHandlerBeanPostProcessor implements BeanPos
                         try {
                             retVal = method.invoke(bean, args);
                         } catch (InvocationTargetException ite) {
+                            logger.error("Forwarding of exception, thrown by " + method.getName() + "...");
                             throw ite.getCause();
                         }
                         logMessage(beanClass.getSimpleName() + ": " + annotation.endMessage(), annotation.level(),
@@ -65,30 +58,24 @@ public class DefaultLoggingAnnotationHandlerBeanPostProcessor implements BeanPos
                     return method.invoke(bean, args);
                 });
             } else {
-                logger.debug("CGLib (Subclass) used to replace bean: \"" + beanClass.getName() + "\".");
+
+                logger.info("SpringCGLib (Subclass) used to enhance bean: \"" + beanClass.getName() + "\".");
                 Enhancer enhancer = new Enhancer();
                 enhancer.setSuperclass(beanClass);
                 enhancer.setInterfaces(beanClass.getInterfaces());
-                enhancer.setCallback((MethodInterceptor) (o, method, objects, methodProxy) -> {
-                    Method m = methodsMap.get(beanName).get(method.getName());
-                    if (m != null) {
-                        Logging annotation = m.getAnnotation(Logging.class);
+                enhancer.setCallback((MethodInterceptor) (o /*Subclass*/, method /*origin method*/, objects /*args*/, methodProxy /*Subclass method*/) -> {
+                    if (method.isAnnotationPresent(Logging.class)) {
+                        Logging annotation = method.getAnnotation(Logging.class);
                         logMessage(beanClass.getSimpleName() + ": " + annotation.startMessage(), annotation.level(),
                                 annotation.startFromNewLine());
-                        Object retVal;
-                        try {
-                            retVal = methodProxy.invokeSuper(o, objects);
-                        } catch (InvocationTargetException ite) {
-                            logMessage(beanClass.getSimpleName() + ": " + annotation.endMessage(), annotation.level(),
-                                    false);
-                            return ite.getCause();
-                        }
+                        Object retVal = methodProxy.invokeSuper(o, objects);
                         logMessage(beanClass.getSimpleName() + ": " + annotation.endMessage(), annotation.level(),
                                 false);
                         return retVal;
                     }
                     return methodProxy.invokeSuper(o, objects);
                 });
+
                 Object proxy = enhancer.create();
                 Field[] fields = beanClass.getDeclaredFields();
                 for (Field field : fields) {
