@@ -136,7 +136,7 @@ public class ProcessorController {
         return "The total price of goods purchased by the customer with e-mail: \"" + email + "\" is: " + String.format("%.2f", fullPrice) + " Belorussian rubles;";
     }
 
-    @PostMapping(value = "/orders/{id:[\\d]+}/next")
+    @PostMapping(value = "/orders/{id:[\\d]+}/nextStatus")
     @ResponseStatus(HttpStatus.OK)
     @Logging(startMessage = "Setting next order status...", endMessage = "Next order status installed.", startFromNewLine = true)
     public OrderDTO setNextOrderStatus(@PathVariable("id") Long id) {

@@ -141,7 +141,7 @@ public class DefaultWebClient implements WebClient {
     @Logging(startMessage = "Sending request to pay for order...", endMessage = "Response on request for paying for order received.")
     public OrderDTO payForOrder(Long orderId) {
         return restTemplate.exchange(inventory + "/orders/" + orderId + "/pay",
-                HttpMethod.PUT,
+                HttpMethod.POST,
                 null,
                 new ParameterizedTypeReference<OrderDTO>() {
                 }).getBody();
