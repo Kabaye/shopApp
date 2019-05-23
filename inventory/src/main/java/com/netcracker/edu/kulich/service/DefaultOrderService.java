@@ -75,6 +75,10 @@ public class DefaultOrderService implements OrderService {
         orderValidator.checkIdIsNotNull(id);
         Order order = orderDAO.read(id);
         orderValidator.checkFoundById(order);
+        if (order.getOrderStatus() == OrderStatusEnum.CANCELED) {
+            logger.error("Attempt to set not possible status.");
+            throw new ServiceException("Sorry, you can't pay for canceled order. Create new one. With best regards");
+        }
         order.setOrderPaymentStatus(OrderPaymentStatusEnum.PAID);
         order = orderDAO.update(order);
         return order;
@@ -90,6 +94,10 @@ public class DefaultOrderService implements OrderService {
             logger.error("Attempt to set not possible status.");
             throw new ServiceException("Sorry, but we can't send order to you without payment. Please, pay firstly and then we will send you your order.");
         }
+        if (order.getOrderStatus() == OrderStatusEnum.CANCELED) {
+            logger.error("Attempt to set not possible status.");
+            throw new ServiceException("Сорямба, we can't set next status of canceled order)))).");
+        }
         order.setOrderStatus(order.getOrderStatus().nextStatus());
         order = orderDAO.update(order);
         return order;
@@ -101,9 +109,9 @@ public class DefaultOrderService implements OrderService {
         orderValidator.checkIdIsNotNull(id);
         Order order = orderDAO.read(id);
         orderValidator.checkFoundById(order);
-        if (order.getOrderPaymentStatus() == OrderPaymentStatusEnum.PAID && order.getOrderStatus() != OrderStatusEnum.IN_PROCESS && order.getOrderStatus() != OrderStatusEnum.AGGREGATED) {
+        if (order.getOrderPaymentStatus() == OrderPaymentStatusEnum.PAID || (order.getOrderStatus() != OrderStatusEnum.IN_PROCESS && order.getOrderStatus() != OrderStatusEnum.AGGREGATED)) {
             logger.error("Attempt to set not possible status.");
-            throw new ServiceException("We can't cancel shipped order.");
+            throw new ServiceException("We can't cancel shipped or paid order.");
         }
         order.setOrderStatus(OrderStatusEnum.CANCELED);
         order = orderDAO.update(order);
@@ -116,9 +124,10 @@ public class DefaultOrderService implements OrderService {
         orderValidator.checkIdIsNotNull(id);
         Order order = orderDAO.read(id);
         orderValidator.checkFoundById(order);
-        if (order.getOrderPaymentStatus() == OrderPaymentStatusEnum.PAID || order.getOrderStatus() != OrderStatusEnum.IN_PROCESS) {
+        if (order.getOrderPaymentStatus() == OrderPaymentStatusEnum.PAID || order.getOrderStatus() != OrderStatusEnum.IN_PROCESS
+                && order.getOrderStatus() != OrderStatusEnum.AGGREGATED || order.getOrderStatus() == OrderStatusEnum.CANCELED) {
             logger.error("Attempt to modify unchangeable order.");
-            throw new ServiceException("You can't update paid or shipped order.");
+            throw new ServiceException("You can't update paid, canceled or shipped order.");
         }
         checkAndRecreateOrderItem(item);
         order.addItem(item);
@@ -134,9 +143,10 @@ public class DefaultOrderService implements OrderService {
         orderValidator.checkIdIsNotNull(id);
         Order order = orderDAO.read(id);
         orderValidator.checkFoundById(order);
-        if (order.getOrderPaymentStatus() == OrderPaymentStatusEnum.PAID || order.getOrderStatus() != OrderStatusEnum.IN_PROCESS && order.getOrderStatus() != OrderStatusEnum.AGGREGATED) {
+        if (order.getOrderPaymentStatus() == OrderPaymentStatusEnum.PAID || order.getOrderStatus() != OrderStatusEnum.IN_PROCESS
+                && order.getOrderStatus() != OrderStatusEnum.AGGREGATED || order.getOrderStatus() == OrderStatusEnum.CANCELED) {
             logger.error("Attempt to update unchangeable order");
-            throw new ServiceException("You can't update paid or shipped order.");
+            throw new ServiceException("You can't update paid, canceled or shipped order.");
         }
         OrderItem item = orderItemDAO.read(itemId);
         order.getOrderItems().remove(item);

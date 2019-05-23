@@ -37,7 +37,7 @@ import java.lang.annotation.Target;
  *
  * <p>Class which has method, annotated with {@link Logging @Component}, must be annotated with {@link DefaultLogging @Component}.
  *
- * @author Kulich Svyatoslav
+ * @author Kulich Svyatoslav, Vorobei Artsem
  * @see DefaultLogging
  * @since 5.1.6
  */

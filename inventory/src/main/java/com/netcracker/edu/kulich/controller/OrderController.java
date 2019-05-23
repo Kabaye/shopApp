@@ -10,7 +10,6 @@ import com.netcracker.edu.kulich.exception.controller.ControllerException;
 import com.netcracker.edu.kulich.logging.DefaultLogging;
 import com.netcracker.edu.kulich.logging.Logging;
 import com.netcracker.edu.kulich.service.OrderService;
-import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping
 @DefaultLogging
-@NoArgsConstructor
 public class OrderController {
     private Logger logger = LoggerFactory.getLogger(OrderController.class);
     private OrderService orderService;
