@@ -10,10 +10,7 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,8 +72,15 @@ public class DefaultLoggingAnnotationHandlerBeanPostProcessor implements BeanPos
                     }
                     return methodProxy.invokeSuper(o, objects);
                 });
+                Object proxy;
 
-                Object proxy = enhancer.create();
+                Constructor[] constructors = beanClass.getConstructors();
+                Class[] parameterTypes = constructors[0].getParameterTypes();
+                if (parameterTypes.length == 0) {
+                    proxy = enhancer.create();
+                } else {
+                    proxy = enhancer.create(parameterTypes, new Object[parameterTypes.length]);
+                }
                 Field[] fields = beanClass.getDeclaredFields();
                 for (Field field : fields) {
                     field.setAccessible(true);

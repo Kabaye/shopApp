@@ -12,7 +12,6 @@ import com.netcracker.edu.kulich.exception.controller.ControllerException;
 import com.netcracker.edu.kulich.logging.DefaultLogging;
 import com.netcracker.edu.kulich.logging.Logging;
 import com.netcracker.edu.kulich.service.OfferService;
-import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/offers")
 @DefaultLogging
-@NoArgsConstructor
 public class OfferController {
     private Logger logger = LoggerFactory.getLogger(OfferController.class);
     private OfferTransformator offerTransformator;
