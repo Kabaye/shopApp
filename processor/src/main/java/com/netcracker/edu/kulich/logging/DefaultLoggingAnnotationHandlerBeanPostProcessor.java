@@ -10,10 +10,7 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,26 +36,22 @@ public class DefaultLoggingAnnotationHandlerBeanPostProcessor implements BeanPos
 
                 logger.info("JDK Dynamic Proxy used to enhance bean: \"" + beanClass.getName() + "\".");
                 return Proxy.newProxyInstance(beanClass.getClassLoader(), beanClass.getInterfaces(), (proxy /*my proxy*/, method /*origin method*/, args) -> {
-                    Method m = beanClass.getMethod(method.getName(), method.getParameterTypes());
-                    if (m.isAnnotationPresent(Logging.class)) {
-                        Logging annotation = m.getAnnotation(Logging.class);
-                        logMessage(beanClass.getSimpleName() + ": " + annotation.startMessage(), annotation.level(),
-                                annotation.startFromNewLine());
-                        Object retVal;
-                        try {
-                            retVal = method.invoke(bean, args);
-                        } catch (InvocationTargetException ite) {
-                            logger.error("Forwarding of exception, thrown by " + method.getName() + "...");
-                            throw ite.getCause();
-                        }
-                        logMessage(beanClass.getSimpleName() + ": " + annotation.endMessage(), annotation.level(),
-                                false);
-                        return retVal;
-                    }
                     try {
+                        Method m = beanClass.getMethod(method.getName(), method.getParameterTypes());
+                        if (m.isAnnotationPresent(Logging.class)) {
+                            Logging annotation = m.getAnnotation(Logging.class);
+                            logMessage(beanClass.getSimpleName() + ": " + annotation.startMessage(), annotation.level(),
+                                    annotation.startFromNewLine());
+                            Object retVal;
+                            retVal = method.invoke(bean, args);
+                            logMessage(beanClass.getSimpleName() + ": " + annotation.endMessage(), annotation.level(),
+                                    false);
+                            return retVal;
+                        }
                         return method.invoke(bean, args);
                     } catch (InvocationTargetException ite) {
-                        throw ite.getTargetException();
+                        logger.error("Forwarding of exception, thrown by " + method.getName() + "...");
+                        throw ite.getCause();
                     }
                 });
             } else {
@@ -77,11 +70,17 @@ public class DefaultLoggingAnnotationHandlerBeanPostProcessor implements BeanPos
                                 false);
                         return retVal;
                     }
-
                     return methodProxy.invokeSuper(o, objects);
                 });
+                Object proxy;
 
-                Object proxy = enhancer.create();
+                Constructor[] constructors = beanClass.getConstructors();
+                Class[] parameterTypes = constructors[0].getParameterTypes();
+                if (parameterTypes.length == 0) {
+                    proxy = enhancer.create();
+                } else {
+                    proxy = enhancer.create(parameterTypes, new Object[parameterTypes.length]);
+                }
                 Field[] fields = beanClass.getDeclaredFields();
                 for (Field field : fields) {
                     field.setAccessible(true);

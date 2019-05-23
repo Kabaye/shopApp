@@ -1,28 +1,28 @@
 package com.netcracker.edu.kulich.controller;
 
 import com.netcracker.edu.kulich.controller.client.WebClient;
-import com.netcracker.edu.kulich.dto.CustomerDTO;
-import com.netcracker.edu.kulich.dto.OfferDTO;
-import com.netcracker.edu.kulich.dto.OrderDTO;
-import com.netcracker.edu.kulich.dto.SimplifiedOrderDTO;
+import com.netcracker.edu.kulich.dto.*;
+import com.netcracker.edu.kulich.dto.transformator.Transformator;
 import com.netcracker.edu.kulich.logging.DefaultLogging;
 import com.netcracker.edu.kulich.logging.Logging;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @DefaultLogging
 @RestController
-@NoArgsConstructor
 public class ProcessorController {
     private WebClient defaultWebClient;
+    private Transformator transformator;
 
     @Autowired
-    public ProcessorController(WebClient defaultWebClient) {
+    public ProcessorController(WebClient defaultWebClient, Transformator transformator) {
         this.defaultWebClient = defaultWebClient;
+        this.transformator = transformator;
     }
 
     @GetMapping(value = "/offers")
@@ -63,8 +63,16 @@ public class ProcessorController {
     @PostMapping(value = "/orders")
     @ResponseStatus(HttpStatus.CREATED)
     @Logging(startMessage = "Creating order with e-mail, date, and list of offers...", endMessage = "Order created.", startFromNewLine = true)
-    public OrderDTO createOrder(@RequestBody SimplifiedOrderDTO simplifiedOrderDTO) {
-        return defaultWebClient.createOrder(simplifiedOrderDTO);
+    public OrderDTO createOrder(@RequestBody SimplifiedOrderDTO simplifiedOrder) {
+        CustomerDTO customer = defaultWebClient.getCustomerByEmail(simplifiedOrder.getEmail());
+
+        Set<OfferDTO> offers = defaultWebClient.getOffersByIds(simplifiedOrder.getItemIds());
+
+        Set<OrderItemDTO> items = offers.stream().map(transformator::convertOfferDtoToOrderItemDto).collect(Collectors.toSet());
+
+        OrderDTO orderDTO = new OrderDTO(simplifiedOrder.getDate(), customer.getEmail(), items);
+
+        return defaultWebClient.saveOrder(orderDTO);
     }
 
     @GetMapping(value = "/orders/{id:[\\d]+}")

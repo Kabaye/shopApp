@@ -1,6 +1,8 @@
 package com.netcracker.edu.kulich.controller.client;
 
-import com.netcracker.edu.kulich.dto.*;
+import com.netcracker.edu.kulich.dto.CustomerDTO;
+import com.netcracker.edu.kulich.dto.OfferDTO;
+import com.netcracker.edu.kulich.dto.OrderDTO;
 import com.netcracker.edu.kulich.dto.transformator.Transformator;
 import com.netcracker.edu.kulich.logging.DefaultLogging;
 import com.netcracker.edu.kulich.logging.Logging;
@@ -87,19 +89,6 @@ public class DefaultWebClient implements WebClient {
                 new HttpEntity<>(customer),
                 new ParameterizedTypeReference<CustomerDTO>() {
                 }).getBody();
-    }
-
-    @Logging(startMessage = "Creating order by email, offers and date...", endMessage = "Response on request for order saving received.")
-    public OrderDTO createOrder(SimplifiedOrderDTO simplifiedOrder) {
-        CustomerDTO customer = getCustomerByEmail(simplifiedOrder.getEmail());
-
-        Set<OfferDTO> offers = getOffersByIds(simplifiedOrder.getItemIds());
-
-        Set<OrderItemDTO> items = offers.stream().map(transformator::convertOfferDtoToOrderItemDto).collect(Collectors.toSet());
-
-        OrderDTO orderDTO = new OrderDTO(simplifiedOrder.getDate(), customer.getEmail(), items);
-
-        return saveOrder(orderDTO);
     }
 
     @Logging(startMessage = "Sending request to get order by id...", endMessage = "Response on request for customer received.")
@@ -218,7 +207,8 @@ public class DefaultWebClient implements WebClient {
         ).getBody();
     }
 
-    private Set<OfferDTO> getOffersByIds(Set<Long> ids) {
+    @Logging(startMessage = "Sending request to get all orders by ids...", endMessage = "Response on request for getting orders received.")
+    public Set<OfferDTO> getOffersByIds(Set<Long> ids) {
         return ids.stream()
                 .map(this::getOfferById)
                 .collect(Collectors.toSet());

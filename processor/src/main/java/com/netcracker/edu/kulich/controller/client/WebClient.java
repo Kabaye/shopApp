@@ -3,9 +3,9 @@ package com.netcracker.edu.kulich.controller.client;
 import com.netcracker.edu.kulich.dto.CustomerDTO;
 import com.netcracker.edu.kulich.dto.OfferDTO;
 import com.netcracker.edu.kulich.dto.OrderDTO;
-import com.netcracker.edu.kulich.dto.SimplifiedOrderDTO;
 
 import java.util.List;
+import java.util.Set;
 
 public interface WebClient {
 
@@ -18,8 +18,6 @@ public interface WebClient {
     CustomerDTO getCustomerByEmail(String email);
 
     CustomerDTO signUpWithEmail(CustomerDTO customer);
-
-    OrderDTO createOrder(SimplifiedOrderDTO simplifiedOrder);
 
     OrderDTO getOrderById(Long id);
 
@@ -44,4 +42,6 @@ public interface WebClient {
     OrderDTO cancelOrder(Long orderId);
 
     OrderDTO saveOrder(OrderDTO orderDTO);
+
+    Set<OfferDTO> getOffersByIds(Set<Long> ids);
 }
