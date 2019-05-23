@@ -7,7 +7,6 @@ import com.netcracker.edu.kulich.exception.controller.CustomerControllerExceptio
 import com.netcracker.edu.kulich.logging.DefaultLogging;
 import com.netcracker.edu.kulich.logging.Logging;
 import com.netcracker.edu.kulich.service.CustomerService;
-import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 @RestController
 @DefaultLogging
 @RequestMapping("/customers")
-@NoArgsConstructor
 public class CustomerController {
     private Transformator transformator;
     private CustomerService customerService;
