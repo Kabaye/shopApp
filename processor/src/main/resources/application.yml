@@ -1,14 +1,19 @@
 server:
   port: 6666
 catalog:
-  host: http://localhost
-  port: 6668
-  url: ${catalog.host}:${catalog.port}/catalog
+  name: catalog
 inventory:
-  host: http://localhost
-  port: 6669
-  url: ${inventory.host}:${inventory.port}/inventory
-customer:
-  host: http://localhost
-  port: 6667
-  url: ${customer.host}:${customer.port}/customer-management
+  name: inventory
+customer-management:
+  name: customer-management
+spring:
+  application:
+    name: processor
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:9999/myeureka/eureka}
+  instance:
+    lease-renewal-interval-in-seconds: 5
+    preferIpAddress: true
+    ip-address: 127.0.0.1

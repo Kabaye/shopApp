@@ -6,7 +6,6 @@ import com.netcracker.edu.kulich.dto.OrderDTO;
 import com.netcracker.edu.kulich.dto.transformator.Transformator;
 import com.netcracker.edu.kulich.logging.annotation.DefaultLogging;
 import com.netcracker.edu.kulich.logging.annotation.Logging;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -29,12 +28,12 @@ public class DefaultWebClient implements WebClient {
     private String customerManagement;
     private Transformator transformator;
 
-    public DefaultWebClient(@Value("${inventory.url}") String inventory, @Value("${catalog.url}") String catalog,
-                            @Value("${customer.url}") String customerManagement, RestTemplate restTemplate, Transformator transformator, ResponseErrorHandler restTemplateResponseErrorHandler) {
-        this.inventory = inventory;
-        this.catalog = catalog;
-        this.customerManagement = customerManagement;
+    public DefaultWebClient(RestTemplate restTemplate, String inventoryUrl, String catalogUrl, String customerManagementUrl,
+                            Transformator transformator, ResponseErrorHandler restTemplateResponseErrorHandler) {
         this.restTemplate = restTemplate;
+        this.inventory = inventoryUrl + "/inventory";
+        this.catalog = catalogUrl + "/catalog";
+        this.customerManagement = customerManagementUrl + "/customer-management";
         this.transformator = transformator;
         this.restTemplate.setErrorHandler(restTemplateResponseErrorHandler);
     }
