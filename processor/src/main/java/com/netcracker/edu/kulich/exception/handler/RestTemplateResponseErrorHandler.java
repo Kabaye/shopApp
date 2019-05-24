@@ -1,8 +1,8 @@
 package com.netcracker.edu.kulich.exception.handler;
 
 import com.netcracker.edu.kulich.exception.remote.RemoteAPIException;
-import com.netcracker.edu.kulich.logging.DefaultLogging;
-import com.netcracker.edu.kulich.logging.Logging;
+import com.netcracker.edu.kulich.logging.annotation.DefaultLogging;
+import com.netcracker.edu.kulich.logging.annotation.Logging;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
