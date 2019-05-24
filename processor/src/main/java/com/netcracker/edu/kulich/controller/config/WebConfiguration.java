@@ -18,7 +18,6 @@ public class WebConfiguration {
         this.discoveryClient = discoveryClient;
     }
 
-
     @Bean
     public String catalogUrl(@Value("${catalog.name}") String catalog) {
         List<ServiceInstance> list = discoveryClient.getInstances(catalog);
