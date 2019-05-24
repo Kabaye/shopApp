@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: catalog
   datasource:
     url: jdbc:postgresql://localhost:5432/Catalog
     username: postgres
@@ -18,3 +20,12 @@ spring:
       path: /catalog
 server:
   port: 6668
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:9999/myeureka/eureka}
+    initial-instance-info-replication-interval-seconds: 5
+  instance:
+    lease-renewal-interval-in-seconds: 5
+    preferIpAddress: true
+    ip-address: 127.0.0.1

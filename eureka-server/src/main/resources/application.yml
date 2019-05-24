@@ -1,0 +1,14 @@
+server:
+  port: 9999
+  servlet:
+    context-path: /myeureka
+
+eureka:
+  server:
+    response-cache-update-interval-ms: 5000
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1

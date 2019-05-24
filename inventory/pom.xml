@@ -12,7 +12,6 @@
     <artifactId>inventory</artifactId>
 
     <dependencies>
-
         <!-- JDBC Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>

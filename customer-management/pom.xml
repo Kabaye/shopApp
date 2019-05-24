@@ -12,7 +12,6 @@
     <artifactId>customer-management</artifactId>
 
     <dependencies>
-
         <!-- JDBC Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
