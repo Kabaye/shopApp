@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class InventoryException extends RuntimeException {
+public abstract class InventoryException extends RuntimeException {
     private HttpStatus status;
 
     public InventoryException(String message, HttpStatus status) {
