@@ -12,7 +12,6 @@ import com.netcracker.edu.kulich.offer.entity.Offer;
 import com.netcracker.edu.kulich.offer.service.OfferService;
 import com.netcracker.edu.kulich.tag.dto.TagDTO;
 import com.netcracker.edu.kulich.tag.dto.transformator.TagTransformator;
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/offers")
 @DefaultLogging
-@Api(value = "Offer Management System")
 public class OfferController {
     private Logger logger = LoggerFactory.getLogger(OfferController.class);
     private OfferTransformator offerTransformator;

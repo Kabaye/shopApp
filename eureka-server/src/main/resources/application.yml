@@ -5,8 +5,7 @@ server:
 
 eureka:
   server:
-    response-cache-update-interval-ms: 1000
-    eviction-interval-timer-in-ms: 100
+    response-cache-update-interval-ms: 3000
     enable-self-preservation: true
   client:
     register-with-eureka: false
