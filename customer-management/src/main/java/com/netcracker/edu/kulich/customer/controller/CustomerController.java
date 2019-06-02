@@ -7,6 +7,7 @@ import com.netcracker.edu.kulich.customer.service.CustomerService;
 import com.netcracker.edu.kulich.exception.controller.ControllerException;
 import com.netcracker.edu.kulich.logging.annotation.DefaultLogging;
 import com.netcracker.edu.kulich.logging.annotation.Logging;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @RestController
 @DefaultLogging
 @RequestMapping("/customers")
+@Api(value = "Customer Management System")
 public class CustomerController {
     private Transformator transformator;
     private CustomerService customerService;

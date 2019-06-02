@@ -7,6 +7,7 @@ import com.netcracker.edu.kulich.tag.dto.TagDTO;
 import com.netcracker.edu.kulich.tag.dto.transformator.TagTransformator;
 import com.netcracker.edu.kulich.tag.entity.Tag;
 import com.netcracker.edu.kulich.tag.service.TagService;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/tags")
 @DefaultLogging
+@Api(value = "Tag Management System")
 public class TagController {
     private Logger logger = LoggerFactory.getLogger(TagController.class);
     private TagTransformator tagTransformator;

@@ -7,6 +7,7 @@ import com.netcracker.edu.kulich.category.service.CategoryService;
 import com.netcracker.edu.kulich.exception.controller.ControllerException;
 import com.netcracker.edu.kulich.logging.annotation.DefaultLogging;
 import com.netcracker.edu.kulich.logging.annotation.Logging;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/categories")
 @DefaultLogging
+@Api(value = "Category Management System")
 public class CategoryController {
     private CategoryTransformator categoryTransformator;
     private CategoryService categoryService;

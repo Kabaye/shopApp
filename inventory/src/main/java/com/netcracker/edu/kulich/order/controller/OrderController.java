@@ -10,6 +10,7 @@ import com.netcracker.edu.kulich.order.dto.transformator.Transformator;
 import com.netcracker.edu.kulich.order.entity.Order;
 import com.netcracker.edu.kulich.order.entity.OrderItem;
 import com.netcracker.edu.kulich.order.service.OrderService;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping
 @DefaultLogging
+@Api(value = "Order Management System")
 public class OrderController {
     private Logger logger = LoggerFactory.getLogger(OrderController.class);
     private OrderService orderService;

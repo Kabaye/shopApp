@@ -18,3 +18,4 @@ eureka:
     preferIpAddress: true
     ip-address: 127.0.0.1
     lease-expiration-duration-in-seconds: 2
+servers:
