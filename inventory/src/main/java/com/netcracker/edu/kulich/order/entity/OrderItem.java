@@ -16,6 +16,10 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Entity
 @Table(name = "order_items")
+@NamedQueries({
+        @NamedQuery(name = "OrderItem.getAllByCustomerAndCategory", query = "SELECT o FROM OrderItem o WHERE o.category=:category AND o.order.email = :email"),
+        @NamedQuery(name = "OrderItem.getAllByCustomerAndTag", query = "SELECT o FROM OrderItem o WHERE o.order.email = :email AND :tag MEMBER OF o.tags")
+})
 public class OrderItem {
 
     @Id

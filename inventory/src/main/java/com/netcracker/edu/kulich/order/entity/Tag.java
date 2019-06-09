@@ -14,6 +14,9 @@ import java.util.StringJoiner;
 @NoArgsConstructor
 @Entity
 @Table(name = "tags")
+@NamedQueries({
+        @NamedQuery(name = "Tag.findByName", query = "SELECT t FROM Tag t where t.tagname = :tagname")
+})
 public class Tag {
 
     @Id

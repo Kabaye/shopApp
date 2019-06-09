@@ -75,9 +75,9 @@ public class DefaultOrderService implements OrderService {
         orderValidator.checkIdIsNotNull(id);
         Order order = orderDAO.read(id);
         orderValidator.checkFoundById(order);
-        if (order.getOrderStatus() == OrderStatusEnum.CANCELED) {
+        if (order.getOrderStatus() == OrderStatusEnum.CANCELED || order.getOrderPaymentStatus() == OrderPaymentStatusEnum.PAID) {
             logger.error("Attempt to set not possible status.");
-            throw new ServiceException("Sorry, you can't pay for canceled order. Create new one. With best regards");
+            throw new ServiceException("Sorry, you can't pay for canceled / paid order. Create new one. With best regards");
         }
         order.setOrderPaymentStatus(OrderPaymentStatusEnum.PAID);
         order = orderDAO.update(order);

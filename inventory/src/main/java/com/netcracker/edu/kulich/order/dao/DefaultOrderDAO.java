@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import java.util.List;
 
 @Repository(value = "orderDAO")
@@ -34,9 +33,7 @@ public class DefaultOrderDAO implements OrderDAO {
 
     @Override
     public List<Order> findAll() {
-        List<Order> orders;
-        orders = entityManager.createQuery("select order from Order order order by order.id", Order.class).getResultList();
-        return orders;
+        return entityManager.createNamedQuery("Order.getAll", Order.class).getResultList();
     }
 
 
@@ -57,43 +54,31 @@ public class DefaultOrderDAO implements OrderDAO {
 
     @Override
     public List<OrderItem> findCustomerOrderItemsByCategory(String email, String category) {
-        List<OrderItem> orderItems;
-
-        Query query = entityManager.createQuery("SELECT o FROM OrderItem o" +
-                " where o.category=:category AND o.order.email = :email");
-
-        query.setParameter("email", email);
-        query.setParameter("category", category);
-
-        orderItems = query.getResultList();
-
-        return orderItems;
+        return entityManager.createNamedQuery("OrderItem.getAllByCustomerAndCategory", OrderItem.class)
+                .setParameter("category", category)
+                .setParameter("email", email)
+                .getResultList();
     }
 
     @Override
     public List<OrderItem> findCustomerOrderItemsByTag(String email, Tag tag) {
-        List<OrderItem> orderItems;
-
-        Query query = entityManager.createQuery("SELECT o FROM OrderItem o" +
-                " where o.order.email = :email AND :tag MEMBER OF o.tags");
-
-        query.setParameter("email", email);
-        query.setParameter("tag", tag);
-
-        orderItems = query.getResultList();
-
-        return orderItems;
+        return entityManager.createNamedQuery("OrderItem.getAllByCustomerAndTag", OrderItem.class)
+                .setParameter("email", email)
+                .setParameter("tag", tag)
+                .getResultList();
     }
 
     @Override
     public List<Order> getAllOrdersByPaymentStatus(OrderPaymentStatusEnum paymentStatus) {
-        return entityManager.createQuery("SELECT order FROM Order order WHERE order.orderPaymentStatus = :status")
-                .setParameter("status", paymentStatus).getResultList();
+        return entityManager.createNamedQuery("Order.getAllByStatus", Order.class)
+                .setParameter("status", paymentStatus)
+                .getResultList();
     }
 
     @Override
     public List<Order> getAllOrdersByEmail(String email) {
-        return entityManager.createQuery("SELECT order FROM Order order WHERE order.email = :email")
-                .setParameter("email", email).getResultList();
+        return entityManager.createNamedQuery("Order.getAllByEmail", Order.class)
+                .setParameter("email", email)
+                .getResultList();
     }
 }

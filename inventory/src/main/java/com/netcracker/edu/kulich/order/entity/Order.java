@@ -16,6 +16,11 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "orders")
+@NamedQueries({
+        @NamedQuery(name = "Order.getAll", query = "SELECT order FROM Order order ORDER BY order.id"),
+        @NamedQuery(name = "Order.getAllByStatus", query = "SELECT order FROM Order order WHERE order.orderPaymentStatus = :status"),
+        @NamedQuery(name = "Order.getAllByEmail", query = "SELECT order FROM Order order WHERE order.email = :email"),
+})
 public class Order {
 
     @Id
