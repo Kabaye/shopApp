@@ -13,7 +13,7 @@ public interface OfferDAO {
 
     Offer read(Long id);
 
-    List<Offer> findAll();
+    List findAll();
 
     Offer update(Offer offer);
 

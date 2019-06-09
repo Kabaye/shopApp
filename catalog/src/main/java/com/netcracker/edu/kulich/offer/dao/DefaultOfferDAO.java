@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository(value = "offerDAO")
 public class DefaultOfferDAO implements OfferDAO {
@@ -35,8 +35,7 @@ public class DefaultOfferDAO implements OfferDAO {
 
     @Override
     public List<Offer> findAll() {
-        List<Offer> offers = entityManager.createQuery("select offer from Offer offer order by offer.id", Offer.class).getResultList();
-        return offers;
+        return (List<Offer>) entityManager.createNamedQuery("Offer.findAll").getResultList();
     }
 
 
@@ -56,53 +55,25 @@ public class DefaultOfferDAO implements OfferDAO {
 
     @Override
     public List<Offer> findOffersByCategory(Category category) {
-        List<Offer> offers;
-
-        Query query = entityManager.createQuery("SELECT offer FROM Offer offer WHERE offer.category.category = :category_name");
-        query.setParameter("category_name", category.getCategory());
-
-        offers = (List<Offer>) query.getResultList();
-
-        return offers;
+        return (List<Offer>) entityManager.createNamedQuery("Offer.findAllByCategory").setParameter("category_name", category.getCategory()).getResultList();
     }
 
     @Override
     public List<Offer> findOffersByTags(Collection<Tag> tags) {
-        List<Offer> offers;
-
-        StringBuilder builder = new StringBuilder();
-        builder.append(" SELECT o FROM Offer o ");
-        builder.append(" JOIN Tag t ON o MEMBER OF t.offers ");
-        builder.append(" WHERE t.tagname IN (");
-
-        long tagCount = tags.stream()
-                .filter(tag -> tag != null && tag.getTagname() != null)
-                .map(Tag::getTagname)
-                .peek(tagname -> builder.append("'").append(tagname).append("'").append(", "))
-                .count();
-
-        builder.setLength(builder.length() - 2);
-        builder.append(")");
-        builder.append(" GROUP BY o.id HAVING COUNT(DISTINCT t.tagname) = ").append(tagCount);
-
-        offers = (List<Offer>) entityManager.createQuery(builder.toString()).getResultList();
-
-        return offers;
+        return entityManager.createNamedQuery("Offer.findAllHavingTags", Offer.class)
+                .setParameter("tagNameList", tags.stream()
+                        .map(Tag::getTagname)
+                        .collect(Collectors.toList()))
+                .setParameter("tagCount", (long) tags.size())
+                .getResultList();
     }
 
     @Override
     public List<Offer> findOffersByRangeOfPrice(double lowerBound, double upperBound) {
-        List<Offer> offers;
-
-        Query query = entityManager.createQuery("SELECT offer FROM Offer offer " +
-                "WHERE offer.price.price >= :lowerBound AND offer.price.price <= :upperBound");
-
-        query.setParameter("lowerBound", lowerBound);
-        query.setParameter("upperBound", upperBound);
-
-        offers = (List<Offer>) query.getResultList();
-
-        return offers;
+        return entityManager.createNamedQuery("Offer.findAllWithPriceInRange", Offer.class)
+                .setParameter("lowerBound", lowerBound)
+                .setParameter("upperBound", upperBound)
+                .getResultList();
     }
 
 

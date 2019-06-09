@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
-import java.util.List;
 import java.util.Set;
 
 @Repository(value = "tagDAO")
@@ -28,11 +27,12 @@ public class DefaultTagDAO implements TagDAO {
 
     @Override
     public Tag readByName(String name) {
-        List objects = entityManager.createQuery("SELECT tag FROM Tag tag WHERE tag.tagname = :name").setParameter("name", name).getResultList();
-        Tag tag = null;
-        if (objects.size() != 0)
-            tag = (Tag) objects.get(0);
-        return tag;
+        return entityManager.createNamedQuery("Tag.findByName", Tag.class)
+                .setParameter("tagname", name)
+                .setMaxResults(1).getResultList()
+                .stream()
+                .findFirst()
+                .get();
     }
 
     @Override

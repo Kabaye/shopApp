@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
-import java.util.List;
 import java.util.Set;
 
 @Repository(value = "categoryDAO")
@@ -28,15 +27,14 @@ public class DefaultCategoryDAO implements CategoryDAO {
 
     @Override
     public Category readByName(String name) {
-        Category category;
-        List objects = entityManager.createQuery("SELECT c FROM Category c WHERE c.category = :name ")
+        return entityManager.createNamedQuery("Category.findByName", Category.class)
                 .setParameter("name", name)
-                .getResultList();
-        if (objects.size() == 0)
-            category = null;
-        else
-            category = (Category) objects.get(0);
-        return category;
+                .setMaxResults(1)
+                .getResultList()
+                .stream()
+                .limit(1)
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
