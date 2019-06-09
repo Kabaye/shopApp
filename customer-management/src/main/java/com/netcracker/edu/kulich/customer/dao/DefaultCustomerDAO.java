@@ -17,8 +17,7 @@ public class DefaultCustomerDAO implements CustomerDAO {
 
     @Override
     public Customer save(Customer customer) {
-        customer = entityManager.merge(customer);
-        return customer;
+        return entityManager.merge(customer);
     }
 
     @Override
@@ -30,7 +29,7 @@ public class DefaultCustomerDAO implements CustomerDAO {
     @Override
     public List<Customer> findAll() {
         List<Customer> customers;
-        customers = entityManager.createQuery("SELECT elem FROM Customer elem ORDER BY elem.id", Customer.class).getResultList();
+        customers = entityManager.createNamedQuery("Customer.getAll").getResultList();
         return customers;
     }
 
