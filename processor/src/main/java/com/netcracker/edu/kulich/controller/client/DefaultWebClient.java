@@ -118,8 +118,8 @@ public class DefaultWebClient implements WebClient {
     }
 
     @Logging(startMessage = "Sending request to remove order item from order...", endMessage = "Response on request for removing order item received.")
-    public void removeItemFromOrder(Long orderId, Long itemId) {
-        restTemplate.exchange(inventory + "/orders/" + orderId + "/items/" + itemId,
+    public OrderDTO removeItemFromOrder(Long orderId, Long itemId) {
+        return restTemplate.exchange(inventory + "/orders/" + orderId + "/items/" + itemId,
                 HttpMethod.DELETE,
                 null,
                 new ParameterizedTypeReference<OrderDTO>() {

@@ -25,7 +25,7 @@ public interface WebClient {
 
     OrderDTO addItemToOrder(Long orderId, Long itemId);
 
-    void removeItemFromOrder(Long orderId, Long itemId);
+    OrderDTO removeItemFromOrder(Long orderId, Long itemId);
 
     OrderDTO payForOrder(Long orderId);
 

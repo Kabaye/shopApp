@@ -132,7 +132,6 @@ public class DefaultOrderService implements OrderService {
         checkAndRecreateOrderItem(item);
         order.addItem(item);
         item.setOrder(order);
-        order = orderDAO.update(order);
         order.postPersistAndUpdate();
         return order;
     }
@@ -150,9 +149,7 @@ public class DefaultOrderService implements OrderService {
         }
         OrderItem item = orderItemDAO.read(itemId);
         order.getOrderItems().remove(item);
-        order = orderDAO.update(order);
         order.postPersistAndUpdate();
-
         return order;
     }
 

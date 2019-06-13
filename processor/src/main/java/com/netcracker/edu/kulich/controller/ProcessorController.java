@@ -104,10 +104,10 @@ public class ProcessorController {
     }
 
     @DeleteMapping(value = "/orders/{id:[\\d]+}/items/{itemId:[\\d]+}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @Logging(startMessage = "Deleting order item from order...", endMessage = "Order item deleted.", startFromNewLine = true)
-    public void removeItemFromOrder(@PathVariable("id") Long id, @PathVariable("itemId") Long itemId) {
-        webClient.removeItemFromOrder(id, itemId);
+    public OrderDTO removeItemFromOrder(@PathVariable("id") Long id, @PathVariable("itemId") Long itemId) {
+        return webClient.removeItemFromOrder(id, itemId);
     }
 
     @PostMapping(value = "/orders/{id:[\\d]+}/pay")
