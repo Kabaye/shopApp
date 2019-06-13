@@ -23,7 +23,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URI:http://localhost:9999/myeureka/eureka}
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
     initial-instance-info-replication-interval-seconds: 1
   instance:
     preferIpAddress: true

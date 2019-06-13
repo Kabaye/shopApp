@@ -1,8 +1,5 @@
 server:
-  port: 9999
-  servlet:
-    context-path: /myeureka
-
+  port: 8761
 eureka:
   server:
     response-cache-update-interval-ms: 3000
