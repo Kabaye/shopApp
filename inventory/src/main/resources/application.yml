@@ -19,7 +19,7 @@ spring:
     servlet:
       path: /inventory
 server:
-  port: 6669
+  port: 8803
 eureka:
   client:
     service-url:

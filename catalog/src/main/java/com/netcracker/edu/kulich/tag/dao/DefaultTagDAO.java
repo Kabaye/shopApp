@@ -32,7 +32,7 @@ public class DefaultTagDAO implements TagDAO {
                 .setMaxResults(1).getResultList()
                 .stream()
                 .findFirst()
-                .get();
+                .orElse(null);
     }
 
     @Override

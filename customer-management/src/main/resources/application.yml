@@ -19,7 +19,7 @@ spring:
     servlet:
       path: /customer-management
 server:
-  port: 6667
+  port: 8801
 eureka:
   client:
     service-url:

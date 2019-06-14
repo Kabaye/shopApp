@@ -19,7 +19,7 @@ spring:
     servlet:
       path: /catalog
 server:
-  port: 6668
+  port: 8802
 eureka:
   client:
     service-url:
