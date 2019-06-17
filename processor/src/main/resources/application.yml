@@ -1,11 +1,11 @@
 server:
   port: 8800
 catalog:
-  name: catalog
+  name: http://catalog
 inventory:
-  name: inventory
+  name: http://inventory
 customer-management:
-  name: customer-management
+  name: http://customer-management
 spring:
   application:
     name: processor

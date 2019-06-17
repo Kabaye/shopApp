@@ -21,7 +21,8 @@ import java.util.stream.Collectors;
 @NamedQueries({
         @NamedQuery(name = "Offer.findAll", query = "SELECT offer FROM Offer offer"),
         @NamedQuery(name = "Offer.findAllByCategory", query = "SELECT o FROM Offer o  WHERE o.category.category = :category_name"),
-        @NamedQuery(name = "Offer.findAllHavingTags", query = "SELECT o FROM Offer o JOIN Tag t ON o MEMBER OF t.offers WHERE t.tagname IN (:tagNameList) GROUP BY o.id HAVING COUNT(DISTINCT t.tagname) = :tagCount"),
+        @NamedQuery(name = "Offer.findAllHavingTags", query = "SELECT o FROM Offer o JOIN Tag t ON o MEMBER OF t.offers " +
+                "WHERE t.tagname IN (:tagNameList) GROUP BY o.id HAVING COUNT(DISTINCT t.tagname) = :tagCount"),
         @NamedQuery(name = "Offer.findAllWithPriceInRange", query = "SELECT o FROM Offer o  WHERE o.price.price BETWEEN :lowerBound AND :upperBound")
 })
 public class Offer {
